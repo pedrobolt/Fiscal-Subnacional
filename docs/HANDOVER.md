@@ -34,6 +34,8 @@ Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do R
 - `premissas.yml`: IPCA, PIB real e PIB nominal (R$ bilhões) do cenário vigente da planilha federal (com data e fonte). Não é versionado (informação interna); o formato está em `premissas.exemplo.yml` e a validação em `R/premissas.R` (`ler_premissas()`).
 - Nada mais deve exigir edição manual. Se exigir, registrar aqui.
 
+Registro de experimentos: `experiments/registro.csv` (um candidato por linha e cutoff, com parâmetros, amostra e commit). Novo candidato avaliado = nova linha via `registrar_experimento()`.
+
 ## 6. Fontes de dados
 | Fonte | O quê | Acesso | Defasagem típica |
 |---|---|---|---|
