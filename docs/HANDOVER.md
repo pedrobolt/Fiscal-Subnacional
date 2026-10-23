@@ -30,7 +30,7 @@ Passo a passo detalhado, com o que conferir antes de enviar os números: `docs/p
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 
 ## 5. O que atualizar à mão
-- `premissas.yml`: IPCA e PIB do cenário vigente da planilha federal (com data e fonte). Não é versionado (informação interna); o formato está em `premissas.exemplo.yml`.
+- `premissas.yml`: IPCA, PIB real e PIB nominal (R$ bilhões) do cenário vigente da planilha federal (com data e fonte). Não é versionado (informação interna); o formato está em `premissas.exemplo.yml` e a validação em `R/premissas.R` (`ler_premissas()`).
 - Nada mais deve exigir edição manual. Se exigir, registrar aqui.
 
 ## 6. Fontes de dados

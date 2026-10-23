@@ -11,3 +11,7 @@ pib_real:        # crescimento real anual, fração
   2026: null
   2027: null
   2028: null
+pib_nominal:     # PIB nominal anual, R$ bilhões (denominador do % do PIB; contrato, "Unidades de saída")
+  2026: null
+  2027: null
+  2028: null
