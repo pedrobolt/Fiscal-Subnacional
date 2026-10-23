@@ -40,7 +40,7 @@ Registro de experimentos: `experiments/registro.csv` (um candidato por linha e c
 | Fonte | O quê | Acesso | Defasagem típica |
 |---|---|---|---|
 | BCB/SGS | Primário regional (4642), estadual (4643), municipal (4644); NFSP sem desvalorização cambial, fluxo mensal, R$ milhões, déficit positivo (o código inverte o sinal) | `https://api.bcb.gov.br/dados/serie/bcdata.sgs.<código>/dados?formato=json`; a API falha de forma intermitente (há novas tentativas) | ~1 mês [confirmar no E2] |
-| Siconfi/RREO | Anexos 1 e 6, estados e municípios (bimestral) | API Siconfi | 30 dias legais + atraso [medir no E2.7] |
+| Siconfi/RREO | Anexos 1 e 6, estados e municípios (bimestral) | API `apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo` (exige `id_ente`; sem download em massa para o RREO). Estados: `Rscript -e 'source("_targets.R"); baixar_rreo_estados()'` (~1,2 h, retomável) | 30 dias legais + atraso [medir no E2.7] |
 | STN | Transferências FPE/FPM | [preencher no E2.3] | [preencher] |
 | IBGE/BCB | IPCA, PIB | API | — |
 
