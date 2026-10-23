@@ -92,3 +92,20 @@ sem_dados <- function(base) {
                     pop_share = sum(d$populacao[is.na(d$receita)], na.rm = TRUE) / sum(d$populacao, na.rm = TRUE)))),
        municipios = s[order(-s$populacao), c("cod_ibge", "uf", "populacao")])
 }
+
+#' Peso do grupo "RREO Simplificado" (ausência estrutural nos bimestres 1, 2, 4 e 5) por UF e no Brasil:
+#' número de municípios e participação na receita, no resultado primário (líquido e em valor absoluto)
+#' e na população. Municípios sem dados ficam fora dos dois grupos (têm imputação própria).
+participacao_simplificado <- function(base) {
+  calc <- function(d) {
+    s <- !is.na(d$tipo) & d$tipo == "RREO Simplificado"
+    com <- !is.na(d$tipo)
+    data.frame(n_municipios = nrow(d), n_simplificado = sum(s),
+               pop_share = sum(d$populacao[s], na.rm = TRUE) / sum(d$populacao, na.rm = TRUE),
+               receita_share = sum(d$receita[s], na.rm = TRUE) / sum(d$receita[com], na.rm = TRUE),
+               primario_liquido_share = sum(d$primario[s], na.rm = TRUE) / sum(d$primario[com], na.rm = TRUE),
+               primario_abs_share = sum(abs(d$primario[s]), na.rm = TRUE) / sum(abs(d$primario[com]), na.rm = TRUE))
+  }
+  por_uf <- do.call(rbind, lapply(split(base, base$uf), function(d) cbind(uf = d$uf[1], calc(d))))
+  rbind(por_uf, cbind(uf = "BR", calc(base)))
+}

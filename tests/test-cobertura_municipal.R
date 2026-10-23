@@ -57,3 +57,17 @@ test_that("extrair_municipio cai para o Simplificado e devolve NA sem dados", {
   expect_true(is.na(r$primario))
   expect_true(is.na(extrair_municipio(2, 2025, pasta = pasta)$tipo))
 })
+
+test_that("participacao_simplificado separa o grupo estrutural e ignora sem dados", {
+  b <- data.frame(cod_ibge = 1:4, uf = "A", populacao = c(100, 50, 50, 100),
+                  tipo = c("RREO", "RREO Simplificado", "RREO Simplificado", NA),
+                  receita = c(80, 15, 5, NA), primario = c(8, -1, 3, NA))
+  p <- participacao_simplificado(b)
+  a <- p[p$uf == "A", ]
+  expect_equal(a$n_simplificado, 2)
+  expect_equal(a$receita_share, 20 / 100)
+  expect_equal(a$primario_liquido_share, 2 / 10)
+  expect_equal(a$primario_abs_share, 4 / 12)
+  expect_equal(a$pop_share, 100 / 300)
+  expect_equal(p$uf, c("A", "BR"))
+})
