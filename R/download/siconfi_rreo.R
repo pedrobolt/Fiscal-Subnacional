@@ -148,7 +148,16 @@ baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO
   log <- sprintf("_log_M%s.csv", tag)
   n <- 0
   for (ano in anos) for (b in periodos) for (anx in anexos) for (id in ids) {
-    baixar_rreo_municipal(id, ano, b, anx, pasta = pasta, log = log, hoje = hoje)
+    # Anexo 6: consulta só o tipo que o Anexo 1 já mostrou ter dados (poupa chamadas)
+    tipos <- TIPOS_RREO
+    if (anx != ANEXOS_RREO[["anexo01"]]) {
+      a1 <- vapply(TIPOS_RREO, function(t) isTRUE(linhas_rreo(caminho_rreo(pasta, "M", id, ano, b, ANEXOS_RREO[["anexo01"]], t)) > 0), logical(1))
+      if (any(a1)) tipos <- TIPOS_RREO[a1][1] else next   # sem Anexo 1 com dados: não há o que buscar
+    }
+    for (t in tipos) {
+      p <- baixar_rreo(id, ano, b, anx, esfera = "M", pasta = pasta, tipo = t, log = log, hoje = hoje)
+      if (!is.na(p) && linhas_rreo(p) > 0) break
+    }
     n <- n + 1
   }
   invisible(n)
