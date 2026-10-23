@@ -21,7 +21,8 @@ No Linux, instalar antes a biblioteca de sistema `libglpk40` (exigida pelo `igra
 ```
 Rscript -e "renv::restore()"                 # só na primeira vez ou após mudança de pacotes
 cp premissas.exemplo.yml premissas.yml       # e preencher com o cenário vigente
-Rscript -e "targets::tar_make()"             # baixa, valida, projeta e exporta
+Rscript -e "targets::tar_make()"             # baixa, valida, projeta e exporta (E1.5: fatia mínima; tabelas em outputs/fatia_*.csv)
+# o ano-alvo está em _targets.R (ano_t); em jan/fev, trocar para o ano anterior
 Rscript -e "testthat::test_dir('tests')"     # confere
 ```
 Passo a passo detalhado, com o que conferir antes de enviar os números: `docs/playbook_rodada.md` (E7.4).
@@ -36,7 +37,7 @@ Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do R
 ## 6. Fontes de dados
 | Fonte | O quê | Acesso | Defasagem típica |
 |---|---|---|---|
-| BCB/SGS | Primário regional, estadual, municipal (mensal) | API SGS | ~1 mês [confirmar no E2] |
+| BCB/SGS | Primário regional (4642), estadual (4643), municipal (4644); NFSP sem desvalorização cambial, fluxo mensal, R$ milhões, déficit positivo (o código inverte o sinal) | `https://api.bcb.gov.br/dados/serie/bcdata.sgs.<código>/dados?formato=json`; a API falha de forma intermitente (há novas tentativas) | ~1 mês [confirmar no E2] |
 | Siconfi/RREO | Anexos 1 e 6, estados e municípios (bimestral) | API Siconfi | 30 dias legais + atraso [medir no E2.7] |
 | STN | Transferências FPE/FPM | [preencher no E2.3] | [preencher] |
 | IBGE/BCB | IPCA, PIB | API | — |
