@@ -33,3 +33,14 @@ test_that("falha com erro de unidade", {
 test_that("falha com arquivo inexistente", {
   expect_error(ler_premissas("nao_existe.yml", ano_t = 2026), "encontrado")
 })
+
+test_that("ano_t é obrigatório (sem default baseado na data do sistema)", {
+  expect_error(ler_premissas(escreve()), "obrigat")
+  expect_false("ano_t" %in% names(Filter(function(v) !identical(v, quote(expr = )), formals(ler_premissas))))
+})
+
+test_that("aceita acentos no campo fonte", {
+  f <- escreve()
+  writeLines(sub("fonte: \"teste\"", "fonte: \"Planilha federal, célula K727\"", readLines(f)), f, useBytes = TRUE)
+  expect_match(ler_premissas(f, ano_t = 2026)$fonte, "célula", fixed = TRUE)
+})

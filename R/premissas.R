@@ -4,14 +4,18 @@
 #' Lê e valida o arquivo de premissas macroeconômicas.
 #'
 #' @param caminho caminho do arquivo YAML.
-#' @param ano_t ano corrente do modelo; precisa ter todas as séries preenchidas.
+#' @param ano_t ano-alvo do modelo (obrigatório, sem default); precisa ter todas as séries preenchidas.
 #' @return lista com versao, fonte e data.frame `anos` (ano, ipca, pib_real, pib_nominal).
-ler_premissas <- function(caminho = "premissas.yml", ano_t = as.integer(format(Sys.Date(), "%Y"))) {
+ler_premissas <- function(caminho = "premissas.yml", ano_t) {
+  if (missing(ano_t)) {
+    stop("ano_t é obrigatório (ex.: ler_premissas(ano_t = 2026)); fechamentos de jan/fev usam o ano anterior.", call. = FALSE)
+  }
   if (!file.exists(caminho)) {
     stop("Arquivo de premissas não encontrado: ", caminho,
          ". Copie premissas.exemplo.yml para premissas.yml e preencha.", call. = FALSE)
   }
-  x <- yaml::read_yaml(caminho)
+  # Lê como UTF-8 explicitamente: acentos em `fonte` quebram read_yaml em locales não UTF-8.
+  x <- yaml::yaml.load(paste(readLines(caminho, encoding = "UTF-8", warn = FALSE), collapse = "\n"))
 
   campos <- c("ipca", "pib_real", "pib_nominal")
   ausentes <- setdiff(c("versao", "fonte", campos), names(x))
