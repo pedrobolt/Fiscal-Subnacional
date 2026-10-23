@@ -4,7 +4,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ## Estado atual
 - Etapa: E1
-- Próxima tarefa: E1.4 (premissas), após o merge da E1.3; depois E1.5 (fatia mínima com o BCB)
+- Próxima tarefa: E1.5 (fatia mínima com o BCB), após o merge da E1.4
 
 ## Concluído
 ### E1.1 — Estrutura do repositório (23/10/2026, branch `e1.1-estrutura`)
@@ -17,6 +17,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ### E1.3 — Revisão do contrato (23/10/2026, branch `e1.3-contrato`)
 - Contrato aprovado pelo Pedro com ajustes (ver Decisões de 23/10/2026); `docs/contrato.md` atualizado para a versão 23/10/2026.
+
+### E1.4 — premissas.yml (23/10/2026, branch `e1.4-premissas`)
+- `premissas.exemplo.yml` ganhou `pib_nominal` (R$ bilhões, denominador do % do PIB, conforme o contrato).
+- `R/premissas.R`: `ler_premissas(caminho, ano_t)` lê e valida; falha se faltar campo, se o ano t estiver em branco ou se houver erro de unidade (IPCA e PIB real em fração; PIB nominal em R$ bilhões). Anos seguintes podem ficar em branco.
+- `tests/test-premissas.R`: 5 testes com arquivos temporários; o `premissas.yml` real não é lido nem versionado.
+- Verificação: `Rscript -e "testthat::test_dir('tests')"` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 12 ]`; `targets::tar_make()` → pipeline ok.
+- Pendente (Pedro): criar o `premissas.yml` local a partir do exemplo, incluindo o PIB nominal de 2026 (planilha federal), e conferir as células de IPCA e PIB real.
 
 ## Pendências abertas
 - E2.5: confirmar se o lançamento do FPE/FPM bruto com dedutora do Fundeb vale em todo o período 2015–2025 ou se mudou com o layout de 2018.
