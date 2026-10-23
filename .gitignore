@@ -1,0 +1,22 @@
+# Informação interna da CNI
+premissas.yml
+outputs/*
+!outputs/.gitkeep
+
+# Dados brutos: política de versionamento dos snapshots definida na E2.4
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# targets e renv
+_targets/
+renv/library/
+renv/staging/
+renv/local/
+renv/cellar/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/

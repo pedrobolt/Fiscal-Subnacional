@@ -1,0 +1,13 @@
+# Modelo de formato das premissas macroeconômicas.
+# Copie para premissas.yml (não versionado) e preencha com o cenário vigente da planilha federal da CNI.
+# Usadas só no motor de cenários e na conversão para % do PIB. O backtest NÃO usa estes valores.
+versao: "AAAA-MM-DD"
+fonte: "Planilha federal CNI, <mês/ano>; células de origem"
+ipca:            # variação anual, fração (0.05 = 5%)
+  2026: null
+  2027: null
+  2028: null
+pib_real:        # crescimento real anual, fração
+  2026: null
+  2027: null
+  2028: null
