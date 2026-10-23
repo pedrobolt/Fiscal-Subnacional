@@ -1,11 +1,6 @@
 # Cobertura do download do RREO (E2.1): quantos entes têm dados por ano x bimestre x anexo.
 # Ausência é ausência: arquivo inexistente ou vazio conta como "sem dados", nunca como zero.
 
-linhas_rreo <- function(arquivo) {
-  if (!file.exists(arquivo)) return(NA_integer_)
-  NROW(jsonlite::fromJSON(gzfile(arquivo))$items)
-}
-
 cobertura_rreo <- function(ids, anos, periodos = 1:6, anexos = ANEXOS_RREO, esfera = "E", pasta = "data/raw/rreo",
                            hoje = Sys.Date()) {
   g <- expand.grid(ano = anos, periodo = periodos, anexo = unname(anexos), stringsAsFactors = FALSE)
