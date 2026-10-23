@@ -53,7 +53,11 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
       segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 2), msg = substr(res$msg, 1, 120)), log)
     if (res$ok) {
       if (res$linhas == 0 && ano >= as.integer(format(hoje, "%Y"))) return(NA_character_)
-      con <- gzfile(destino, "wb"); writeLines(readLines(tmp, warn = FALSE, encoding = "UTF-8"), con, useBytes = TRUE); close(con)
+      # Gravação atômica: escreve em .tmp e renomeia. Se o processo morrer no meio, sobra só o .tmp
+      # (ignorado) e o arquivo final nunca fica truncado.
+      parcial <- paste0(destino, ".tmp")
+      con <- gzfile(parcial, "wb"); writeLines(readLines(tmp, warn = FALSE, encoding = "UTF-8"), con, useBytes = TRUE); close(con)
+      if (!file.rename(parcial, destino)) stop("Falha ao renomear ", parcial, call. = FALSE)
       Sys.sleep(pausa)
       return(destino)
     }
@@ -161,4 +165,19 @@ baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO
     n <- n + 1
   }
   invisible(n)
+}
+
+#' Valida todos os .json.gz de `pasta` (descompacta e interpreta o JSON). Retorna os caminhos inválidos.
+#' Com `remover = TRUE`, apaga os inválidos para a retomada rebaixá-los. Também apaga sobras .tmp.
+validar_rreo_pasta <- function(pasta = "data/raw/rreo", remover = FALSE) {
+  tmps <- list.files(pasta, pattern = "\\.tmp$", recursive = TRUE, full.names = TRUE)
+  if (remover && length(tmps) > 0) unlink(tmps)
+  arqs <- list.files(pasta, pattern = "\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
+  ok <- vapply(arqs, function(a) {
+    r <- try(suppressWarnings(jsonlite::fromJSON(gzfile(a))), silent = TRUE)
+    !inherits(r, "try-error") && is.list(r) && !is.null(r$items)
+  }, logical(1))
+  ruins <- arqs[!ok]
+  if (remover && length(ruins) > 0) unlink(ruins)
+  ruins
 }
