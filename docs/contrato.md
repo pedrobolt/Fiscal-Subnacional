@@ -1,6 +1,6 @@
 # Contrato metodológico
 
-Versão: 20/10/2026. Alterações só com aprovação do Pedro, registradas em `docs/STATUS.md` (seção Decisões).
+Versão: 23/10/2026. Alterações só com aprovação do Pedro, registradas em `docs/STATUS.md` (seção Decisões).
 
 ## Produtos
 | Produto | Alvo | Fonte | Avaliado contra |
@@ -17,9 +17,9 @@ Versão: 20/10/2026. Alterações só com aprovação do Pedro, registradas em `
 - **Estágio da despesa**: caixa = despesa paga + restos a pagar pagos. Empenho e liquidação são preservados, mas não são alvo.
 - **RPPS**: receitas e despesas primárias **exceto fontes do RPPS** (como no Anexo 6).
 - **Primário**: juros, amortizações e operações de crédito ficam fora.
-- **Transferências federais (FPE/FPM)**: usar o valor reportado pela STN (o que a União transferiu), não o declarado pelos entes.
+- **FPE/FPM**: projetado a partir da série da STN (valor bruto transferido), convertido ao conceito RREO por fator de ponte (RREO declarado / STN), estimado no histórico por UF e esfera; avaliado contra o RREO declarado. A ponte cobre bruto vs. líquido do Fundeb, timing de decêndios e cobertura de entes. Se o fator for instável em alguma UF, sinalizar como achado de qualidade no E2.
 - **Valores**: base em R$ correntes. Variação real deflacionada pelo **IPCA mensal, período a período** (cada mês ou bimestre pelo IPCA do próprio período, depois somado). Não usar IPCA dez/dez para fluxos.
-- **Unidades de saída**: R$ bilhões e % do PIB.
+- **Unidades de saída**: R$ bilhões e % do PIB. O denominador do % do PIB é o PIB nominal anual do ano t, tratado como premissa (`premissas.yml`). Não usar o PIB acumulado em 12 meses do BCB.
 - **Agregado**: "total das 27 UFs" só quando a cobertura estiver explícita; senão, rotular como parcial.
 
 ## Quebras conhecidas (a tratar no E2, nota de quebras)
@@ -31,4 +31,4 @@ Versão: 20/10/2026. Alterações só com aprovação do Pedro, registradas em `
 - Backtest de **evento fixo**: erro do total anual por mês do cutoff (jan…dez), anos-alvo 2016–2025.
 - Informação em tempo real simulada: `available_at` de cada dado; o histórico do BCB é revisado (limitação declarada); snapshots próprios a partir de agora.
 - Métricas: ME (viés), MAE, RMSE, em R$ e % do PIB; teste de Diebold-Mariano.
-- Regra de aceitação (proposta, a congelar no E3): reduzir o erro em ≥10% frente ao melhor benchmark em ≥70% dos anos-alvo, sem viés sistemático. Em empate, o mais simples.
+- Regra de aceitação (proposta, a congelar no E3): reduzir o erro em ≥10% frente ao melhor benchmark (da lista do plano E3.4: naïve, participação sazonal, ETS, SARIMA e previsão atualizada do RREO) em ≥70% dos anos-alvo, sem viés sistemático. Em empate, o mais simples.
