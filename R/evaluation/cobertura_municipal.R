@@ -20,8 +20,8 @@ valor_conta <- function(d, cod_conta, coluna_regex) {
 #' Retorna data.frame(cod_ibge, tipo, receita, primario); tipo NA = sem dados.
 extrair_municipio <- function(id, ano, periodo = 6, pasta = "data/raw/rreo", contas = CONTAS_COBERTURA[[as.character(ano)]]) {
   for (tipo in TIPOS_RREO) {
-    a1 <- caminho_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo01"]], tipo)
-    a6 <- caminho_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo06"]], tipo)
+    a1 <- vigente_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo01"]], tipo)
+    a6 <- vigente_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo06"]], tipo)
     if (isTRUE(linhas_rreo(a1) > 0)) {
       rec <- valor_conta(ler_rreo(a1), contas$receita[1], contas$receita[2])
       pri <- if (isTRUE(linhas_rreo(a6) > 0)) valor_conta(ler_rreo(a6), contas$primario[1], contas$primario[2]) else NA_real_

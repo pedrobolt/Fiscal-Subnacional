@@ -1,4 +1,5 @@
 library(testthat)
+source("../R/download/snapshots.R")
 source("../R/download/siconfi_rreo.R")
 source("../R/evaluation/cobertura_municipal.R")
 

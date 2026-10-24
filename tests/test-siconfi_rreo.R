@@ -1,4 +1,5 @@
 library(testthat)
+source("../R/download/snapshots.R")
 source("../R/download/siconfi_rreo.R")
 
 item <- function(coluna = "Até o Bimestre (c)", valor = 100) {
