@@ -30,6 +30,8 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 ## Avaliação
 - Backtest de **evento fixo**: erro do total anual por mês do cutoff (jan…dez), anos-alvo 2016–2025.
 - Informação em tempo real simulada: `available_at` de cada dado; o histórico do BCB é revisado (limitação declarada); snapshots próprios a partir de agora.
+- **RREO: versão dos valores.** Os valores usados são a versão mais recente (retificada) de cada demonstrativo, análoga à revisão do histórico do BCB (limitação declarada).
+- **RREO: `available_at`** (fonte: `extrato_entregas` do Siconfi, que guarda só o último status de cada ente × ano × período). Demonstrativo homologado (HO): `available_at` = `data_status`. Demonstrativo retificado (RE): a primeira entrega não é observável, e usar o prazo legal puro (fim do bimestre + 30 dias) vazaria informação; `available_at` = prazo legal + atraso mediano dos homologados da mesma UF × período. Para entes sem homologados na mesma UF × período, usar a mediana do período no país (registrar como achado). A defasagem mediana por UF × período é calculada na E2.7.
 - Amostras: os candidatos só-BCB também são avaliados em amostra longa (anos-alvo desde o primeiro ano com janela completa), com erro reportado por subperíodo. O torneio formal (Diebold-Mariano e regra de aceitação) permanece na amostra comum 2016–2025, por causa do RREO.
 - Métricas: ME (viés), MAE, RMSE, em R$ e % do PIB; teste de Diebold-Mariano.
 - Regra de aceitação (proposta, a congelar no E3): reduzir o erro em ≥10% frente ao melhor benchmark (da lista do plano E3.4: naïve, participação sazonal, ETS, SARIMA e previsão atualizada do RREO) em ≥70% dos anos-alvo, sem viés sistemático. Em empate, o mais simples.
