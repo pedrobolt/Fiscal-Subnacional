@@ -1,6 +1,6 @@
 # Download e leitura do RREO via API do Siconfi (E2.1; reaproveitada na E2.0 para municípios).
 # Regras: bruto imutável e compactado (.json.gz, um arquivo por ente x ano x bimestre x anexo);
-# arquivo existente nunca é rebaixado (política de snapshots/retificações: E2.4);
+# arquivo existente nunca é sobrescrito: retificações entram como snapshot novo (R/download/snapshots.R, E2.4);
 # resposta vazia só é guardada para exercícios já encerrados (o bimestre corrente pode ainda não ter sido publicado);
 # cada chamada é registrada em _log.csv (status, tempo, linhas).
 
@@ -8,7 +8,7 @@ SICONFI_URL <- "https://apidatalake.tesouro.gov.br/ords/siconfi/tt"
 ANEXOS_RREO <- c(anexo01 = "RREO-Anexo 01", anexo06 = "RREO-Anexo 06")
 
 # Municípios pequenos que optam pelo RREO semestral entregam o tipo "RREO Simplificado"
-# (mesmos Anexos 1 e 6, só nos bimestres 3 e 6).
+# (mesmos Anexos 1 e 6; na amostra de 2025 e 2019, 119 de 120 entregam os seis bimestres).
 TIPOS_RREO <- c("RREO", "RREO Simplificado")
 
 url_rreo <- function(id_ente, ano, periodo, anexo, tipo = "RREO") {
@@ -32,9 +32,14 @@ registrar_chamada <- function(pasta, linha, log = "_log.csv") {
 #' Baixa um demonstrativo do RREO (um ente, ano, bimestre, anexo) e guarda o JSON compactado.
 #' Retorna o caminho do arquivo, ou NA se a resposta veio vazia e não foi guardada.
 baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "data/raw/rreo",
-                        tentativas = 4, hoje = Sys.Date(), pausa = 0.3, tipo = "RREO", log = "_log.csv") {
-  destino <- caminho_rreo(pasta, esfera, id_ente, ano, periodo, anexo, tipo)
-  if (file.exists(destino)) return(destino)
+                        tentativas = 4, hoje = Sys.Date(), pausa = 0.3, tipo = "RREO", log = "_log.csv",
+                        snapshot = FALSE) {
+  base <- caminho_rreo(pasta, esfera, id_ente, ano, periodo, anexo, tipo)
+  vigente <- arquivo_vigente(base)
+  # Sem `snapshot`: reaproveita a versão vigente. Com `snapshot`: consulta de novo e, se vier conteúdo,
+  # grava como versão nova (a original e as anteriores ficam intactas).
+  if (!snapshot && !is.na(vigente)) return(vigente)
+  destino <- if (snapshot && !is.na(vigente)) caminho_snapshot(base) else base
   dir.create(dirname(destino), showWarnings = FALSE, recursive = TRUE)
   tmp <- tempfile(fileext = ".json")
   for (i in seq_len(tentativas)) {
@@ -52,7 +57,7 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
       periodo = periodo, anexo = anexo, tipo = tipo, tentativa = i, ok = res$ok, linhas = res$linhas,
       segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 2), msg = substr(res$msg, 1, 120)), log)
     if (res$ok) {
-      if (res$linhas == 0 && ano >= as.integer(format(hoje, "%Y"))) return(NA_character_)
+      if (res$linhas == 0 && (snapshot || ano >= as.integer(format(hoje, "%Y")))) return(vigente)  # vazio não vira versão nova
       # Gravação atômica: escreve em .tmp e renomeia. Se o processo morrer no meio, sobra só o .tmp
       # (ignorado) e o arquivo final nunca fica truncado.
       parcial <- paste0(destino, ".tmp")
@@ -68,7 +73,7 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
 
 #' Número de linhas do arquivo (NA se não existir).
 linhas_rreo <- function(arquivo) {
-  if (!file.exists(arquivo)) return(NA_integer_)
+  if (is.na(arquivo) || !file.exists(arquivo)) return(NA_integer_)
   NROW(jsonlite::fromJSON(gzfile(arquivo))$items)
 }
 
@@ -155,7 +160,7 @@ baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO
     # Anexo 6: consulta só o tipo que o Anexo 1 já mostrou ter dados (poupa chamadas)
     tipos <- TIPOS_RREO
     if (anx != ANEXOS_RREO[["anexo01"]]) {
-      a1 <- vapply(TIPOS_RREO, function(t) isTRUE(linhas_rreo(caminho_rreo(pasta, "M", id, ano, b, ANEXOS_RREO[["anexo01"]], t)) > 0), logical(1))
+      a1 <- vapply(TIPOS_RREO, function(t) isTRUE(linhas_rreo(vigente_rreo(pasta, "M", id, ano, b, ANEXOS_RREO[["anexo01"]], t)) > 0), logical(1))
       if (any(a1)) tipos <- TIPOS_RREO[a1][1] else next   # sem Anexo 1 com dados: não há o que buscar
     }
     for (t in tipos) {
