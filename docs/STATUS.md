@@ -4,7 +4,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ## Estado atual
 - Etapa: E1
-- Próxima tarefa: E2.1 (RREO Anexos 1 e 6, estados por UF), após o merge da E1.8 (plano de 5 linhas antes de codar; incluir estimativa e início antecipado do download do RREO municipal)
+- Próxima tarefa: E2.0 (piloto do RREO municipal; plano de 5 linhas aguardando ok do Pedro) em paralelo com a revisão da E2.1; depois E2.2
 
 ## Concluído
 ### E1.1 — Estrutura do repositório (23/10/2026, branch `e1.1-estrutura`)
@@ -46,7 +46,17 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - `docs/plano.md`: E5.2 (FPE/FPM com fator de ponte), E2.3 (PIB nominal anual histórico pelo IBGE; `premissas.yml` só para anos projetados) e E3.3 (tolerância de erro útil para o informe).
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 55 ]`; `targets::tar_make()` → `ended pipeline [11 completed, 0 skipped]`; resultados 2016–2025 inalterados.
 
+### E2.1 — RREO Anexos 1 e 6, estados (23/10/2026, branch `e2.1-rreo-estados`)
+- `R/download/siconfi_rreo.R`: `baixar_rreo()` (um ente × ano × bimestre × anexo; 1 conexão; novas tentativas; JSON compactado `.json.gz` em `data/raw/rreo/<esfera>/<ano>/`, imutável e retomável; resposta vazia só é guardada para exercícios encerrados; log por chamada em `data/raw/rreo/_log.csv`), `ler_rreo()` (formato longo, sem somar nem reclassificar), `baixar_rreo_estados()`. Reaproveitável na E2.0 (municípios).
+- `R/transform/rreo.R`, `R/quality/cobertura_rreo.R`; alvos `rreo_estados` e `cobertura_estados` no pipeline (leem o bruto local; o download é fora do pipeline: `Rscript -e 'source("_targets.R"); baixar_rreo_estados()'`).
+- Download: 27 entes (26 estados + DF) × 2015–2026 × bimestres publicados × Anexos 1 e 6 = **3.780 chamadas, 0 erros, mediana 1,07 s por chamada** (1 conexão, ~1,2 h). Bruto: 34 MB compactado. Sem paginação (máx. ~700 linhas por chamada).
+- Cobertura: 3.775 de 3.780 demonstrativos com dados. Os 5 vazios são o **Rio Grande do Sul (43), Anexo 6, 2018, bimestres 1–5** (o 6º existe). Achado de qualidade: **causa a investigar no E2.8** (a mudança de layout de 2018 valeu para todos os entes e só o RS veio vazio, então não se atribui ao layout). O agregado estadual desses bimestres é rotulado como **parcial** (26 de 27 UFs no Anexo 6); ausência tratada como ausência, nunca zero.
+- Tabela longa: 1.383.117 linhas, 27 entes, 2015–2026.
+- Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 74 ]`; `targets::tar_make()` → pipeline concluído.
+- Pendente: `available_at` (E2.7) e política de snapshots/retificações (E2.4).
+
 ## Pendências abertas
+- E2.8: investigar a causa do RS, Anexo 6, 2018 b1–b5 vazio e decidir o tratamento (o agregado estadual desses bimestres fica rotulado como parcial; o 6º bimestre existe e cobre o total anual).
 - E3.3: definir com o Pedro a tolerância de erro útil para o informe (ex.: acertar o sinal, ±0,1% do PIB).
 - E3.4: incluir o passeio aleatório sazonal (acumulado do ano + realizado do restante do ano anterior = `prever_acumulado` com `janela = 1`) como benchmark.
 - E3 (janela do acumulado): vira parâmetro, conjunto fixo {1, 3, 5} × {com, sem 2020–22}, definido antes de ver resultados. Escolha por seleção aninhada (só anos < ano-alvo), não pelo menor erro do backtest completo.

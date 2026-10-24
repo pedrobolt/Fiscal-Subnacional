@@ -29,5 +29,12 @@ list(
   tar_target(backtest, rodar_backtest(serie_regional)),
   tar_target(resumo, resumir_erros(backtest)),
   tar_target(previsao, com_pct_pib(prever_ano_corrente(serie_regional, ano_t), premissas)),
-  tar_target(saidas, gravar_saidas_fatia(backtest, resumo, previsao), format = "file")
+  tar_target(saidas, gravar_saidas_fatia(backtest, resumo, previsao), format = "file"),
+
+  # E2.1: RREO dos estados. O download (horas) é feito fora do pipeline:
+  #   Rscript -e 'source("_targets.R"); baixar_rreo_estados()'
+  # Aqui só se lê o que já está em data/raw/rreo e se mede a cobertura.
+  tar_target(ids_estados, ids_estados_local(), cue = tar_cue(mode = "always")),
+  tar_target(rreo_estados, ler_rreo_pasta("data/raw/rreo", "E"), cue = tar_cue(mode = "always")),
+  tar_target(cobertura_estados, cobertura_rreo(ids_estados, 2015:2026), cue = tar_cue(mode = "always"))
 )
