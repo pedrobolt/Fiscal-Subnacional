@@ -73,6 +73,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 129 ]`; `targets::tar_make()` ok, estados inalterados (3.775 de 3.780 com dados; 5 vazios do RS, Anexo 6, 2018; 0 não tentados; 0 sem arquivo).
 - Limitação: a data da versão original (sem sufixo) é o `mtime` do arquivo (preservado pelo `tar`; arquivos do Release restaurados mantêm a data de coleta). Se a data se perder, a versão original é tratada como antiga e pode ser rebaixada uma vez como snapshot.
 
+### E2.5 — Carga histórica em faixas (24/10/2026, branch `e2.5-carga-historica`, empilhada sobre a E2.4)
+- `R/download/carga_historica.R` (faixas, trava por fatia, `executar_carga()`, `progresso_carga()`), `scripts/carga_historica.R <1|2>` e `scripts/carga_historica_progresso.R`. Dois processos fixos (2 conexões; `de != 2` é recusado), retomada automática, falha de rede num ente × ano é registrada em `_erros_carga<N>.csv` e não derruba a rodada, instruções para Windows no HANDOVER 3c.
+- Faixas: estados; municípios 6º bimestre 2025→2015; municípios bimestres 1–5 de 2026→2023. Estimativa: ~378 mil chamadas (extrato ~67 mil + RREO ~311 mil) ≈ 73 h ≈ 3 dias a 1,44/s (acima dos ~2,5 dias previstos por incluir o extrato de todos os anos, que também alimenta o `available_at`).
+- **Não executada**: aguarda a aprovação e o merge da E2.4. Não testada em Windows (código usa `file.path`, `download.file(method = "libcurl")`, gravação atômica por `file.rename`).
+- Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 144 ]`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
