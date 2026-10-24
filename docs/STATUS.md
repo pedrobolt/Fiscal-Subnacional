@@ -4,7 +4,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ## Estado atual
 - Etapa: E1
-- Próxima tarefa: E2.0 (piloto do RREO municipal; plano de 5 linhas aguardando ok do Pedro) em paralelo com a revisão da E2.1; depois E2.2
+- Próxima tarefa: decisão do Pedro sobre a recomendação da E2.0 (censo completo) e ordem da carga histórica; depois E2.2
 
 ## Concluído
 ### E1.1 — Estrutura do repositório (23/10/2026, branch `e1.1-estrutura`)
@@ -55,7 +55,20 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 74 ]`; `targets::tar_make()` → pipeline concluído.
 - Pendente: `available_at` (E2.7) e política de snapshots/retificações (E2.4).
 
+### E2.0 — Piloto do RREO municipal (23/10/2026, branch `e2.0-piloto-municipal`)
+- Relatório completo: `docs/relatorio_e2_0.md`. Código: `R/download/siconfi_rreo.R` (tentativa `RREO` e depois `RREO Simplificado`; gravação atômica; `validar_rreo_pasta()`), `R/evaluation/cobertura_municipal.R`, `R/quality/manifesto.R`, `scripts/` (coleta, curvas, amostra do extrato, empacotar/restaurar).
+- Amostras (tamanhos exatos): exploratória de **8** municípios (descobriu o Simplificado); piloto A **200** municípios (1 conexão, 273 chamadas, 0 erros, 0,85/s); piloto B **200** outros municípios, sem sobreposição com A (2 conexões, 287 chamadas, 1 erro transitório, ~1,7/s); coleta completa 2025 e 2019 (6º bimestre, Anexos 1 e 6): **26.089 chamadas em 5,0 h ativas = 1,44/s**, 7 erros transitórios; amostra do extrato: **120** Simplificados por ano (2025 e 2019).
+- Resultados: 5.526 (2025) e 5.539 (2019) municípios com dados; sem dados: 43 (0,61% da população) e 30 (0,18%). Simplificado: 2.294 (41%) em 2025 e 2.067 (37%) em 2019; **entrega os seis bimestres** (119/120 em cada ano), logo **não há ausência estrutural em b1, b2, b4, b5** (a hipótese de imputação separada por ausência estrutural foi descartada; resta verificar contas do Simplificado por UF). Para 80% da receita municipal: 1.967 municípios por UF (2025), 1.814 (2019); ranking estável (~92% de sobreposição).
+- **Recomendação: censo completo** (expansão dos grandes deixa erro de R$ 0,7–7,6 bi no agregado com sinal instável contra primário regional do BCB de R$ 9,5–15,2 bi; custo por bimestre 2,5 h contra 0,9 h). Carga inicial do censo 2015–2026 ≈ 913 mil chamadas ≈ 7,3 dias; começar pelo 6º bimestre de todos os anos (~1,2 dia). A aprovar pelo Pedro.
+- `extrato_entregas`: dá `tipo_relatorio` (P/S) e `data_status` por ente × ano × período, **mas só o último status** (HO homologado / RE retificado); sem histórico. 10,6% (2025) e 6,4% (2019) das linhas do RREO amostradas estavam retificadas. `available_at` (E2.7) = `data_status` quando HO; quando RE, só limite superior: usar a data legal (fim do bimestre + 30 dias) como proxy e registrar a limitação. Valores usados são a **versão mais recente (retificada)**, análogo à revisão do BCB.
+- Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 105 ]`; validação de todos os arquivos do bruto: 0 inválidos.
+- Armazenamento do bruto: GitHub Release `dados-rreo-20261023` (ver HANDOVER 3b).
+
 ## Pendências abertas
+- Contrato (PR próprio, a aprovar): registrar que os valores do RREO são a versão mais recente (retificada) e a regra do `available_at` (HO: `data_status`; RE: proxy legal).
+- E2.2: verificar contas do Simplificado por UF (MS, MG, RS, PR, MA, ES têm 34–48% da receita no grupo); validar extração do primário municipal (layout 2019 × 2025; 22 e 135 municípios sem primário).
+- E2.7: medir a fração de retificações e a defasagem de entrega com o extrato completo (~5,6 mil chamadas por ano).
+- Carga inicial do censo histórico municipal (decisão do Pedro sobre a ordem: 6º bimestre de todos os anos primeiro).
 - E2.8: investigar a causa do RS, Anexo 6, 2018 b1–b5 vazio e decidir o tratamento (o agregado estadual desses bimestres fica rotulado como parcial; o 6º bimestre existe e cobre o total anual).
 - E3.3: definir com o Pedro a tolerância de erro útil para o informe (ex.: acertar o sinal, ±0,1% do PIB).
 - E3.4: incluir o passeio aleatório sazonal (acumulado do ano + realizado do restante do ano anterior = `prever_acumulado` com `janela = 1`) como benchmark.

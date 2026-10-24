@@ -27,6 +27,13 @@ Rscript -e "testthat::test_dir('tests')"     # confere
 ```
 Passo a passo detalhado, com o que conferir antes de enviar os números: `docs/playbook_rodada.md` (E7.4).
 
+### 3b. Dados brutos do RREO: carga inicial e rodada incremental
+O bruto (`data/raw/rreo/`, ~190 MB compactado, 30 mil arquivos) não está no git. Cópia de referência: **GitHub Release `dados-rreo-20261023`** do repositório (dados públicos do Siconfi), com o pacote `rreo_bruto_20261023.tar.gz` e o manifesto (`_manifesto.csv` com arquivo, tamanho e MD5; `_manifesto.json` com contagens, datas de coleta e o commit do código que gerou os dados).
+- **Carga inicial** (máquina nova ou ambiente perdido): baixar os dois arquivos do Release (página Releases, ou `gh release download dados-rreo-20261023`) e, na raiz do repositório, `Rscript scripts/restaurar_dados.R rreo_bruto_20261023.tar.gz rreo_bruto_20261023_manifesto.csv`. O script extrai em `data/raw/rreo/` e confere tamanho e MD5 de todos os arquivos; falha se algo estiver ausente ou diferente.
+- **Rodada incremental** (mensal/bimestral): `baixar_rreo()` nunca rebaixa um arquivo que já existe, então basta rodar o download de novo: busca só os ente × ano × bimestre × anexo que faltam (novo bimestre). Respostas vazias de exercícios encerrados são guardadas (não repetem); o bimestre corrente só é guardado quando há dados. Retificações de bimestres antigos **não** são detectadas por esse caminho (arquivo existente é mantido); a detecção por `extrato_entregas` e a política de snapshots entram na E2.4/E2.7.
+- **Estados**: `Rscript -e 'source("_targets.R"); baixar_rreo_estados()'` (~1,2 h do zero). **Municípios**: `Rscript scripts/coleta_municipal.R 1` e `... 2` (2 processos = 2 conexões, o máximo; não passar disso). Ritmo medido: 1,44 chamada/s; ~13 mil chamadas (~2,5 h) por bimestre.
+- Atualizar o Release: `Rscript scripts/empacotar_dados.R <AAAAMMDD>` (valida todos os arquivos, exige código commitado e grava em `outputs/release/`) e criar um novo Release com data no nome; não sobrescrever o anterior.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 
