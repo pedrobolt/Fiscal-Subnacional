@@ -127,3 +127,50 @@ test_that("ler_rreo_pasta usa a versão vigente e acrescenta tipo, arquivo e bai
   expect_match(d$arquivo[d$tipo_demonstrativo == "RREO"], "^M/2025/1_b6_a01_s20261105T093000Z\\.json\\.gz$")
   expect_equal(d$baixado_em[d$tipo_demonstrativo == "RREO"], utc("2026-11-05 09:30:00"))
 })
+
+escreve_log <- function(pasta, momentos, base_args = list(esfera = "M", id = 1, ano = 2025, periodo = 6, anexo = "RREO-Anexo 01", tipo = "RREO"), nome = "_log.csv") {
+  d <- data.frame(momento = momentos, esfera = base_args$esfera, id_ente = base_args$id, ano = base_args$ano,
+                  periodo = base_args$periodo, anexo = base_args$anexo, tipo = base_args$tipo, tentativa = 1,
+                  ok = TRUE, linhas = 10, segundos = 1, msg = "")
+  dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
+  utils::write.csv(d, file.path(pasta, nome), row.names = FALSE)
+}
+
+test_that("data da original vem do log, não do mtime (cópia/restauração muda o mtime)", {
+  pasta <- tempfile()
+  base <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01")
+  grava(list(item()), base, utc("2027-03-01 00:00:00"))              # mtime "de hoje", após cópia
+  escreve_log(pasta, c("2026-10-23T12:00:00Z", "2026-10-25T08:00:00Z"))  # primeiro ok = original
+  v <- versoes_rreo(base)
+  expect_equal(v$baixado_em, utc("2026-10-23 12:00:00"))
+  expect_equal(v$fonte, "log")
+})
+
+test_that("log antigo (hora local sem fuso) é lido como America/Sao_Paulo e convertido a UTC", {
+  pasta <- tempfile()
+  base <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01")
+  grava(list(item()), base)
+  escreve_log(pasta, "2026-10-23 09:00:00")
+  expect_equal(baixado_em_vigente(base), utc("2026-10-23 12:00:00"))
+})
+
+test_that("sem registro no log, usa o mtime e marca a fonte", {
+  pasta <- tempfile()
+  base <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01")
+  grava(list(item()), base, utc("2026-10-20 10:00:00"))
+  v <- versoes_rreo(base)
+  expect_equal(v$baixado_em, utc("2026-10-20 10:00:00")); expect_equal(v$fonte, "mtime")
+})
+
+test_that("planejar_jobs não marca retificado por causa de mtime novo quando o log tem a data da original", {
+  pasta <- tempfile()
+  base <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01")
+  grava(list(item()), base, utc("2027-03-01 00:00:00"))
+  escreve_log(pasta, "2026-10-23T12:00:00Z")
+  ent <- data.frame(cod_ibge = 1, exercicio = 2025, periodo = 6, tipo = "RREO",
+                    data_status = utc("2026-10-10 00:00:00"), stringsAsFactors = FALSE)
+  j <- planejar_jobs(ent, pasta, "M", anexos = "RREO-Anexo 01", periodos = 6)
+  expect_equal(nrow(j), 0)
+  ent$data_status <- utc("2026-10-24 00:00:00")
+  expect_equal(planejar_jobs(ent, pasta, "M", anexos = "RREO-Anexo 01", periodos = 6)$motivo, "retificado")
+})

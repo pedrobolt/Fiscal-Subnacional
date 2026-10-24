@@ -15,11 +15,12 @@ resumo_manifesto <- function(man, pasta = "data/raw/rreo", commit = NA_character
   esfera <- vapply(partes, `[`, "", 1); ano <- vapply(partes, `[`, "", 2)
   cont <- table(esfera, ano)
   logs <- list.files(pasta, pattern = "^_log.*\\.csv$", full.names = TRUE)
-  momentos <- unlist(lapply(logs, function(f) { x <- utils::read.csv(f); x$momento }))
+  momentos <- unlist(lapply(logs, function(f) { x <- utils::read.csv(f, colClasses = "character"); momento_log_numerico(x$momento) }))
   list(criado_em = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), commit_codigo = commit,
        arquivos = nrow(man), arquivos_json_gz = nrow(j), bytes_total = sum(man$bytes),
        arquivos_invalidos_na_validacao = invalidos,
        contagem_por_esfera_ano = as.list(apply(cont, 1, function(r) as.list(r))),
-       coleta_inicio = if (length(momentos)) min(momentos) else NA, coleta_fim = if (length(momentos)) max(momentos) else NA,
+       coleta_inicio = if (length(momentos)) format(as.POSIXct(min(momentos, na.rm = TRUE), origin = "1970-01-01", tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ") else NA,
+       coleta_fim = if (length(momentos)) format(as.POSIXct(max(momentos, na.rm = TRUE), origin = "1970-01-01", tz = "UTC"), "%Y-%m-%dT%H:%M:%SZ") else NA,
        chamadas_registradas = length(momentos))
 }

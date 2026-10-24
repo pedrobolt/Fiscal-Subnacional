@@ -1,4 +1,5 @@
 library(testthat)
+source("../R/download/snapshots.R")
 source("../R/quality/manifesto.R")
 
 test_that("manifesto lista arquivos com md5 e resume por esfera e ano", {
@@ -13,5 +14,5 @@ test_that("manifesto lista arquivos com md5 e resume por esfera e ano", {
   r <- resumo_manifesto(m, p, commit = "abc", invalidos = 0L)
   expect_equal(r$arquivos_json_gz, 3)
   expect_equal(r$contagem_por_esfera_ano$M$`2025`, 2)
-  expect_equal(r$coleta_fim, "2026-10-23 11:00:00")
+  expect_equal(r$coleta_fim, "2026-10-23T14:00:00Z")   # log antigo (hora local -03) convertido a UTC
 })
