@@ -41,19 +41,32 @@ extrato_atualizado <- function(pasta, id_ente, ano, idade_max_dias = 7, agora = 
 #' Atualiza o RREO de `ids` (esfera "E" ou "M") nos `anos` e `periodos` dados, nessa ordem de anos.
 #' Retorna data.frame com a contagem de jobs por motivo. `fatia`/`de` repartem os entes entre processos.
 atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = "data/raw/rreo", fatia = 1, de = 1,
-                           idade_max_extrato_dias = 7, tag = "", hoje = Sys.Date()) {
+                           idade_max_extrato_dias = 7, tag = "", hoje = Sys.Date(), ao_avancar = NULL) {
   ids <- ids[(seq_along(ids) - 1) %% de == fatia - 1]
   log <- sprintf("_log_%s%s.csv", esfera, tag)
   contagem <- character(0)
+  falhas <- 0
   for (ano in anos) for (id in ids) {
-    ext <- ler_extrato(extrato_atualizado(pasta, id, ano, idade_max_extrato_dias, log = sprintf("_log_extrato%s.csv", tag)))
-    ext <- ext[ext$periodo %in% periodos & vapply(ext$periodo, function(b) bimestre_disponivel(ano, b, hoje), logical(1)), ]
-    jobs <- planejar_jobs(ext, pasta, esfera, periodos = periodos)
-    for (j in seq_len(nrow(jobs))) {
-      with(jobs[j, ], baixar_rreo(cod_ibge, ano, periodo, anexo, esfera = esfera, pasta = pasta, tipo = tipo,
-                                  log = log, hoje = hoje, snapshot = motivo != "novo"))
-    }
-    contagem <- c(contagem, jobs$motivo)
+    if (!is.null(ao_avancar)) ao_avancar(id, ano)
+    # Uma falha de rede num ente x ano não derruba a rodada: fica registrada e a próxima rodada tenta de novo.
+    res <- tryCatch({
+      ext <- ler_extrato(extrato_atualizado(pasta, id, ano, idade_max_extrato_dias, log = sprintf("_log_extrato%s.csv", tag)))
+      ext <- ext[ext$periodo %in% periodos & vapply(ext$periodo, function(b) bimestre_disponivel(ano, b, hoje), logical(1)), ]
+      jobs <- planejar_jobs(ext, pasta, esfera, periodos = periodos)
+      for (j in seq_len(nrow(jobs))) {
+        with(jobs[j, ], baixar_rreo(cod_ibge, ano, periodo, anexo, esfera = esfera, pasta = pasta, tipo = tipo,
+                                    log = log, hoje = hoje, snapshot = motivo != "novo"))
+      }
+      jobs$motivo
+    }, error = function(e) {
+      falhas <<- falhas + 1
+      registrar_chamada(pasta, data.frame(momento = format(Sys.time(), "%Y-%m-%d %H:%M:%S"), id_ente = id, ano = ano,
+                                          erro = substr(conditionMessage(e), 1, 200)), sprintf("_erros%s.csv", tag))
+      character(0)
+    })
+    contagem <- c(contagem, res)
   }
-  as.data.frame(table(motivo = factor(contagem, levels = c("novo", "retificado", "vazio_com_entrega"))), responseName = "jobs")
+  out <- as.data.frame(table(motivo = factor(contagem, levels = c("novo", "retificado", "vazio_com_entrega"))), responseName = "jobs")
+  attr(out, "falhas") <- falhas
+  out
 }

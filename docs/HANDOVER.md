@@ -34,6 +34,16 @@ O bruto (`data/raw/rreo/`, ~125 MB compactado, 30 mil arquivos) não está no gi
 - **Estados**: `Rscript -e 'source("_targets.R"); baixar_rreo_estados()'` (~1,2 h do zero). **Municípios**: `Rscript scripts/coleta_municipal.R 1` e `... 2` (2 processos = 2 conexões, o máximo; não passar disso). Ritmo medido: 1,44 chamada/s; ~13 mil chamadas (~2,5 h) por bimestre.
 - Atualizar o Release: `Rscript scripts/empacotar_dados.R <AAAAMMDD>` (valida todos os arquivos, exige código commitado e grava em `outputs/release/`) e criar um novo Release com data no nome; não sobrescrever o anterior.
 
+### 3c. Carga histórica do RREO municipal (Windows, sem supervisor)
+Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na ordem: (0) estados; (1) municípios, 6º bimestre de 2025 a 2015; (2) municípios, bimestres 1–5 de 2026 a 2023. Bimestres 1–5 de 2015–2022 **não** entram (pendência condicionada ao E4). Estimativa: ~378 mil chamadas, ~3 dias de API a 1,44 chamada/s (2 conexões; o ritmo na sua rede pode variar).
+1. Preparar: clone atualizado do repositório na `main`; `Rscript -e "renv::restore()"`; restaurar o bruto já coletado (HANDOVER 3b, `scripts/restaurar_dados.R`) para não rebaixar o que já existe.
+2. Impedir suspensão: Configurações > Sistema > Energia > "Suspensão" = Nunca (na tomada); notebook: tampa fechada = não fazer nada. Deixar o computador na tomada.
+3. Abrir **dois** terminais (PowerShell) na raiz do repositório e rodar um comando em cada: `Rscript scripts/carga_historica.R 1` e `Rscript scripts/carga_historica.R 2`. Se o Windows não reconhecer `Rscript`, usar o caminho completo, por exemplo `& "C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts/carga_historica.R 1`. **Nunca mais de dois** (limite de conexões); o script se recusa a rodar a mesma fatia duas vezes ao mesmo tempo (aviso "parece já estar em execução").
+4. Acompanhar: `Rscript scripts/carga_historica_progresso.R` (não usa a API): tabela por faixa e ano, chamadas restantes, ritmo da última hora e horas restantes.
+5. Interrupção (fechou o terminal, queda de energia ou de rede): rodar os mesmos dois comandos. Arquivos são gravados de forma atômica e o que existe não é rebaixado. Se aparecer "parece já estar em execução", aguardar 2 minutos ou conferir no Gerenciador de Tarefas se há outro `Rscript` ativo.
+6. Falhas de rede num ente x ano ficam em `data/raw/rreo/_erros_carga<N>.csv` e são tentadas de novo na próxima execução.
+7. Ao terminar (cada terminal imprime "Fatia N concluída"): `Rscript scripts/empacotar_dados.R AAAAMMDD` e publicar um novo Release com a data no nome (HANDOVER 3b). Os scripts não foram testados em Windows; se algo falhar, anotar a mensagem de erro no STATUS.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 
