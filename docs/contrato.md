@@ -1,6 +1,6 @@
 # Contrato metodológico
 
-Versão: 23/10/2026. Alterações só com aprovação do Pedro, registradas em `docs/STATUS.md` (seção Decisões).
+Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações só com aprovação do Pedro, registradas em `docs/STATUS.md` (seção Decisões).
 
 ## Produtos
 | Produto | Alvo | Fonte | Avaliado contra |
@@ -30,5 +30,6 @@ Versão: 23/10/2026. Alterações só com aprovação do Pedro, registradas em `
 ## Avaliação
 - Backtest de **evento fixo**: erro do total anual por mês do cutoff (jan…dez), anos-alvo 2016–2025.
 - Informação em tempo real simulada: `available_at` de cada dado; o histórico do BCB é revisado (limitação declarada); snapshots próprios a partir de agora.
+- Amostras: os candidatos só-BCB também são avaliados em amostra longa (anos-alvo desde o primeiro ano com janela completa), com erro reportado por subperíodo. O torneio formal (Diebold-Mariano e regra de aceitação) permanece na amostra comum 2016–2025, por causa do RREO.
 - Métricas: ME (viés), MAE, RMSE, em R$ e % do PIB; teste de Diebold-Mariano.
 - Regra de aceitação (proposta, a congelar no E3): reduzir o erro em ≥10% frente ao melhor benchmark (da lista do plano E3.4: naïve, participação sazonal, ETS, SARIMA e previsão atualizada do RREO) em ≥70% dos anos-alvo, sem viés sistemático. Em empate, o mais simples.
