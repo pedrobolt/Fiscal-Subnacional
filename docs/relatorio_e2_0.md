@@ -6,7 +6,7 @@ Data: 23/10/2026. Dados: RREO 6º bimestre de 2025 e 2019, Anexos 1 (receita rea
 - 2 conexões (máximo autorizado): 26.089 chamadas em 5,0 h de coleta ativa = **1,44 chamada/s**; 7 erros transitórios (todos resolvidos por nova tentativa), sem bloqueio. Pilotos: 1 conexão 0,85/s (273 chamadas, 0 erros); 2 conexões ~1,7/s (287 chamadas, 1 erro).
 - Amostras: exploratória de 8 municípios (descobriu o RREO Simplificado); piloto A, 200 municípios (1 conexão); piloto B, outros 200 (2 conexões, sem sobreposição com A).
 - Sem download em massa do RREO no Tesouro Transparente (só API).
-- 186 MB compactados para 30.421 arquivos (estados 2015–2026 e municípios 2025/2019).
+- ~125 MB compactados (186 MB em disco) para 30.421 arquivos (estados 2015–2026 e municípios 2025/2019).
 - **RREO Simplificado**: 41% dos municípios em 2025 (2.294) e 37% em 2019 (2.067) entregam o tipo `RREO Simplificado`; é preciso consultar os dois tipos. Em amostra de 120 Simplificados por ano, 119 entregam **os seis bimestres** (2025 e 2019): **não há ausência estrutural nos bimestres 1, 2, 4 e 5** (hipótese descartada).
 
 ## Curva de cobertura (municípios ordenados por receita, dentro da UF)
