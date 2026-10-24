@@ -82,3 +82,14 @@ test_that("bimestre_disponivel considera publicação até 30 dias após o fim d
   expect_true(bimestre_disponivel(2026, 1, as.Date("2026-03-01")))
   expect_false(bimestre_disponivel(2026, 1, as.Date("2026-02-15")))
 })
+
+test_that("validar_rreo_pasta acha arquivo truncado e sobra .tmp, e remove quando pedido", {
+  pasta <- tempfile()
+  bom <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01"); grava_gz(list(item()), bom)
+  ruim <- caminho_rreo(pasta, "M", 2, 2025, 6, "RREO-Anexo 01"); grava_gz(list(item()), ruim)
+  bytes <- readBin(ruim, "raw", file.size(ruim)); writeBin(bytes[seq_len(length(bytes) %/% 2)], ruim)  # trunca
+  file.create(paste0(bom, ".tmp"))
+  expect_equal(validar_rreo_pasta(pasta), ruim)
+  validar_rreo_pasta(pasta, remover = TRUE)
+  expect_false(file.exists(ruim)); expect_true(file.exists(bom)); expect_false(file.exists(paste0(bom, ".tmp")))
+})
