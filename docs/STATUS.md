@@ -79,6 +79,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Não executada**: aguarda a aprovação e o merge da E2.4. Não testada em Windows (código usa `file.path`, `download.file(method = "libcurl")`, gravação atômica por `file.rename`).
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 144 ]`.
 
+### Gate pré-E4 (24/10/2026, branch `e3.4a-gate-sazonal`)
+- (a) SRW (`prever_acumulado`, janela 1) no BCB regional, 2016–2025 e amostra longa 2003–2025 por subperíodo, registrado em `experiments/registro.csv` (`outputs/gate_a_srw_bcb.csv`). SRW ≥ acumulado j=5 até o corte ~6–7 em todas as amostras; j=5 vence nos cortes 9–11 nas amostras com 2020–2025.
+- (b) Primário RREO dos estados vs BCB (estaduais e regionais), amostra pareada efetiva 2020–2025 (n=6): sem ganho demonstrado para o P1; só a ponte RREO→BCB ajuda nos estaduais e de forma instável nos regionais. Detalhes e limites em `docs/relatorio_gate.md`.
+- Recomendação: faixa 2 da carga (municípios, bimestres 1–5 de 2023+) não roda agora; decisão do Pedro.
+- Descobertas: Anexo 6 de caixa só a partir de 2018 (2015–2017 = empenhado/liquidado); RS 2018 sem Anexo 6 nos bimestres 1–5 (E2.8); 2018–2022 `RREO6ResultadoPrimarioEstadosMunicipios` (coluna "VALOR INCORRIDO" ou "VALOR"), 2023+ `ResultadoPrimarioSemRPPSAcimaDaLinha`; tratamento de RPPS em 2018–2022 não verificado (E3.6).
+- Arquivos: `R/evaluation/gate_rreo.R`, `scripts/gate_sazonal.R`, `tests/test-gate_rreo.R`, `docs/relatorio_gate.md`, `experiments/registro.csv`.
+
 ### E2.4b — Data da versão original (24/10/2026, branch `e2.4b-data-original`)
 - A data da versão original deixou de vir do mtime (muda ao copiar, extrair no Windows ou restaurar do Release). Agora é o primeiro registro `ok` do demonstrativo nos `_log*.csv` (que viajam no Release); snapshots seguem usando o carimbo UTC do nome. Sem registro no log, cai no mtime e a coluna `baixado_em_fonte` de `ler_rreo_pasta()` marca `mtime`.
 - Logs novos gravam `momento` em UTC com "Z"; logs antigos (hora local sem fuso, gerados na nuvem) são lidos como America/Sao_Paulo. Premissa a conferir: todos os logs antigos vieram desse ambiente.
