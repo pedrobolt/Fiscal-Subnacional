@@ -1,4 +1,4 @@
-# Carga histórica do RREO por faixas (E2.5). Ordem aprovada em 24/10/2026:
+# Carga histórica do RREO por faixas (E2.4b). Ordem aprovada em 24/10/2026:
 #   0) estados (extrato + retificações; já têm 2015–2026)
 #   1) municípios: 6º bimestre de todos os anos (mais recente primeiro)
 #   2) municípios: bimestres 1–5 de 2023 em diante (2026 b1–b4, 2025, 2024, 2023)
@@ -66,7 +66,7 @@ progresso_carga <- function(pasta = "data/raw/rreo", faixas = faixas_carga(), ho
   }
   p <- do.call(rbind, linhas)
   logs <- list.files(pasta, pattern = "^_log_.*_carga[0-9]\\.csv$", full.names = TRUE)
-  mom <- as.POSIXct(unlist(lapply(logs, function(l) utils::read.csv(l)$momento)))
+  mom <- as.POSIXct(unlist(lapply(logs, function(l) momento_log_numerico(utils::read.csv(l, colClasses = "character")$momento))), origin = "1970-01-01", tz = "UTC")
   taxa <- if (length(mom)) sum(mom > Sys.time() - 3600) / 3600 else NA_real_
   # Ente x ano sem extrato ainda custa 1 chamada de extrato + 2 anexos x bimestres da faixa
   p$chamadas_restantes <- p$jobs_pendentes + (p$entes - p$com_extrato) * p$jobs_por_ente_ano_sem_extrato

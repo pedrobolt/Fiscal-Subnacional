@@ -25,7 +25,7 @@ baixar_extrato <- function(id_ente, ano, pasta = "data/raw/rreo", tentativas = 4
     }, error = function(e) list(ok = FALSE, linhas = NA_integer_, msg = conditionMessage(e)),
        warning = function(w) list(ok = FALSE, linhas = NA_integer_, msg = conditionMessage(w)))
     registrar_chamada(pasta, data.frame(
-      momento = format(Sys.time(), "%Y-%m-%d %H:%M:%S"), esfera = NA, id_ente = id_ente, ano = ano,
+      momento = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), esfera = NA, id_ente = id_ente, ano = ano,
       periodo = NA, anexo = "extrato", tipo = NA, tentativa = i, ok = res$ok, linhas = res$linhas,
       segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 2), msg = substr(res$msg, 1, 120)), log)
     if (res$ok) {

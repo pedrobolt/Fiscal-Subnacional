@@ -71,13 +71,20 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - E2.2: `cobertura_rreo()` reconhece o Simplificado e separa `vazios`, `nao_tentado` (Anexo 6 sem arquivo porque o Anexo 1 está vazio/ausente) e `sem_arquivo`; `ler_rreo_pasta()` lê só a versão vigente e acrescenta `tipo_demonstrativo`, `arquivo` e `baixado_em`.
 - Teste ao vivo (cópia de um arquivo do SP com data antiga): retificação do 6º bimestre de 2025 detectada (RE em 16/04/2026 > arquivo de 01/04/2026) → snapshot novo; Anexo 6 ausente → baixado como `novo`; extrato salvo como snapshot.
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 129 ]`; `targets::tar_make()` ok, estados inalterados (3.775 de 3.780 com dados; 5 vazios do RS, Anexo 6, 2018; 0 não tentados; 0 sem arquivo).
-- Limitação: a data da versão original (sem sufixo) é o `mtime` do arquivo (preservado pelo `tar`; arquivos do Release restaurados mantêm a data de coleta). Se a data se perder, a versão original é tratada como antiga e pode ser rebaixada uma vez como snapshot.
+- (Superada pela E2.4b: a data da original agora vem do log, não do mtime.)
 
-### E2.5 — Carga histórica em faixas (24/10/2026, branch `e2.5-carga-historica`, empilhada sobre a E2.4)
+### E2.4b — Carga histórica em faixas (24/10/2026, branch `e2.5-carga-historica`, empilhada sobre a E2.4)
 - `R/download/carga_historica.R` (faixas, trava por fatia, `executar_carga()`, `progresso_carga()`), `scripts/carga_historica.R <1|2>` e `scripts/carga_historica_progresso.R`. Dois processos fixos (2 conexões; `de != 2` é recusado), retomada automática, falha de rede num ente × ano é registrada em `_erros_carga<N>.csv` e não derruba a rodada, instruções para Windows no HANDOVER 3c.
 - Faixas: estados; municípios 6º bimestre 2025→2015; municípios bimestres 1–5 de 2026→2023. Estimativa: ~378 mil chamadas (extrato ~67 mil + RREO ~311 mil) ≈ 73 h ≈ 3 dias a 1,44/s (acima dos ~2,5 dias previstos por incluir o extrato de todos os anos, que também alimenta o `available_at`).
 - **Não executada**: aguarda a aprovação e o merge da E2.4. Não testada em Windows (código usa `file.path`, `download.file(method = "libcurl")`, gravação atômica por `file.rename`).
 - Verificação: `testthat::test_dir('tests')` → `[ FAIL 0 | WARN 0 | SKIP 0 | PASS 144 ]`.
+
+### E2.4b — Data da versão original (24/10/2026, branch `e2.4b-data-original`)
+- A data da versão original deixou de vir do mtime (muda ao copiar, extrair no Windows ou restaurar do Release). Agora é o primeiro registro `ok` do demonstrativo nos `_log*.csv` (que viajam no Release); snapshots seguem usando o carimbo UTC do nome. Sem registro no log, cai no mtime e a coluna `baixado_em_fonte` de `ler_rreo_pasta()` marca `mtime`.
+- Logs novos gravam `momento` em UTC com "Z"; logs antigos (hora local sem fuso, gerados na nuvem) são lidos como America/Sao_Paulo. Premissa a conferir: todos os logs antigos vieram desse ambiente.
+- Dados reais: 30.421 arquivos, todos com data pelo log (0 por mtime).
+- Funções: `momentos_originais()`, `datas_versoes()`, `chave_arquivo()`, `momento_log_numerico()` em `R/download/snapshots.R`; `versoes_rreo()` ganhou coluna `fonte`; `arquivo_vigente()` não depende mais de datas de arquivo. 4 testes novos (151 passam).
+- Renomeação: a carga histórica passa a se chamar E2.4b (E2.5 = dicionário de contas por layout, conforme `docs/plano.md`).
 
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.

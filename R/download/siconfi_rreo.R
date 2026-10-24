@@ -53,7 +53,7 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
     }, error = function(e) list(ok = FALSE, linhas = NA_integer_, msg = conditionMessage(e)),
        warning = function(w) list(ok = FALSE, linhas = NA_integer_, msg = conditionMessage(w)))
     registrar_chamada(pasta, data.frame(
-      momento = format(Sys.time(), "%Y-%m-%d %H:%M:%S"), esfera = esfera, id_ente = id_ente, ano = ano,
+      momento = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), esfera = esfera, id_ente = id_ente, ano = ano,
       periodo = periodo, anexo = anexo, tipo = tipo, tentativa = i, ok = res$ok, linhas = res$linhas,
       segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 2), msg = substr(res$msg, 1, 120)), log)
     if (res$ok) {
