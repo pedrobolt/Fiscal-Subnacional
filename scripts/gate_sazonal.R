@@ -18,7 +18,7 @@ amostras_a <- list("2016-2025" = 2016:2025, "2003-2025" = 2003:2025, "2003-2015"
 res_a <- do.call(rbind, lapply(names(amostras_a), function(a) cbind(amostra = a, resumir_erros(bt_a[bt_a$ano %in% amostras_a[[a]], ]))))
 utils::write.csv(res_a, "outputs/gate_a_srw_bcb.csv", row.names = FALSE)
 
-# (b) RREO dos estados -> BCB (estaduais e regionais), 2018-2025
+# (b) RREO dos estados -> BCB (estaduais e regionais); anos-alvo 2018-2025, mas a amostra pareada efetiva é 2020-2025 (2018: RS sem Anexo 6 b1-5; 2019 precisa de 2018)
 rreo <- ler_rreo_pasta("data/raw/rreo", "E")
 x <- rreo_primario_estados(rreo)
 cat("RREO estados: anos", range(x$ano), "| bimestres completos (27 UFs):", sum(!is.na(x$valor_bi)), "de", nrow(x), "\n")
@@ -39,8 +39,8 @@ if (registrar) {
   }
   for (alvo in c("estaduais", "regionais")) for (n in setdiff(unique(res_b$modelo), "srw")) {
     r <- res_b[res_b$alvo == alvo, ]
-    registrar_experimento(r, n, sprintf("alvo=%s;cortes=3-11;rreo=estados", alvo), "2018-2025", commit)
+    registrar_experimento(r, n, sprintf("alvo=%s;cortes=3-11;rreo=estados", alvo), "2020-2025", commit)
   }
   for (alvo in c("estaduais", "regionais"))
-    registrar_experimento(res_b[res_b$alvo == alvo, ], "srw", sprintf("janela=1;alvo=%s;cortes=3-11", alvo), "2018-2025", commit)
+    registrar_experimento(res_b[res_b$alvo == alvo, ], "srw", sprintf("janela=1;alvo=%s;cortes=3-11", alvo), "2020-2025", commit)
 }
