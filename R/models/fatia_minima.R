@@ -32,4 +32,12 @@ prever_acumulado <- function(serie, ano_t, mes_corte, janela = 5) {
   acum + mean(restos)
 }
 
+#' Primeiro ano-alvo com janela completa: a janela precisa de `janela` anos civis completos antes do alvo.
+primeiro_ano_alvo <- function(serie, janela = 5) {
+  anos <- as.integer(format(serie$data, "%Y"))
+  completos <- as.integer(names(which(table(anos) == 12)))
+  if (length(completos) == 0) return(NA_integer_)
+  min(completos) + janela
+}
+
 MODELOS_FATIA <- list(naive = prever_naive, acumulado = prever_acumulado)

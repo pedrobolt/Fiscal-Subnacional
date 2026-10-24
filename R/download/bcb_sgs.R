@@ -6,6 +6,11 @@
 # Convenção do BCB: déficit positivo, superávit negativo (o sinal é invertido em ler_sgs_primario).
 SGS_PRIMARIO <- c(regionais = 4642L, estaduais = 4643L, municipais = 4644L)
 
+# Início do download: data bem anterior ao primeiro dado; a API devolve a série desde o primeiro valor disponível.
+# 4642 começa em 02/1991; 4643 e 4644, em 01/1998. A análise usa SGS_INICIO_ANALISE (ver contrato/STATUS).
+SGS_INICIO_DOWNLOAD <- as.Date("1900-01-01")
+SGS_INICIO_ANALISE <- as.Date("1998-01-01")
+
 url_sgs <- function(codigo, inicio, fim) {
   sprintf("https://api.bcb.gov.br/dados/serie/bcdata.sgs.%d/dados?formato=json&dataInicial=%s&dataFinal=%s",
           as.integer(codigo), format(inicio, "%d/%m/%Y"), format(fim, "%d/%m/%Y"))

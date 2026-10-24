@@ -60,3 +60,9 @@ test_that("com_pct_pib divide pelo PIB nominal do ano", {
   r <- com_pct_pib(data.frame(ano = 2026, previsao = 136.41), prem)
   expect_equal(r$pct_pib, 1)
 })
+
+test_that("primeiro_ano_alvo = primeiro ano civil completo + janela", {
+  s <- data.frame(data = seq(as.Date("1998-03-01"), as.Date("2010-12-01"), by = "month"), valor_bi = 1)
+  expect_equal(primeiro_ano_alvo(s, 5), 1999 + 5)   # 1998 está incompleto
+  expect_equal(primeiro_ano_alvo(s, 1), 1999 + 1)
+})
