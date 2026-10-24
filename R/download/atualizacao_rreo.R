@@ -8,6 +8,7 @@
 #' Arquivo vazio com entrega anterior à consulta não é refeito (o Anexo simplesmente não existe).
 planejar_jobs <- function(entregas, pasta, esfera, anexos = ANEXOS_RREO, periodos = 1:6) {
   jobs <- list()
+  momentos <- momentos_originais(pasta)
   entregas <- entregas[entregas$periodo %in% periodos, ]
   for (k in seq_len(nrow(entregas))) {
     e <- entregas[k, ]
@@ -17,7 +18,7 @@ planejar_jobs <- function(entregas, pasta, esfera, anexos = ANEXOS_RREO, periodo
       motivo <- NA_character_
       if (is.na(vig)) {
         motivo <- "novo"
-      } else if (!is.na(e$data_status) && e$data_status > baixado_em_vigente(base)) {
+      } else if (!is.na(e$data_status) && e$data_status > baixado_em_vigente(base, momentos)) {
         motivo <- if (isTRUE(linhas_rreo(vig) == 0)) "vazio_com_entrega" else "retificado"
       }
       if (!is.na(motivo)) {
@@ -60,7 +61,7 @@ atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = "dat
       jobs$motivo
     }, error = function(e) {
       falhas <<- falhas + 1
-      registrar_chamada(pasta, data.frame(momento = format(Sys.time(), "%Y-%m-%d %H:%M:%S"), id_ente = id, ano = ano,
+      registrar_chamada(pasta, data.frame(momento = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), id_ente = id, ano = ano,
                                           erro = substr(conditionMessage(e), 1, 200)), sprintf("_erros%s.csv", tag))
       character(0)
     })

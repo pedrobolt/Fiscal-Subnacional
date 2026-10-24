@@ -1,4 +1,4 @@
-# Carga histórica do RREO (E2.5). Rodar em DOIS terminais (2 conexões, o máximo autorizado), na raiz do repositório:
+# Carga histórica do RREO (E2.4b). Rodar em DOIS terminais (2 conexões, o máximo autorizado), na raiz do repositório:
 #   Rscript scripts/carga_historica.R 1
 #   Rscript scripts/carga_historica.R 2
 # Retomável: interrompeu (fechou o terminal, queda de energia ou de rede)? Basta rodar de novo.

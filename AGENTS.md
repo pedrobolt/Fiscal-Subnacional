@@ -16,7 +16,7 @@ Modelo em R que projeta, para o ano corrente, o resultado primário dos governos
 2. **Antes de codar**, descreva em até 5 linhas o que vai fazer e quais arquivos vai criar ou alterar. Espere aprovação se a tarefa envolver conceito fiscal, dados ou avaliação.
 3. **Ao terminar**: rode os testes e o pipeline, mostre a saída real, atualize `docs/STATUS.md` (incluindo a lista de arquivos alterados) e, se a tarefa mudou como o modelo roda, quais dados usa ou alguma decisão, atualize `docs/HANDOVER.md`.
 4. Faça commit na branch da tarefa e abra um **pull request** para `main`. A revisão e o merge são do Pedro.
-5. **Nunca** faça push direto em `main`, merge, force-push ou apague arquivos sem pedido explícito.
+5. **Nunca** faça push direto em `main`, merge, force-push ou apague arquivos sem pedido explícito. Isso vale também para `rm` com curinga (`*`) e para limpezas de pastas de dados: sem pedido explícito, não se apaga nada (use `_to_delete/` e avise).
 6. Nunca declare sucesso sem executar. Se algo falhou ou ficou pendente, diga.
 
 ## Regras que você não pode mudar sozinho
