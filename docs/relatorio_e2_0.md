@@ -25,7 +25,7 @@ Parcela do resultado primário (RREO) capturada pelos N maiores em receita (rank
 ## Municípios sem dados (tamanho da imputação)
 - 2025: 43 municípios (0,77%), 0,61% da população; maiores: Foz do Iguaçu (PR, 297 mil), Magé (RJ, 244 mil), Gurupi (TO), Acará (PA), Lábrea (AM).
 - 2019: 30 municípios (0,54%), 0,18% da população; maiores: Muaná (PA), Itapemirim (ES), Joaçaba (SC).
-- Imputação desse grupo é pequena frente à da expansão. A lista completa sai de `sem_dados()` (`outputs/`, não versionado).
+- A imputação desse grupo é pequena (menos de 1% dos municípios). A lista completa sai de `sem_dados()` (`outputs/`, não versionado).
 
 ## Grupo Simplificado (peso no agregado)
 | | Municípios | População | Receita | Primário (líquido / abs.) |
