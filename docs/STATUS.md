@@ -83,6 +83,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - E3.3: regra de aceitação a congelar.
 
 ## Decisões (com data)
+- 24/10/2026 (E1.9): RREO usa a versão mais recente (retificada). `available_at` do RREO: homologado = `data_status`; retificado = prazo legal (fim do bimestre + 30 dias) + atraso mediano dos homologados da mesma UF × período (o prazo legal puro vazaria informação). Aplicado em `docs/contrato.md`, seção Avaliação.
 - 23/10/2026 (E1.7): avaliação dos candidatos só-BCB também em amostra longa (anos-alvo desde o primeiro ano com janela completa), com erro por subperíodo; torneio formal (DM e regra de aceitação) segue na amostra comum 2016–2025, por causa do RREO. Aplicado em `docs/contrato.md`, seção Avaliação.
 - 23/10/2026 (E1.3): % do PIB usa o PIB nominal anual do ano t como premissa (`premissas.yml`), não o PIB 12 meses do BCB.
 - 23/10/2026 (E1.3): FPE/FPM projetado da série da STN (bruto transferido) e convertido ao conceito RREO por fator de ponte (RREO declarado / STN) estimado por UF e esfera; avaliado contra o RREO declarado. Substitui a decisão anterior de usar apenas o valor da STN. Fator instável em alguma UF vira achado de qualidade no E2.
