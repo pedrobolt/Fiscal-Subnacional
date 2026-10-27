@@ -20,7 +20,7 @@ prever_total_restante <- function(info, ano_t, m, espec, serie = info$bcb) {
 }
 
 #' m3 da definição do E4.1: restante ~ acumulado + restante(t-1) + eleição do próprio componente (em % do PIB).
-ESPEC_M3_ESTADOS    <- ESPEC_RESTANTE$m3                                      # dummy de eleição estadual (E)
+ESPEC_M3_ESTADOS    <- list(formula = r ~ a + r_lag + E)                                     # dummy de eleição estadual (E)
 ESPEC_M3_MUNICIPIOS <- list(formula = r ~ a + r_lag + Emun)                  # dummy de eleição municipal (Emun)
 
 #' E4.1 (definição registrada em 27/10/2026): soma de duas previsões, m3 no componente estadual (SGS 4643) e m3 no
