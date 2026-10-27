@@ -29,20 +29,21 @@ Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 ## E3. Definir como avaliar as projeções (S3–S4)
 - E3.1 Backtest de evento fixo (cutoffs mensais BCB e bimestrais RREO)
 - E3.2 Métricas e teste de Diebold-Mariano
-- E3.3 Regra de aceitação escrita e congelada — validar com o Pedro (bloqueia E4 em diante). Sem tolerância de erro externa: o critério é relativo ao benchmark (decisão de 27/10/2026, registrada no contrato)
-- E3.4 Benchmarks: naïve, participação sazonal, ETS, SARIMA, previsão atualizada do RREO (Anexo 1)
+- E3.3 Regra de aceitação escrita e congelada (27/10/2026, em `docs/contrato.md`, seção "Protocolo do P1"): lista fechada K = 9, aceitação por faixa de corte (jan–abr, mai–ago, set–nov) com RMSE −10% vs SRW em R$, melhor em >50% dos anos, DM com Holm, sinal e viés não piores, duas amostras (com/sem 2020–22); intervalo paramétrico a 80% (pior caso). Sem tolerância de erro externa
+- E3.4 Base do P1: SRW em R$ (e SRW em % do PIB, acumulado j=5, m2, m3 como desafiantes). ETS, SARIMA, participação sazonal e variantes do m3 (tendência, janela móvel, eleição municipal) ficam só como diagnóstico; ARDL e modelos mais ricos foram considerados e excluídos do P1 por falta de poder (16–19 anos-alvo). A previsão atualizada do RREO (Anexo 1) fica para o P2 (E5)
 - E3.5 Viés das metas da LDO, rolante (se a meta vier pela API)
 - E3.6 Série do gap RREO × BCB e candidatos simples para prevê-lo
 - E3.7 Teste automático de vazamento e registro de experimentos
 Aceite: teste de vazamento passa; protocolo aprovado.
 
 ## E4. Projetar o resultado fiscal dos governos regionais — P1 (S5)
-- E4.1 Torneio: total direto; estados + municípios; bottom-up + gap; combinações; LDO corrigida
+- E4.1 Torneio dentro da lista fechada do contrato: estados + municípios separados; FPE/FPM observáveis; meta da LDO; combinação (média simples, pesos iguais); bottom-up + gap só como variante de (5) se o contrato for atualizado
 - E4.2 Intervalos de previsão
 - E4.3 Documentar modelo escolhido e justificativa
 Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 
 ## E5. Projetar receitas e despesas — P2 (S6)
+- E5.0 Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
 - E5.1 Categorias: receita corrente, ICMS, IPVA, ISS, FPE/FPM, demais (IPTU incluído), pessoal, custeio, investimento
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
 - E5.3 Resultado RREO (estados, municípios, total), variação real e contribuição de cada item
