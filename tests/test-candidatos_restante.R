@@ -1,6 +1,7 @@
 library(testthat)
 source("../R/models/fatia_minima.R")
 source("../R/download/bcb_sgs.R")
+source("../R/download/ibge_pib.R")
 source("../R/models/candidatos_restante.R")
 source("../R/models/candidato_pendencias_rreo.R")
 
@@ -11,9 +12,16 @@ serie_sint <- function(anos) {
 }
 pib_sint <- function(anos) data.frame(ano = anos, pib_bi = 1000 * 1.1^(anos - min(anos)))
 
-test_that("pib_anual usa o valor de dezembro, em R$ bi", {
-  sg <- data.frame(data = as.Date(c("2022-11-01", "2022-12-01", "2023-06-01")), valor = c(9e6, 10e6, 11e6))
-  expect_equal(pib_anual(sg), data.frame(ano = 2022L, pib_bi = 10000))
+test_that("PIB do IBGE: anual da 6784, completado pela soma de quatro trimestres completos", {
+  d1 <- tempfile(fileext = ".json"); d2 <- tempfile(fileext = ".json")
+  cab <- list(D2C = "Variável (Código)", D3C = "Ano (Código)", V = "Valor", D3N = "Ano")
+  anual <- rbind(cab, data.frame(D2C = c("9808", "9809"), D3C = c("2023", "2023"), V = c("10000000", "9000000"), D3N = "2023"))
+  jsonlite::write_json(anual, d1)
+  tri <- rbind(data.frame(D3C = "Período", V = "V", D3N = "n"),
+               data.frame(D3C = c("202401", "202402", "202403", "202404", "202501", "202502"), V = "1000000", D3N = "tri"))
+  jsonlite::write_json(tri, d2)
+  p <- pib_ibge_anual(d1, d2)
+  expect_equal(p$ano, c(2023L, 2024L)); expect_equal(p$pib_bi, c(10000, 4000)); expect_equal(p$fonte, c("6784", "1846"))
 })
 
 test_that("painel: acumulado + restante = total; r_lag usa o PIB do ano anterior; dummies de eleição", {

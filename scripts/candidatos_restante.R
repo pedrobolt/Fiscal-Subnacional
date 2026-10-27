@@ -6,7 +6,8 @@ commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = 
 ultimo <- function(cod) { f <- sort(list.files("data/raw", sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
 ser <- function(cod) { s <- ler_sgs(ultimo(cod)); primario_bi(s[s$data >= SGS_INICIO_ANALISE, ]) }
 reg <- ser(4642); est <- ser(4643)
-pib <- pib_anual(ler_sgs(ultimo(SGS_PIB)))
+arq_pib <- baixar_pib_ibge()   # SIDRA/IBGE (contrato: não usar o PIB 12 meses do BCB)
+pib <- pib_ibge_anual(arq_pib[["anual"]], arq_pib[["trimestral"]])
 dir.create("outputs", showWarnings = FALSE)
 
 painel <- painel_restante(reg, pib)
@@ -57,10 +58,10 @@ if (registrar) {
 }
 
 # Previsão de 2026 no último corte disponível (apenas ilustrativa: a escolha do modelo sai do backtest por corte).
-# PIB 2026: sem premissas.yml neste ambiente, usa-se o PIB acumulado em 12 meses mais recente do SGS 4382 como aproximação.
+# PIB 2026: sem premissas.yml neste ambiente, usa-se a soma dos quatro últimos trimestres do IBGE como aproximação.
 ult <- max(reg$data[format(reg$data, "%Y") == "2026"]); mcorte <- as.integer(format(ult, "%m"))
-sg <- ler_sgs(ultimo(SGS_PIB)); pib26 <- sg$valor[nrow(sg)] / 1000
-pib2 <- rbind(pib, data.frame(ano = 2026, pib_bi = pib26))
+pib26 <- pib_ultimos_4_trimestres(arq_pib[["trimestral"]])$pib_bi
+pib2 <- rbind(pib[c("ano", "pib_bi")], data.frame(ano = 2026, pib_bi = pib26))
 reg26 <- reg
 pn <- painel_restante(reg, pib2, cortes = mcorte)
 al <- data.frame(ano = 2026, corte = mcorte, A = soma_meses(reg, 2026, 1:mcorte), R = NA_real_, Y = NA_real_, pib = pib26)

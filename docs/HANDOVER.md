@@ -47,6 +47,10 @@ Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na
 ### 3d. Candidatos do restante do ano (E3.4/E4)
 `Rscript scripts/candidatos_restante.R [--registrar]` usa só dados locais: BCB SGS 4642/4643/4644/4382 em `data/raw/` (baixe com `baixar_sgs()`, que faz chamadas ao BCB, não ao Siconfi) e o RREO dos estados em `data/raw/rreo/E`. Saídas em `outputs/restante_*.csv`; `--registrar` acrescenta linhas ao `experiments/registro.csv` (rodar só depois de commitar o código, para o hash ficar certo). Detalhes e leitura: `docs/relatorio_candidatos_restante.md`.
 
+### 3e. PIB do IBGE e transferências da STN (E2.3)
+- **PIB:** `baixar_pib_ibge()` grava `data/raw/ibge_pib_6784_<data>.json` e `ibge_pib_1846_<data>.json`; `pib_ibge_anual()` devolve o PIB nominal anual em R$ bi. Não usar o PIB acumulado em 12 meses do BCB (contrato).
+- **STN:** o Tesouro Transparente limita a taxa de pedidos (HTTP 429). Na sua máquina: `Rscript -e 'source("R/download/stn_transferencias.R"); print(baixar_stn("estados")); print(baixar_stn("municipios"))'`. Baixa para `data/raw/stn/<estados|municipios>/`, ~5 s entre arquivos, espera o `Retry-After` e para após 3 recusas seguidas; é só rodar de novo (o que já existe não é rebaixado; HTML de erro nunca é gravado). Se continuar recusando, tente em outro horário. Isso não usa a API do Siconfi e pode rodar junto com a carga histórica.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 

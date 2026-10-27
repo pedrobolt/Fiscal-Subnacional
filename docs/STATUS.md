@@ -95,17 +95,22 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Renomeação: a carga histórica passa a se chamar E2.4b (E2.5 = dicionário de contas por layout, conforme `docs/plano.md`).
 
 ### E3.4/E4 — Candidatos do restante do ano em % do PIB (27/10/2026, branch `e3.4b-candidatos-restante`)
-- E2.3 (parcial): PIB nominal anual do SGS 4382 (dezembro), `pib_anual()`; bruto em `data/raw/bcb_sgs_4382_*.json`. Falta cruzar com o IBGE e tratar a projeção para o ano corrente (virá de `premissas.yml`).
+- E2.3 (parcial; ver a entrada E2.3): o PIB passou a vir do IBGE; a primeira versão usou o SGS 4382, que o contrato veda (impacto nos resultados ≤ 0,0001 p.p.).
 - Candidatos 1–3 (+ `m3_tend`, `m3_jan10`, `m3_2eleic`) com estimação rolante, com e sem 2020–22; métricas ME/MAE/RMSE (R$ e % do PIB), MASE vs SRW, DM, acerto de sinal. Registrados em `experiments/registro.csv` (amostras "2007-2025" e "2007-2025 sem 2020-22").
 - Resultado: sem 2020–22, o `m3` ganha do SRW só a partir do corte ~8 (não significativo no corte 8); com 2020–22, nenhum ganho. Eleição estadual sem efeito. Acumulado não é só tendência. O `m3` tem viés positivo (+3,7 bi no corte 8).
 - Candidato 4 (RREO estados): n = 7, sem sinal utilizável; municípios após a carga. Relatório: `docs/relatorio_candidatos_restante.md`.
-- Arquivos: `R/models/candidatos_restante.R`, `R/models/candidato_pendencias_rreo.R`, `scripts/candidatos_restante.R`, `tests/test-candidatos_restante.R`, `R/download/bcb_sgs.R` (`SGS_PIB`, `pib_anual`).
+- Arquivos: `R/models/candidatos_restante.R`, `R/models/candidato_pendencias_rreo.R`, `scripts/candidatos_restante.R`, `tests/test-candidatos_restante.R`, (a função `pib_anual` do SGS 4382 foi removida na E2.3).
 
 ### Decisões após os candidatos do restante (27/10/2026)
 1. **Candidato-base do P1: SRW em R$.** O modelo 3 (restante ~ acumulado + restante(t-1) + eleição, em % do PIB) só será adotado, e só para cortes ≥ 9, se passar na regra de aceitação do E3.3, considerando o viés positivo (ME +3,7 bi no corte 8 sem 2020–22).
 2. **Fim da busca de candidatos que remodelam a mesma série** (comparações múltiplas). Novos candidatos só com informação nova: estados e municípios separados (E4.1), receitas já observáveis (FPE/FPM) e meta da LDO (E3.5). Candidato 4 (pendências do RREO): uma única variante, a variação interanual da pendência, quando os municípios entrarem na base; depois, encerrar.
 3. **Prioridade: E4.2**, intervalos de previsão por corte a partir dos erros históricos do SRW, com cobertura avaliada.
 4. **Limitação registrada:** o backtest em % do PIB usa o PIB realizado do ano t, que não é conhecido no corte; em produção o denominador vem do `premissas.yml`. O erro de projeção do PIB não está nos resultados em % do PIB.
+
+### E2.3 — PIB nominal do IBGE e transferências da STN (27/10/2026, branch `e2.3-pib-ibge-stn`)
+- **PIB (feito):** `R/download/ibge_pib.R` baixa do SIDRA a tabela 6784 (v9808, anual 1996–2023) e a 1846 (v585, trimestral); `pib_ibge_anual()` usa a anual e completa com a soma de quatro trimestres (2024 e 2025). Comparado com o SGS 4382: diferença máxima 0,11% (1998–2025), nula em 2022–2025. `pib_ultimos_4_trimestres()` serve só para ilustrar o ano corrente sem `premissas.yml`. `scripts/candidatos_restante.R` passou a usar o IBGE; resultados do backtest praticamente idênticos (≤ 0,0001 p.p.). Erro meu corrigido: a frase "confere com o IBGE" do relatório anterior não tinha sido conferida; agora foi.
+- **STN FPE/FPM (pendente de rodar):** `R/download/stn_transferencias.R` (`recursos_stn()`, `baixar_stn()`) lê a lista de arquivos no CKAN do Tesouro Transparente (estados: 1997–2015, jan–jul/2016 e mensais desde 08/2016; municípios idem) e baixa com pausa, respeitando o `Retry-After`. Neste ambiente o servidor respondeu HTTP 429 a todos os pedidos de arquivo (mesmo após esperar), então **nenhum arquivo da STN foi baixado**; não insisti. Rodar na máquina do Pedro (HANDOVER 3e).
+- Falta: leitura/validação dos CSVs da STN (colunas, FPE por UF, FPM por município e UF), série mensal de FPE/FPM e fator de ponte (depende do RREO municipal para o FPM); IPCA do SGS.
 
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
