@@ -4,6 +4,7 @@ source("../R/evaluation/backtest_fatia.R")
 source("../R/models/candidatos_restante.R")
 source("../R/models/candidatos_p1.R")
 source("../R/evaluation/vazamento.R")
+source("../R/transform/stn.R")
 
 set.seed(10)
 anos <- 1998:2016
@@ -12,7 +13,12 @@ bcb_est <- comp(); bcb_mun <- comp()
 bcb <- data.frame(data = bcb_est$data, valor_bi = bcb_est$valor_bi + bcb_mun$valor_bi)
 pib <- data.frame(ano = anos, pib_bi = 1000 * 1.1^(anos - 1998))
 rreo <- data.frame(available_at = as.Date("2008-01-01") + seq(0, 3000, by = 30), valor = rnorm(101))
-fontes <- list(bcb = bcb, bcb_est = bcb_est, bcb_mun = bcb_mun, pib = pib, rreo = rreo, stn = rreo, ldo = rreo)
+g <- expand.grid(mes = 1:12, ano = 1997:2016); g <- g[order(g$ano, g$mes), ]
+stn <- data.frame(ano = g$ano, mes = g$mes, valor_fpe = 5 + 0.3 * (g$ano - 1997) + rnorm(nrow(g), 0, 0.4),
+                  valor_fpm = 5.2 + 0.3 * (g$ano - 1997) + rnorm(nrow(g), 0, 0.4), tratamento = "original")
+stn$available_at <- available_at_stn(stn$ano, stn$mes)
+stn[stn$ano == 2004 & stn$mes == 5, c("valor_fpe", "valor_fpm")] <- NA   # lacuna: sem imputação
+fontes <- list(bcb = bcb, bcb_est = bcb_est, bcb_mun = bcb_mun, pib = pib, rreo = rreo, stn = stn, ldo = rreo)
 
 test_that("data de divulgação do BCB: último dia útil do mês seguinte; calendário real tem precedência", {
   expect_equal(data_divulgacao_bcb(2026, 8), as.Date("2026-09-30"))    # quarta
@@ -29,13 +35,13 @@ test_that("montar_info: BCB até o mês m; RREO/STN/LDO só com available_at <= 
   corte <- data_divulgacao_bcb(2010, 6)
   f <- fontes; f$rreo <- data.frame(available_at = corte + c(-1, 0, 1), valor = 1:3)
   expect_equal(montar_info(f, 2010, 6)$rreo$valor, c(1, 2))
-  f$stn <- data.frame(valor = 1)
+  f$ldo <- data.frame(valor = 1)
   expect_error(montar_info(f, 2010, 6), "available_at")
 })
 
 test_that("nenhum candidato do P1 muda quando o futuro é perturbado", {
   r <- testar_vazamento(c(CANDIDATOS_P1, CANDIDATOS_DIAGNOSTICO), fontes, anos = c(2009, 2012, 2015), cortes = c(1, 4, 8, 11))
-  expect_equal(nrow(r), 9 * 3 * 4)
+  expect_equal(nrow(r), 11 * 3 * 4)
   expect_false(any(r$mudou))
 })
 
@@ -101,4 +107,33 @@ test_that("backtest_p1: usa montar_info, exclui anos e devolve erro em R$ e p.p.
   bt <- backtest_p1(CANDIDATOS_P1["srw_brl"], fontes, 2010:2012, cortes = 8, excluir = 2011)
   expect_equal(sort(unique(bt$ano)), c(2010, 2012))
   expect_equal(bt$erro_pp, bt$erro / bt$pib * 100)
+})
+
+test_that("fpe_fpm: g usa só meses disponíveis; lacuna vira NA; o candidato reage à STN (o teste de vazamento não é trivial)", {
+  info <- montar_info(fontes, 2012, 8)
+  expect_equal(max(info$stn$ano * 100 + info$stn$mes), 201208)         # o mês m entra no corte m (available_at = divulgação do BCB do mês m)
+  expect_false(is.na(CANDIDATOS_P1$fpe_fpm(info, 2012, 8)))
+  expect_false(is.na(g_stn(info, 2012, 8)))
+  # no corte de jul/2012, ago/2012 ainda não existe: g(2012, 8) seria NA
+  expect_true(is.na(g_stn(montar_info(fontes, 2012, 7), 2012, 8)))
+  # lacuna em mai/2004: g(2004, m>=5) e g(2005, m>=5) são NA; para m<5 existem
+  i7 <- montar_info(fontes, 2012, 11)
+  expect_true(is.na(g_stn(i7, 2004, 6))); expect_true(is.na(g_stn(i7, 2005, 6))); expect_false(is.na(g_stn(i7, 2004, 4)))
+  # o candidato muda quando um mês disponível muda (prova de que usa a fonte)
+  f2 <- fontes; k <- f2$stn$ano == 2011 & f2$stn$mes == 3; f2$stn$valor_fpe[k] <- f2$stn$valor_fpe[k] + 50
+  ant <- CANDIDATOS_P1$fpe_fpm(montar_info(fontes, 2012, 11), 2012, 11); dep <- CANDIDATOS_P1$fpe_fpm(montar_info(f2, 2012, 11), 2012, 11)
+  expect_false(isTRUE(all.equal(ant, dep)))
+  # sem a fonte: falha explícita, nunca m3 em silêncio
+  info0 <- montar_info(fontes[setdiff(names(fontes), "stn")], 2012, 8)
+  expect_error(CANDIDATOS_P1$fpe_fpm(info0, 2012, 8), "stn")
+})
+
+test_that("a combinação inclui fpe_fpm; o conjunto do #25 continua reproduzível e a sem-fpe é diagnóstico", {
+  info <- montar_info(fontes, 2012, 11)
+  base <- vapply(CANDIDATOS_P1_BASE, function(f) f(info, 2012, 11), numeric(1))
+  com <- c(base, fpe_fpm = CANDIDATOS_P1$fpe_fpm(info, 2012, 11))
+  expect_equal(CANDIDATOS_P1$combinacao(info, 2012, 11), mean(com, na.rm = TRUE))
+  expect_equal(CANDIDATOS_P1_25$combinacao(info, 2012, 11), mean(base, na.rm = TRUE))
+  expect_equal(CANDIDATOS_DIAGNOSTICO$diag_combinacao_sem_fpe(info, 2012, 11), mean(base, na.rm = TRUE))
+  expect_false("fpe_fpm" %in% names(CANDIDATOS_P1_25))
 })

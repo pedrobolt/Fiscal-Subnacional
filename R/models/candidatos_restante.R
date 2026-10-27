@@ -39,10 +39,11 @@ ESPEC_RESTANTE <- list(
 #' Previsão do restante (fração do PIB) para o alvo `t` no painel de um corte; NA se faltar treino.
 prever_restante <- function(painel_m, t, espec, excluir = integer(0), min_treino = 8) {
   alvo <- painel_m[painel_m$ano == t, ]
-  if (nrow(alvo) != 1 || anyNA(alvo[c("a", "r_lag", "pib")])) return(NA_real_)
+  vars <- if (is.null(espec$formula)) character(0) else intersect(setdiff(all.vars(espec$formula), "r"), names(alvo))
+  if (nrow(alvo) != 1 || anyNA(alvo[unique(c("a", "r_lag", "pib", vars))])) return(NA_real_)
   if (is.null(espec$formula)) return(alvo$r_lag)
   tr <- painel_m[painel_m$ano < t & !(painel_m$ano %in% excluir), ]
-  tr <- tr[stats::complete.cases(tr[c("r", "a", "r_lag")]), ]
+  tr <- tr[stats::complete.cases(tr[unique(c("r", "a", "r_lag", vars))]), ]   # regressores extras (ex.: g) também precisam existir
   if (!is.null(espec$janela) && nrow(tr) > espec$janela) tr <- tr[order(tr$ano), ][(nrow(tr) - espec$janela + 1):nrow(tr), ]
   if (nrow(tr) < min_treino) return(NA_real_)
   as.numeric(stats::predict(stats::lm(espec$formula, data = tr), newdata = alvo))
