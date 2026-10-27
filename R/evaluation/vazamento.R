@@ -52,8 +52,11 @@ available_at_rreo <- function(ext) {
 montar_info <- function(fontes, ano_t, m, calendario = NULL) {
   corte <- data_divulgacao_bcb(ano_t, m, calendario)
   info <- list(ano_t = ano_t, corte_mes = m, data_corte = corte,
-               bcb = fontes$bcb[fontes$bcb$data <= as.Date(sprintf("%d-%02d-01", ano_t, m)), ],
                pib = fontes$pib[fontes$pib$ano <= ano_t, ])
+  # Séries do BCB (regional `bcb` e componentes `bcb_est`, `bcb_mun`): dados até o mês m
+  for (nome in grep("^bcb", names(fontes), value = TRUE)) {
+    info[[nome]] <- fontes[[nome]][fontes[[nome]]$data <= as.Date(sprintf("%d-%02d-01", ano_t, m)), ]
+  }
   for (nome in intersect(c("rreo", "stn", "ldo"), names(fontes))) {
     f <- fontes[[nome]]
     if (!("available_at" %in% names(f))) stop("Fonte '", nome, "' sem coluna available_at.", call. = FALSE)
@@ -72,8 +75,10 @@ montar_info_vazado <- function(fontes, ano_t, m, calendario = NULL) {
 perturbar_fontes <- function(fontes, ano_t, m, calendario = NULL, semente = 1) {
   set.seed(semente)
   corte <- data_divulgacao_bcb(ano_t, m, calendario)
-  fut <- fontes$bcb$data > as.Date(sprintf("%d-%02d-01", ano_t, m))
-  fontes$bcb$valor_bi[fut] <- fontes$bcb$valor_bi[fut] + stats::rnorm(sum(fut), 0, 500)
+  for (nome in grep("^bcb", names(fontes), value = TRUE)) {
+    fut <- fontes[[nome]]$data > as.Date(sprintf("%d-%02d-01", ano_t, m))
+    fontes[[nome]]$valor_bi[fut] <- fontes[[nome]]$valor_bi[fut] + stats::rnorm(sum(fut), 0, 500)
+  }
   fontes$pib$pib_bi[fontes$pib$ano > ano_t] <- fontes$pib$pib_bi[fontes$pib$ano > ano_t] * 3
   for (nome in intersect(c("rreo", "stn", "ldo"), names(fontes))) {
     f <- fontes[[nome]]; fut <- as.Date(f$available_at) > corte

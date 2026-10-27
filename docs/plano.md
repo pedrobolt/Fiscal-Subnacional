@@ -37,7 +37,7 @@ Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 Aceite: teste de vazamento passa; protocolo aprovado.
 
 ## E4. Projetar o resultado fiscal dos governos regionais — P1 (S5)
-- E4.1 Torneio dentro da lista fechada do contrato: estados + municípios separados; FPE/FPM observáveis; meta da LDO; combinação (média simples, pesos iguais); bottom-up + gap só como variante de (5) se o contrato for atualizado
+- E4.1 (definição fixada em 27/10/2026, ver contrato): E4.1 = m3 por componente (estadual com eleição estadual; municipal com eleição municipal); combinação = média simples dos candidatos disponíveis no corte. Torneio dentro da lista fechada do contrato: estados + municípios separados; FPE/FPM observáveis; meta da LDO; combinação (média simples, pesos iguais); bottom-up + gap só como variante de (5) se o contrato for atualizado
 - E4.2 Intervalos de previsão
 - E4.3 Documentar modelo escolhido e justificativa
 Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.

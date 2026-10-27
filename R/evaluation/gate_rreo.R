@@ -2,8 +2,6 @@
 # estados melhora a previsão do total anual do BCB frente ao passeio aleatório sazonal?
 # Tudo em R$ bi, superávit positivo. Teste simples, só para medir ganho; não é o torneio formal.
 
-#' Passeio aleatório sazonal: acumulado até o corte + o que se realizou de corte+1..dez no ano anterior.
-prever_srw <- function(serie, ano_t, mes_corte) prever_acumulado(serie, ano_t, mes_corte, janela = 1)
 
 #' Primário dos estados no RREO (cumulativo até o bimestre), somando as 27 UFs; R$ bi.
 #' 2018–2022: RREO6ResultadoPrimarioEstadosMunicipios (VALOR INCORRIDO ou VALOR); 2023+: ...SemRPPSAcimaDaLinha (VALOR).
