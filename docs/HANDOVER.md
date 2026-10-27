@@ -51,6 +51,11 @@ Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na
 - **PIB:** `baixar_pib_ibge()` grava `data/raw/ibge_pib_6784_<data>.json` e `ibge_pib_1846_<data>.json`; `pib_ibge_anual()` devolve o PIB nominal anual em R$ bi. Não usar o PIB acumulado em 12 meses do BCB (contrato).
 - **STN:** o Tesouro Transparente limita a taxa de pedidos (HTTP 429). Na sua máquina: `Rscript -e 'source("R/download/stn_transferencias.R"); print(baixar_stn("estados")); print(baixar_stn("municipios"))'`. Baixa para `data/raw/stn/<estados|municipios>/`, ~5 s entre arquivos, espera o `Retry-After` e para após 3 recusas seguidas; é só rodar de novo (o que já existe não é rebaixado; HTML de erro nunca é gravado). Se continuar recusando, tente em outro horário. Isso não usa a API do Siconfi e pode rodar junto com a carga histórica.
 
+### 3f. Vazamento e registro (E3.7)
+- Todo candidato do P1 implementa `function(info, ano_t, m)` e entra em `CANDIDATOS_P1` (`R/models/candidatos_p1.R`); `info` vem só de `montar_info()`. O teste `tests/test-vazamento.R` perturba o futuro e falha se alguma previsão mudar; rode a suíte inteira antes de abrir PR.
+- Antes de registrar resultados: commitar o código, rodar o script com `--registrar` (o hash precisa existir) e conferir `Rscript -e 'source("R/evaluation/registro.R"); print(validar_registro())'` (vazio = ok). Linhas nunca são apagadas; o campo `status` diz o que vale.
+- Calendário do BCB: se houver o calendário real de divulgação, passe-o em `calendario` (ano, mes, data); sem ele, vale a aproximação do último dia útil do mês seguinte.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 
