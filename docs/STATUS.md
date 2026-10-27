@@ -101,6 +101,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Candidato 4 (RREO estados): n = 7, sem sinal utilizável; municípios após a carga. Relatório: `docs/relatorio_candidatos_restante.md`.
 - Arquivos: `R/models/candidatos_restante.R`, `R/models/candidato_pendencias_rreo.R`, `scripts/candidatos_restante.R`, `tests/test-candidatos_restante.R`, `R/download/bcb_sgs.R` (`SGS_PIB`, `pib_anual`).
 
+### Decisões após os candidatos do restante (27/10/2026)
+1. **Candidato-base do P1: SRW em R$.** O modelo 3 (restante ~ acumulado + restante(t-1) + eleição, em % do PIB) só será adotado, e só para cortes ≥ 9, se passar na regra de aceitação do E3.3, considerando o viés positivo (ME +3,7 bi no corte 8 sem 2020–22).
+2. **Fim da busca de candidatos que remodelam a mesma série** (comparações múltiplas). Novos candidatos só com informação nova: estados e municípios separados (E4.1), receitas já observáveis (FPE/FPM) e meta da LDO (E3.5). Candidato 4 (pendências do RREO): uma única variante, a variação interanual da pendência, quando os municípios entrarem na base; depois, encerrar.
+3. **Prioridade: E4.2**, intervalos de previsão por corte a partir dos erros históricos do SRW, com cobertura avaliada.
+4. **Limitação registrada:** o backtest em % do PIB usa o PIB realizado do ano t, que não é conhecido no corte; em produção o denominador vem do `premissas.yml`. O erro de projeção do PIB não está nos resultados em % do PIB.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
