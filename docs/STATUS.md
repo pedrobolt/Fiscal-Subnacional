@@ -126,6 +126,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Observação de proveniência: as previsões foram geradas antes de um commit que apenas tornou explícita a fórmula do m3 estadual (mesma fórmula, `r ~ a + r_lag + E`); o hash no registro é o desse commit.
 - Limitação mantida: PIB realizado no backtest.
 
+### E2.10 / E3.5 — Meta de primário da LDO (27/10/2026, branch `e3.5-ldo-levantamento`)
+- **Resultado: "LDO não viável no P1"; E3.5 encerrado.** `scripts/levantamento_ldo.R` lê os RREO dos estados já baixados (Anexo 06, conta `RREO6MetaDeResultadoPrimario...`), sem nova chamada à API. Saídas em `outputs/ldo_meta_*.csv`.
+- A meta existe para 2015–2025 (26–27 UFs por ano), só para estados; municípios dependem da carga histórica. Motivos da inviabilidade: (i) 11 anos, e sem 2020–22 sobram 8 anos-alvo mesmo sem nenhum ano de treino, abaixo do piso congelado de 10, então o candidato seria inelegível em qualquer faixa; (ii) a meta é revista no ano (1 a 11 UFs mudam do 1º ao 6º bimestre; em 2024 o agregado vai de +26,3 para −3,9 bi) e só a versão disponível no corte pode ser usada; (iii) o agregado das metas (de −27 a +26 bi) tem pouca relação com o primário dos estados no BCB (de +5 a +78 bi).
+- **Correção:** a nota anterior de que a meta só existia em 2015–2017 estava errada; o texto da conta mudou de rótulo em 2018 ("META FIXADA NO ANEXO...") e a busca antiga não o captava.
+- **Verificação não concluída:** a consulta ao endpoint `/anexos-relatorios` do Siconfi (para ver se RGF, DCA ou MSC têm campo de meta) falhou duas vezes (timeout do cliente e HTTP 504). O fechamento se apoia só no Anexo 06 do RREO; RGF/DCA/MSC não foram verificados. Sem mais chamadas ao Siconfi desta frente, a menos que você peça.
+- A meta pode entrar depois como contexto do informe, fora do torneio.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
@@ -142,7 +149,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - E3.3: discutir o poder estatístico da regra de aceitação. Com 10 anos-alvo, "≥70% dos anos" e Diebold-Mariano são fracos; avaliar agrupar cutoffs por horizonte e reportar com e sem 2020–22.
 - E3.6: na ponte RREO × BCB, verificar como o BCB trata os ativos do RPPS, já que o P2 exclui o RPPS.
 - E2.8: decisão sobre RJ/PR/RS (harmonizar ou excluir).
-- E2.10: meta da LDO disponível pela API?
+- E2.10: feito (ver acima; RGF/DCA/MSC não verificados).
 - E3.3: regra de aceitação a congelar.
 
 ## Decisões (com data)
