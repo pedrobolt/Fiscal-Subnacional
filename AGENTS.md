@@ -18,6 +18,7 @@ Modelo em R que projeta, para o ano corrente, o resultado primário dos governos
 4. Faça commit na branch da tarefa e abra um **pull request** para `main`. A revisão e o merge são do Pedro.
 5. **Nunca** faça push direto em `main`, merge, force-push ou apague arquivos sem pedido explícito. Isso vale também para `rm` com curinga (`*`) e para limpezas de pastas de dados: sem pedido explícito, não se apaga nada (use `_to_delete/` e avise).
 6. Nunca declare sucesso sem executar. Se algo falhou ou ficou pendente, diga.
+7. **Nunca afirme uma verificação que não foi executada** ("confere com X", "testado", "validado"): só escreva isso depois de rodar a checagem e, quando for o caso, cite o resultado. Sem a checagem, diga que não foi verificado.
 
 ## Regras que você não pode mudar sozinho
 - Alvos, conceitos e unidades de `docs/contrato.md`.
