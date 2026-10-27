@@ -1,6 +1,8 @@
 # E4.1: previsões fora da amostra dos candidatos da lista (incl. E4.1 e combinação) e diagnósticos, via montar_info.
 # Uso: Rscript scripts/e41_previsoes.R [--registrar]. Sem chamadas ao Siconfi. Não aplica a regra de aceitação (isso é o torneio do E4).
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+arqs <- list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
+arqs <- c(arqs[!grepl("candidatos_p1", arqs)], arqs[grepl("candidatos_p1", arqs)])  # candidatos_p1 depende de ESPEC_RESTANTE
+invisible(lapply(arqs, source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
 ultimo <- function(cod) { f <- sort(list.files("data/raw", sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
