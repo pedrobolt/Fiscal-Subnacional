@@ -32,6 +32,9 @@ prever_acumulado <- function(serie, ano_t, mes_corte, janela = 5) {
   acum + mean(restos)
 }
 
+#' Passeio aleatório sazonal (SRW, base do P1): acumulado até o corte + o que se realizou de corte+1..dez no ano anterior.
+prever_srw <- function(serie, ano_t, mes_corte) prever_acumulado(serie, ano_t, mes_corte, janela = 1)
+
 #' Primeiro ano-alvo com janela completa: a janela precisa de `janela` anos civis completos antes do alvo.
 primeiro_ano_alvo <- function(serie, janela = 5) {
   anos <- as.integer(format(serie$data, "%Y"))

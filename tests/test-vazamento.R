@@ -7,10 +7,12 @@ source("../R/evaluation/vazamento.R")
 
 set.seed(10)
 anos <- 1998:2016
-bcb <- local({ d <- expand.grid(mes = 1:12, ano = anos); data.frame(data = as.Date(sprintf("%d-%02d-01", d$ano, d$mes)), valor_bi = rnorm(nrow(d), 0, 3)) })
+comp <- function() { d <- expand.grid(mes = 1:12, ano = anos); data.frame(data = as.Date(sprintf("%d-%02d-01", d$ano, d$mes)), valor_bi = rnorm(nrow(d), 0, 3)) }
+bcb_est <- comp(); bcb_mun <- comp()
+bcb <- data.frame(data = bcb_est$data, valor_bi = bcb_est$valor_bi + bcb_mun$valor_bi)
 pib <- data.frame(ano = anos, pib_bi = 1000 * 1.1^(anos - 1998))
 rreo <- data.frame(available_at = as.Date("2008-01-01") + seq(0, 3000, by = 30), valor = rnorm(101))
-fontes <- list(bcb = bcb, pib = pib, rreo = rreo, stn = rreo, ldo = rreo)
+fontes <- list(bcb = bcb, bcb_est = bcb_est, bcb_mun = bcb_mun, pib = pib, rreo = rreo, stn = rreo, ldo = rreo)
 
 test_that("data de divulgação do BCB: último dia útil do mês seguinte; calendário real tem precedência", {
   expect_equal(data_divulgacao_bcb(2026, 8), as.Date("2026-09-30"))    # quarta
@@ -32,8 +34,8 @@ test_that("montar_info: BCB até o mês m; RREO/STN/LDO só com available_at <= 
 })
 
 test_that("nenhum candidato do P1 muda quando o futuro é perturbado", {
-  r <- testar_vazamento(CANDIDATOS_P1, fontes, anos = c(2009, 2012, 2015), cortes = c(1, 4, 8, 11))
-  expect_equal(nrow(r), 5 * 3 * 4)
+  r <- testar_vazamento(c(CANDIDATOS_P1, CANDIDATOS_DIAGNOSTICO), fontes, anos = c(2009, 2012, 2015), cortes = c(1, 4, 8, 11))
+  expect_equal(nrow(r), 9 * 3 * 4)
   expect_false(any(r$mudou))
 })
 
@@ -71,4 +73,32 @@ test_that("available_at do RREO: HO = data_status; RE = prazo legal + mediana HO
   expect_equal(available_at_rreo(ext2)$fonte_available_at[4], "mediana_nacional_periodo")
   expect_error(available_at_rreo(ext[0, ]), "Extrato ausente")
   expect_error(available_at_rreo(NULL), "Extrato ausente")
+})
+
+test_that("E4.1 = m3 por componente (soma) com a dummy de eleição do próprio componente", {
+  info <- montar_info(fontes, 2012, 8)
+  est <- prever_total_restante(info, 2012, 8, ESPEC_M3_ESTADOS, serie = info$bcb_est)
+  mun <- prever_total_restante(info, 2012, 8, ESPEC_M3_MUNICIPIOS, serie = info$bcb_mun)
+  expect_equal(CANDIDATOS_P1$e41(info, 2012, 8), est + mun)
+  expect_equal(deparse(ESPEC_M3_MUNICIPIOS$formula), "r ~ a + r_lag + Emun")
+  expect_equal(deparse(ESPEC_M3_ESTADOS$formula), "r ~ a + r_lag + E")
+  expect_equal(CANDIDATOS_DIAGNOSTICO$diag_e41_est_m3(info, 2012, 8), est + prever_srw(info$bcb_mun, 2012, 8))
+})
+
+test_that("combinação: média simples dos disponíveis, sem pesos estimados; NA fora da média", {
+  info <- montar_info(fontes, 2012, 8)
+  p <- vapply(CANDIDATOS_P1_BASE, function(f) f(info, 2012, 8), numeric(1))
+  expect_equal(prever_combinacao(info, 2012, 8), mean(p))
+  expect_equal(prever_combinacao(info, 2012, 8, candidatos = list(a = function(i, t, m) 1, b = function(i, t, m) NA_real_, c = function(i, t, m) 3)), 2)
+  expect_true(is.na(prever_combinacao(info, 2012, 8, candidatos = list(a = function(i, t, m) NA_real_))))
+  # com poucos anos de treino, m2/m3/e41 ainda não existem: a combinação usa os que há
+  info0 <- montar_info(fontes, 2003, 8); info0$excluir <- integer(0)
+  expect_true(is.na(CANDIDATOS_P1$m3(info0, 2003, 8)))
+  expect_false(is.na(prever_combinacao(info0, 2003, 8)))
+})
+
+test_that("backtest_p1: usa montar_info, exclui anos e devolve erro em R$ e p.p. do PIB", {
+  bt <- backtest_p1(CANDIDATOS_P1["srw_brl"], fontes, 2010:2012, cortes = 8, excluir = 2011)
+  expect_equal(sort(unique(bt$ano)), c(2010, 2012))
+  expect_equal(bt$erro_pp, bt$erro / bt$pib * 100)
 })
