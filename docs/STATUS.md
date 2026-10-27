@@ -119,6 +119,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Registro:** coluna `status` (valido / diagnostico / obsoleto_pib4382), `validar_registro()` (colunas, status, candidato valido dentro da lista, amostra, corte, métricas, duplicatas, commit existente no git) e `status_candidato()`; K = 9 em `K_P1`. Linhas antigas marcadas por `scripts/marcar_status_registro.R` sem apagar nenhuma (conteúdo anterior preservado; 450 linhas). Linhas de `srw_pib`, `m2` e `m3` com o PIB do SGS 4382 (commit 96645c6) ficaram `obsoleto_pib4382`; os mesmos candidatos foram registrados de novo com o PIB do IBGE.
 - Pendente: os candidatos E4.1, FPE/FPM, LDO e combinação entram no teste quando forem implementados; usar `CANDIDATOS_P1` como interface.
 
+### E4.1 — Candidatos por componente e combinação (27/10/2026, branch `e4.1-candidatos-componentes`)
+- Definição registrada no contrato antes do backtest: E4.1 = m3 por componente (estados com dummy de eleição estadual, municípios com dummy de eleição municipal); combinação = média simples dos candidatos disponíveis; variantes (`diag_e41_est_m3`, `diag_e41_mun_m3`) só diagnóstico, fora da lista.
+- Previsões fora da amostra via `montar_info` (teste de vazamento cobre os 9 modelos), alvos 2007–2025, com e sem 2020–22; `scripts/e41_previsoes.R`; 54 linhas por amostra em `experiments/registro.csv`, validadas.
+- RMSE médio por faixa vs SRW em R$ (sem 2020–22; ainda sem DM/Holm nem regra de aceitação, que é o torneio do E4): E4.1 +42% (cortes 1–4), +30% (5–8), −20% (9–11); m3 regional +29%, +12%, −41%; combinação +19%, +12%, −25%. Leitura preliminar: nos cortes 9–11 o m3 regional supera o E4.1 por componente, então a decomposição não agregou; as variantes mostram que o pior vem dos estados. A decisão é do torneio.
+- Observação de proveniência: as previsões foram geradas antes de um commit que apenas tornou explícita a fórmula do m3 estadual (mesma fórmula, `r ~ a + r_lag + E`); o hash no registro é o desse commit.
+- Limitação mantida: PIB realizado no backtest.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
