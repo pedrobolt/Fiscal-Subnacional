@@ -29,7 +29,7 @@ Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 ## E3. Definir como avaliar as projeções (S3–S4)
 - E3.1 Backtest de evento fixo (cutoffs mensais BCB e bimestrais RREO)
 - E3.2 Métricas e teste de Diebold-Mariano
-- E3.3 Regra de aceitação escrita e congelada — validar com o Pedro (bloqueia E4 em diante). Definir também a tolerância de erro útil para o informe (ex.: acertar o sinal, ±0,1% do PIB)
+- E3.3 Regra de aceitação escrita e congelada — validar com o Pedro (bloqueia E4 em diante). Sem tolerância de erro externa: o critério é relativo ao benchmark (decisão de 27/10/2026, registrada no contrato)
 - E3.4 Benchmarks: naïve, participação sazonal, ETS, SARIMA, previsão atualizada do RREO (Anexo 1)
 - E3.5 Viés das metas da LDO, rolante (se a meta vier pela API)
 - E3.6 Série do gap RREO × BCB e candidatos simples para prevê-lo
