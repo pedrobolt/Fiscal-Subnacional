@@ -126,6 +126,14 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Observação de proveniência: as previsões foram geradas antes de um commit que apenas tornou explícita a fórmula do m3 estadual (mesma fórmula, `r ~ a + r_lag + E`); o hash no registro é o desse commit.
 - Limitação mantida: PIB realizado no backtest.
 
+### E2.3 / E4.1b — STN (FPE/FPM) e candidato fpe_fpm (27/10/2026, branch `e4.1b-fpe-fpm`)
+- **Dados:** STN restaurada do release `dados-stn-20261027` (procedência e SHA-256 no HANDOVER). Leitor `R/transform/stn.R` com regras explícitas e testadas: mês normalizado, repetições idênticas removidas (27 no FPE, 66.072 no FPM), 14 meses ausentes como NA (sem imputação), correção ÷100 de set/2024 só com critérios (passou: FPE 9,83 e FPM 13,82 bi).
+- **Candidato fpe_fpm** = m3 + g (FPE+FPM acumulados jan..m em % do PIB menos o mesmo do ano anterior). Definição no contrato; a definição foi escrita depois de disparado o backtest e antes de eu ver qualquer resultado (a primeira rodada falhou na sensibilidade e foi refeita; as 33 linhas dela estão com `obsoleto_execucao_incompleta`).
+- **Elegibilidade (anos-alvo sem 2020–22, após as lacunas):** 14 (cortes 1–4), 12 (5–10), 11 (corte 11); todas as faixas ≥10, mas sem 2023–24 em todos os cortes (e sem 2018–19 a partir do corte 5).
+- **Resultado (RMSE médio da faixa vs SRW em R$, sem 2020–22, anos pareados; sem DM/Holm nem regra de aceitação, que são do torneio):** fpe_fpm +44% (1–4), +25% (5–8), −29% (9–11); m3 nos mesmos anos +28%, +23%, −29%.
+- **Valor marginal de g (diagnóstico):** nulo. fpe_fpm contra m3 nos mesmos ano × corte: DM com p entre 0,11 e 0,85 em todos os cortes, e a favor do m3 na maioria. Coeficiente de g com |t| < 1 nos cortes 5, 8 e 11; VIF de 1,1 a 1,5, então não há colinearidade com o acumulado: g só não traz informação. Sensibilidade com um mês a mais de defasagem da STN (`fpe_fpm_lag1`): praticamente igual (+44%, +25%, −34%), então o resultado não depende da hipótese de `available_at`.
+- **Limitação:** a avaliação pareada perde 2023–24 (lacunas da STN), os anos mais recentes. Saídas em `outputs/fpe_fpm_*.csv`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
