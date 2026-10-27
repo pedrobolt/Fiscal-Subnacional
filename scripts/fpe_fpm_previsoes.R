@@ -19,7 +19,7 @@ bts <- list(); res <- list(); res_m3 <- list(); res_lag <- list(); elig <- list(
 for (a in names(amostras)) {
   ex <- amostras[[a]]
   bt <- backtest_p1(cands, fontes, anos, excluir = ex)
-  bl <- backtest_p1(list(fpe_fpm_lag1 = prever_fpe_fpm), fontes_lag, anos, excluir = ex)
+  bl <- backtest_p1(list(fpe_fpm_lag1 = prever_fpe_fpm_lag1), fontes_lag, anos, excluir = ex)
   bts[[a]] <- cbind(amostra = a, rbind(bt, bl))
   # Pareamento: só ano x corte em que fpe_fpm tem previsão (sem imputação das lacunas); todos os modelos na mesma base.
   res[[a]] <- cbind(amostra = a, resumir_restante(bt, base = "srw_brl"))
@@ -49,6 +49,7 @@ utils::write.csv(res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv", row.names = 
 utils::write.csv(elig, "outputs/fpe_fpm_elegibilidade.csv", row.names = FALSE)
 utils::write.csv(diag, "outputs/fpe_fpm_diag_g.csv", row.names = FALSE)
 if (registrar) {
+  if (!nrow(res_lag) || !all(c("srw_brl", "m3", "fpe_fpm_lag1") %in% res_lag$modelo)) stop("Sensibilidade vazia: nada foi registrado.", call. = FALSE)
   for (a in names(amostras)) {
     for (n in c("srw_brl", "m3", "fpe_fpm")) registrar_experimento(res[res$amostra == a, ], n,
       "p1;alvo=regionais;cortes=1-11;min_treino=8;fontes=bcb+stn;pareado_com_fpe_fpm", paste(a, "pareado fpe_fpm"), commit)

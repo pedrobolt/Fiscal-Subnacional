@@ -78,10 +78,12 @@ backtest_p1 <- function(candidatos, fontes, anos, cortes = 1:11, excluir = integ
 
 #' FPE/FPM (E4.1b): g(t, m) = (FPE+FPM acumulados jan..m de t)/PIB_t - (idem no ano t-1)/PIB_{t-1}, em fração do PIB.
 #' NA se faltar qualquer mês jan..m em t ou t-1 na fonte `stn` já filtrada por available_at (sem imputação).
-g_stn <- function(info, ano, m) {
+g_stn <- function(info, ano, m, lag = 0L) {
+  mm <- m - lag                                  # `lag`: nº de meses finais ainda não divulgados (sensibilidade de available_at)
+  if (mm < 1) return(NA_real_)
   acum <- function(a) {
-    z <- info$stn[info$stn$ano == a & info$stn$mes %in% 1:m, ]
-    if (nrow(z) < m || anyNA(z$valor_fpe) || anyNA(z$valor_fpm)) return(NA_real_)
+    z <- info$stn[info$stn$ano == a & info$stn$mes %in% 1:mm, ]
+    if (nrow(z) < mm || anyNA(z$valor_fpe) || anyNA(z$valor_fpm)) return(NA_real_)
     sum(z$valor_fpe + z$valor_fpm)
   }
   P <- info$pib$pib_bi[info$pib$ano == ano]; Pl <- info$pib$pib_bi[info$pib$ano == ano - 1]
@@ -91,10 +93,13 @@ g_stn <- function(info, ano, m) {
 
 ESPEC_FPE_FPM <- list(formula = r ~ a + r_lag + E + g)
 
+#' Sensibilidade (diagnóstico): STN com um mês a mais de defasagem; g usa jan..m-1.
+prever_fpe_fpm_lag1 <- function(info, ano_t, m) prever_fpe_fpm(info, ano_t, m, lag = 1L)
+
 #' Candidato fpe_fpm: m3 regional + g. Se `info$stn` não existir, falha de forma explícita (nunca cai em m3 em silêncio).
-prever_fpe_fpm <- function(info, ano_t, m) {
+prever_fpe_fpm <- function(info, ano_t, m, lag = 0L) {
   if (is.null(info$stn)) stop("Fonte 'stn' ausente em info: o candidato fpe_fpm exige as transferências da STN.", call. = FALSE)
-  prever_total_restante(info, ano_t, m, ESPEC_FPE_FPM, g = function(a) g_stn(info, a, m))
+  prever_total_restante(info, ano_t, m, ESPEC_FPE_FPM, g = function(a) g_stn(info, a, m, lag))
 }
 
 # Lista corrente do P1: base + desafiantes disponíveis (fpe_fpm entra aqui; ldo foi descartado em 27/10/2026).

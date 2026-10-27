@@ -137,3 +137,11 @@ test_that("a combinação inclui fpe_fpm; o conjunto do #25 continua reproduzív
   expect_equal(CANDIDATOS_DIAGNOSTICO$diag_combinacao_sem_fpe(info, 2012, 11), mean(base, na.rm = TRUE))
   expect_false("fpe_fpm" %in% names(CANDIDATOS_P1_25))
 })
+
+test_that("fpe_fpm com defasagem extra: g usa jan..m-1; no corte 1 não há previsão; mudar o mês m não afeta", {
+  i <- montar_info(fontes, 2012, 8)
+  expect_equal(g_stn(i, 2012, 8, lag = 1), g_stn(montar_info(fontes, 2012, 7), 2012, 7))
+  expect_true(is.na(g_stn(montar_info(fontes, 2012, 1), 2012, 1, lag = 1)))
+  f2 <- fontes; k <- f2$stn$ano == 2012 & f2$stn$mes == 8; f2$stn$valor_fpe[k] <- 999
+  expect_equal(prever_fpe_fpm_lag1(montar_info(f2, 2012, 8), 2012, 8), prever_fpe_fpm_lag1(i, 2012, 8))
+})
