@@ -94,6 +94,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Funções: `momentos_originais()`, `datas_versoes()`, `chave_arquivo()`, `momento_log_numerico()` em `R/download/snapshots.R`; `versoes_rreo()` ganhou coluna `fonte`; `arquivo_vigente()` não depende mais de datas de arquivo. 4 testes novos (151 passam).
 - Renomeação: a carga histórica passa a se chamar E2.4b (E2.5 = dicionário de contas por layout, conforme `docs/plano.md`).
 
+### E3.4/E4 — Candidatos do restante do ano em % do PIB (27/10/2026, branch `e3.4b-candidatos-restante`)
+- E2.3 (parcial): PIB nominal anual do SGS 4382 (dezembro), `pib_anual()`; bruto em `data/raw/bcb_sgs_4382_*.json`. Falta cruzar com o IBGE e tratar a projeção para o ano corrente (virá de `premissas.yml`).
+- Candidatos 1–3 (+ `m3_tend`, `m3_jan10`, `m3_2eleic`) com estimação rolante, com e sem 2020–22; métricas ME/MAE/RMSE (R$ e % do PIB), MASE vs SRW, DM, acerto de sinal. Registrados em `experiments/registro.csv` (amostras "2007-2025" e "2007-2025 sem 2020-22").
+- Resultado: sem 2020–22, o `m3` ganha do SRW só a partir do corte ~8 (não significativo no corte 8); com 2020–22, nenhum ganho. Eleição estadual sem efeito. Acumulado não é só tendência. O `m3` tem viés positivo (+3,7 bi no corte 8).
+- Candidato 4 (RREO estados): n = 7, sem sinal utilizável; municípios após a carga. Relatório: `docs/relatorio_candidatos_restante.md`.
+- Arquivos: `R/models/candidatos_restante.R`, `R/models/candidato_pendencias_rreo.R`, `scripts/candidatos_restante.R`, `tests/test-candidatos_restante.R`, `R/download/bcb_sgs.R` (`SGS_PIB`, `pib_anual`).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

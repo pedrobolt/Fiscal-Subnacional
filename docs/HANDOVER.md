@@ -44,6 +44,9 @@ Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na
 6. Falhas de rede num ente x ano ficam em `data/raw/rreo/_erros_carga<N>.csv` e são tentadas de novo na próxima execução.
 7. Ao terminar (cada terminal imprime "Fatia N concluída"): `Rscript scripts/empacotar_dados.R AAAAMMDD` e publicar um novo Release com a data no nome (HANDOVER 3b). Os scripts não foram testados em Windows; se algo falhar, anotar a mensagem de erro no STATUS.
 
+### 3d. Candidatos do restante do ano (E3.4/E4)
+`Rscript scripts/candidatos_restante.R [--registrar]` usa só dados locais: BCB SGS 4642/4643/4644/4382 em `data/raw/` (baixe com `baixar_sgs()`, que faz chamadas ao BCB, não ao Siconfi) e o RREO dos estados em `data/raw/rreo/E`. Saídas em `outputs/restante_*.csv`; `--registrar` acrescenta linhas ao `experiments/registro.csv` (rodar só depois de commitar o código, para o hash ficar certo). Detalhes e leitura: `docs/relatorio_candidatos_restante.md`.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 

@@ -8,6 +8,8 @@ SGS_PRIMARIO <- c(regionais = 4642L, estaduais = 4643L, municipais = 4644L)
 
 # Início do download: data bem anterior ao primeiro dado; a API devolve a série desde o primeiro valor disponível.
 # 4642 começa em 02/1991; 4643 e 4644, em 01/1998. A análise usa SGS_INICIO_ANALISE (ver contrato/STATUS).
+# PIB nominal: SGS 4382 (acumulado em 12 meses, valores correntes, R$ milhões); o valor de dezembro é o PIB anual.
+SGS_PIB <- 4382L
 SGS_INICIO_DOWNLOAD <- as.Date("1900-01-01")
 SGS_INICIO_ANALISE <- as.Date("1998-01-01")
 
@@ -48,4 +50,11 @@ ler_sgs <- function(arquivo) {
 #' superávit positivo (sinal invertido) e R$ bilhões. Retorna data.frame(data, valor_bi).
 primario_bi <- function(sgs) {
   data.frame(data = sgs$data, valor_bi = -sgs$valor / 1000)
+}
+
+#' PIB nominal anual (R$ bi) a partir do SGS 4382: valor de dezembro de cada ano. Retorna data.frame(ano, pib_bi).
+#' Só entram anos com dezembro publicado (o ano corrente fica de fora até fechar).
+pib_anual <- function(sgs) {
+  d <- sgs[format(sgs$data, "%m") == "12", ]
+  data.frame(ano = as.integer(format(d$data, "%Y")), pib_bi = d$valor / 1000)
 }
