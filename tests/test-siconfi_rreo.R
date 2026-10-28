@@ -95,7 +95,7 @@ test_that("validar_rreo_pasta acha arquivo truncado e sobra .tmp e, quando pedid
   quar <- file.path(raiz, "_quarentena")
   movidos <- list.files(quar, recursive = TRUE)
   expect_true(any(grepl("_b6_a01.json.gz$", movidos)) && any(grepl("\\.tmp$", movidos)))   # nada foi apagado
-  reg <- utils::read.csv(file.path(quar, "_registro.csv"), fileEncoding = "UTF-8", stringsAsFactors = FALSE)
+  reg <- ler_csv(file.path(quar, "_registro.csv"))
   expect_equal(sort(reg$motivo), c("json.gz invalido", "sobra .tmp"))
   expect_equal(caminho_norm(reg$origem[reg$motivo == "json.gz invalido"]), caminho_norm(ruim))
   expect_true(all(file.exists(reg$destino)))

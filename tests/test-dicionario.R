@@ -66,11 +66,13 @@ test_that("dicionário: só folhas somam, e nenhuma folha tem ancestral folha (p
 test_that("dicionário: toda folha tem categoria do E5.1, natureza e estágio; e as categorias-chave existem em cada layout", {
   a6 <- CONTAS[CONTAS$anexo == "RREO-Anexo 06" & CONTAS$usar_no_p2 == "soma", ]
   cats <- c("ICMS", "IPVA", "ISS", "FPE/FPM", "demais receitas", "pessoal", "custeio", "investimento")
-  expect_true(all(a6$categoria_p2 %in% cats)); expect_true(all(a6$natureza %in% c("corrente", "capital")))
+  permitidas <- c(cats, "receita FUNDEB", "demais despesas de capital", "demais despesas")
+  expect_true(all(a6$categoria_p2 %in% permitidas)); expect_true(all(a6$natureza %in% c("corrente", "capital")))
   expect_false(any(is.na(a6$estagio_p2)) && any(a6$layout != "2015-17" & is.na(a6$estagio_p2)))
   for (l in LAYOUTS_RREO) expect_true(all(cats %in% a6$categoria_p2[a6$layout == l]), info = l)
-  expect_true(all(a6$estagio_p2[a6$categoria_p2 %in% c("pessoal", "custeio", "investimento") & a6$layout != "2015-17"] == "paga+rp_processado_pago+rpnp_pago"))
-  expect_true(all(a6$estagio_p2[a6$categoria_p2 %in% c("pessoal", "custeio", "investimento") & a6$layout == "2015-17"] == "sem_caixa(liquidada)"))
+  desp <- c("pessoal", "custeio", "investimento", "demais despesas de capital", "demais despesas")
+  expect_true(all(a6$estagio_p2[a6$categoria_p2 %in% desp & a6$layout != "2015-17"] == "paga+rp_processado_pago+rpnp_pago"))
+  expect_true(all(a6$estagio_p2[a6$categoria_p2 %in% desp & a6$layout == "2015-17"] == "sem_caixa(liquidada)"))
 })
 
 test_that("RPPS: contas só-RPPS nunca entram; totais de conferência de 2023+ são os 'exceto fontes RPPS'", {
@@ -133,4 +135,25 @@ test_that("cobertura_dicionario lista conta e coluna nunca vistas", {
   r <- rbind(linha(2024, "RREO6ICMS", "RECEITAS REALIZADAS (a)", 1), linha(2024, "ContaNova", "COLUNA NOVA", 1))
   cob <- cobertura_dicionario(r, CONTAS, COLUNAS)
   expect_equal(cob$contas$cod_conta, "ContaNova"); expect_equal(cob$colunas$padrao, "COLUNA NOVA")
+})
+
+test_that("FUNDEB: receita própria, impostos e FPE pelo bruto, dedução em linha própria (Anexo 3, pendente)", {
+  f <- CONTAS[CONTAS$cod_conta == "TransferenciasDoFUNDEB", ]
+  expect_true(all(f$categoria_p2 == "receita FUNDEB"))
+  d <- CONTAS[CONTAS$cod_conta == "DeducaoDeReceitaParaFormacaoDoFUNDEB", ]
+  expect_equal(nrow(d), 1); expect_equal(d$categoria_p2, "deducao FUNDEB"); expect_equal(d$usar_no_p2, "pendente")
+  expect_false(any(CONTAS$usar_no_p2[CONTAS$anexo == "RREO-Anexo 03"] == "soma"))
+})
+
+test_that("inversões financeiras e reserva de contingência têm categoria própria, fora de investimento e custeio", {
+  expect_true(all(CONTAS$categoria_p2[CONTAS$cod_conta == "RREO6DemaisInversoesFinanceiras"] == "demais despesas de capital"))
+  expect_true(all(CONTAS$categoria_p2[CONTAS$cod_conta == "RREO6ReservaDeContingencia"] == "demais despesas"))
+  expect_true(all(CONTAS$categoria_p2[CONTAS$cod_conta == "RREO6Investimentos"] == "investimento"))
+})
+
+test_that("sinalizar_reserva_paga acusa só reserva com valor pago", {
+  r <- rbind(linha(2024, "RREO6ReservaDeContingencia", "DOTAÇÃO ATUALIZADA", 500), linha(2024, "RREO6ReservaDeContingencia", "DESPESAS PAGAS (a)", 0),
+             linha(2024, "RREO6ReservaDeContingencia", "PAGOS (c)", 12, ente = 12), linha(2024, "RREO6Investimentos", "DESPESAS PAGAS (a)", 99))
+  s <- sinalizar_reserva_paga(r)
+  expect_equal(nrow(s), 1); expect_equal(s$cod_ibge, 12)
 })

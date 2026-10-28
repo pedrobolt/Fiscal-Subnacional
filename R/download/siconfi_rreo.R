@@ -25,8 +25,7 @@ caminho_rreo <- function(pasta, esfera, id_ente, ano, periodo, anexo, tipo = "RR
 
 registrar_chamada <- function(pasta, linha, log = "_log.csv") {
   log <- file.path(pasta, log)
-  existe <- file.exists(log)
-  utils::write.table(linha, log, sep = ",", row.names = FALSE, col.names = !existe, append = existe, qmethod = "double")
+  gravar_csv(linha, log, append = TRUE)
 }
 
 #' Baixa um demonstrativo do RREO (um ente, ano, bimestre, anexo) e guarda o JSON compactado.
@@ -198,8 +197,7 @@ validar_rreo_pasta <- function(pasta = "data/raw/rreo", quarentenar = FALSE) {
     }
     reg <- do.call(rbind, c(lapply(ruins, mover, motivo = "json.gz invalido"), lapply(tmps, mover, motivo = "sobra .tmp")))
     arq_reg <- file.path(quar, "_registro.csv")
-    utils::write.table(reg, arq_reg, sep = ",", row.names = FALSE, col.names = !file.exists(arq_reg), append = file.exists(arq_reg),
-                       qmethod = "double", fileEncoding = "UTF-8")
+    gravar_csv(reg, arq_reg, append = TRUE)
   }
   ruins
 }

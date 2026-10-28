@@ -227,6 +227,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Acumulado → fluxo: 97,56% de 70.045 linhas batem com "No Bimestre (b)"; o resto é inconsistência da fonte (E2.7).
 - Encoding: dicionários lidos com `data.table::fread` e gravados com `fwrite` (UTF-8 em qualquer locale).
 
+### Ajustes do dicionário, protocolo do E5, histórico pré-2015 e CSV em UTF-8 (28/10/2026, branch `ajustes-dicionario-fundeb`)
+- Dicionário: receita FUNDEB e dedução FUNDEB (Anexo 3, pendente de download) como categorias próprias, impostos e FPE pelo bruto; inversões financeiras em "demais despesas de capital"; reserva de contingência em "demais despesas", com `sinalizar_reserva_paga()` (0 linhas hoje); FPM só no DF, com nota. Fechamento do Anexo 6 inalterado.
+- Protocolo do E5 (para congelar): despesa em caixa só desde 2018, então o P2 é avaliado em painel de 27 UFs, não série a série com piso de 10 anos.
+- RREO dos estados antes de 2015: a API do Siconfi não tem (Anexo 6 de 2014 volta 0 itens; extrato de 2013–14 só tem balanço anual). Há uma planilha anual de execução orçamentária dos estados de 1995 a 2013 no Tesouro, não aberta. Detalhes em `docs/dicionario_contas_estados.md`, seção 9.
+- Todo CSV passa por `ler_csv()`/`gravar_csv()` (`R/utils_io.R`, fread/fwrite em UTF-8), com o mesmo formato de saída do write.csv (aspas, NA como "NA"); `experiments/registro.csv` continua sem alteração e válido (1.162 linhas, 0 problemas).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

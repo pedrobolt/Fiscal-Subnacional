@@ -1,5 +1,6 @@
 # Empacota data/raw/rreo/ (estados e municípios) em um único .tar.gz com manifesto, para anexar a um GitHub Release.
 # Uso: Rscript scripts/empacotar_dados.R <AAAAMMDD>   (saída em outputs/release/)
+source("R/utils_io.R", encoding = "UTF-8")
 source("_targets.R")
 dia <- commandArgs(TRUE)[1]; if (is.na(dia)) dia <- format(Sys.Date(), "%Y%m%d")
 pasta <- "data/raw/rreo"; saida <- "outputs/release"; dir.create(saida, showWarnings = FALSE, recursive = TRUE)
@@ -10,7 +11,7 @@ if (length(system2("git", c("status", "--porcelain", "R", "scripts"), stdout = T
 man <- manifesto_arquivos(pasta)
 res <- resumo_manifesto(man, pasta, commit = commit, invalidos = length(invalidos))
 nome <- sprintf("rreo_bruto_%s", dia)
-utils::write.csv(fileEncoding = "UTF-8", man, file.path(saida, paste0(nome, "_manifesto.csv")), row.names = FALSE)
+gravar_csv(man, file.path(saida, paste0(nome, "_manifesto.csv")))
 writeLines(jsonlite::toJSON(res, auto_unbox = TRUE, pretty = TRUE, na = "null"), file.path(saida, paste0(nome, "_manifesto.json")))
 old <- setwd("data/raw"); on.exit(setwd(old))
 utils::tar(file.path(old, saida, paste0(nome, ".tar.gz")), files = "rreo", compression = "gzip", tar = "internal")

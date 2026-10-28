@@ -1,5 +1,6 @@
 # E4.2b: intervalos do SRW em R$ com σ em % do PIB (mudança de protocolo pós-resultado, contrato 28/10/2026). UMA execução.
 # Uso: Rscript scripts/intervalos_e42_pib.R. Aborta se houver código/documentos sem commit. Sem chamadas ao Siconfi.
+source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 commit <- system("git rev-parse --short HEAD", intern = TRUE)
 sujo <- system("git status --porcelain -- R scripts docs tests AGENTS.md", intern = TRUE)
@@ -13,17 +14,17 @@ bt <- backtest_p1(CANDIDATOS_P1["srw_brl"], fontes, 2000:2025)
 cat("Previsões do SRW:", nrow(bt), "linhas; alvos", min(bt$ano), "-", max(bt$ano), "\n")
 iv <- intervalos_backtest(bt, 2008:2025, escala = "pib")
 dir.create("outputs", showWarnings = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", iv, "outputs/e42b_intervalos_backtest.csv", row.names = FALSE)
+gravar_csv(iv, "outputs/e42b_intervalos_backtest.csv")
 cob <- rbind(
   cbind(amostra = "publicado (σ com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
   cbind(amostra = "publicado (σ com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
   cbind(amostra = "σ sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
-utils::write.csv(fileEncoding = "UTF-8", cob, "outputs/e42b_cobertura.csv", row.names = FALSE)
+gravar_csv(cob, "outputs/e42b_cobertura.csv")
 pub <- cob[cob$amostra == "publicado (σ com 2020-22), alvos 2008-2025", ]
-div <- texto_divulgacao(pub); utils::write.csv(fileEncoding = "UTF-8", div, "outputs/e42b_divulgacao.csv", row.names = FALSE)
+div <- texto_divulgacao(pub); gravar_csv(div, "outputs/e42b_divulgacao.csv")
 err_pct <- bt; err_pct$erro <- bt$erro / bt$pib
 sig <- data.frame(corte = 1:11, sigma_com_pct_pib = 100 * sigma_publicado(err_pct, 2026), sigma_sem_pct_pib = 100 * sigma_publicado(err_pct, 2026, excluir = ANOS_PANDEMIA))
-utils::write.csv(fileEncoding = "UTF-8", sig, "outputs/e42b_sigma_2026.csv", row.names = FALSE)
+gravar_csv(sig, "outputs/e42b_sigma_2026.csv")
 cat("\nσ de produção (alvo 2026, % do PIB):\n"); print(round(sig, 3), row.names = FALSE)
 cat("\nCobertura (nominal 80%):\n"); print(cob[c("amostra", "faixa", "pares", "cobertura", "wilson_inf", "wilson_sup", "contem_80", "anos", "cobertura_anos", "wilson_anos_inf", "wilson_anos_sup", "contem_80_anos")], row.names = FALSE, digits = 3)
 cat("\nDivulgação por faixa (alvos 2008-2025, intervalo publicado):\n"); print(div, row.names = FALSE)

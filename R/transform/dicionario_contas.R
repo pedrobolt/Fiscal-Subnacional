@@ -113,8 +113,9 @@ contas_a6 <- function() {
     rec("RREO6OutrasReceitasTributarias", ABC, "demais receitas", "corrente", pai = "RREO6ReceitasTributarias"),
     rec("RREO6FPE", ABC, "FPE/FPM", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6CotaParteDoFPE", ABC, "FPE/FPM", "corrente", pai = "RREO6TransferenciasCorrentes",
-        nota = "Mesmo conteúdo de RREO6FPE sob outro cod_conta; cada ente usa um dos dois"),
-    rec("RREO6FPM", ABC, "FPE/FPM", "corrente", pai = "RREO6TransferenciasCorrentes", nota = "Cota-parte do FPM recebida pelo estado (pequena)"),
+        nota = "Mesmo conteúdo de RREO6FPE sob outro cod_conta: 26 estados usam este código e o DF (53) usa RREO6FPE; verificado no bruto de 28/10/2026"),
+    rec("RREO6FPM", ABC, "FPE/FPM", "corrente", pai = "RREO6TransferenciasCorrentes",
+        nota = "Cota-parte do FPM: só o DF (53) tem valor, por acumular as competências de estado e município; fica em FPE/FPM. Valores brutos, coerentes com a ponte pela STN"),
     rec("RREO6ReceitasDeContribuicoes", BC, "demais receitas", "corrente", rpps = rpps_ab, pai = "RREO6ReceitasPrimariasCorrentes"),
     rec("RREO6ReceitasPrevidenciarias", A, "demais receitas", "corrente", rpps = "incluido_nao_separavel", pai = "RREO6ReceitasDeContribuicoes",
         nota = "Contribuições previdenciárias (RPPS) dentro do primário em 2015–17"),
@@ -124,8 +125,8 @@ contas_a6 <- function() {
     rec("CotaParteDoITR", BC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("TransferenciasDaLC871996", B, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes", nota = "Lei Kandir; só em 2018–22"),
     rec("TransferenciasDaLCn611989", BC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
-    rec("TransferenciasDoFUNDEB", BC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes",
-        nota = "Receita bruta do FUNDEB; a contrapartida está na despesa. Decisão de tratamento fica para o E5"),
+    rec("TransferenciasDoFUNDEB", BC, "receita FUNDEB", "corrente", pai = "RREO6TransferenciasCorrentes",
+        nota = "Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto − dedução + receita FUNDEB"),
     rec("RREO6ConveniosCorrentes", A, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6OutrasTransferenciasCorrentes", ABC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6DividaAtiva", A, "demais receitas", "corrente", pai = "RREO6DemaisReceitasCorrentes"),
@@ -177,8 +178,8 @@ contas_a6 <- function() {
     des("RREO6PessoalEEncargosSociais", ABC, "pessoal", "corrente"),
     des("RREO6OutrasDespesasCorrentes", ABC, "custeio", "corrente", nota = "Inclui transferências constitucionais e legais; juros ficam fora do primário"),
     des("RREO6Investimentos", ABC, "investimento", "capital"),
-    des("RREO6DemaisInversoesFinanceiras", ABC, "investimento", "capital", nota = "Inversões financeiras primárias (sem concessão de empréstimos e títulos); mapeada em investimento"),
-    des("RREO6ReservaDeContingencia", ABC, "custeio", "corrente", nota = "Normalmente zero na execução"),
+    des("RREO6DemaisInversoesFinanceiras", ABC, "demais despesas de capital", "capital", nota = "Inversões financeiras primárias (sem concessão de empréstimos e títulos); fora de investimento"),
+    des("RREO6ReservaDeContingencia", ABC, "demais despesas", "corrente", nota = "A reserva só tem dotação no bruto observado (nenhum valor pago); `sinalizar_reserva_paga()` avisa se aparecer pago"),
     # despesas: totais, subtotais, filhos
     L("RREO6TotalDespesaPrimaria", ABC, "desp_total", rpps = "inclui_rpps_em_2023+"),
     L("DespesaPrimariaTotalExcetoFontesRPPS", C, "desp_total", rpps = "ja_excluido", nota = "Total de conferência do P2 em 2023+"),
@@ -288,6 +289,17 @@ contas_a1 <- function(rreo) {
              usar_no_p2 = "nao", stringsAsFactors = FALSE)
 }
 
+#' Linha do Anexo 3 (RCL) necessária ao líquido do FUNDEB. Não está baixada: o Anexo 3 traz 12 meses por coluna ("<MR>"),
+#' não acumulado. Verificada só em SP 2024 (dedução de R$ 38,6 bi nos 12 meses; transferências do FUNDEB iguais às do Anexo 6).
+#' Os layouts de 2015–2022 do Anexo 3 ainda não foram inspecionados.
+contas_a3_fundeb <- function() {
+  data.frame(anexo = "RREO-Anexo 03", layout = "2023+", cod_conta = "DeducaoDeReceitaParaFormacaoDoFUNDEB",
+             conta = "Dedução de Receita para Formação do FUNDEB", papel = "ded_fundeb", nivel = "folha", usar_no_p2 = "pendente",
+             estagio_p2 = "receita_deduzida", categoria_p2 = "deducao FUNDEB", natureza = "corrente", pai = NA,
+             rpps = "nao_se_aplica", nota = "Anexo 3 ainda não baixado; verificado só em 2024. Entra no líquido (bruto − dedução + receita FUNDEB)",
+             stringsAsFactors = FALSE)
+}
+
 #' Dicionário completo de contas dos estados (Anexos 6 e 1) a partir do bruto observado (`rreo`). Conta observada e não
 #' curada entra como "memo_nao_curado" (fora do P2), para o teste de cobertura apontar o que ainda falta decidir.
 dicionario_contas_estados <- function(rreo) {
@@ -307,7 +319,7 @@ dicionario_contas_estados <- function(rreo) {
   cols <- c("anexo", "layout", "cod_conta", "conta", "papel", "nivel", "usar_no_p2", "estagio_p2", "categoria_p2", "natureza", "pai", "rpps", "nota")
   for (n in setdiff(cols, names(a1))) a1[[n]] <- NA
   a1$rpps <- "nao_se_aplica"
-  out <- rbind(a6[, cols], a1[, cols])
+  out <- rbind(a6[, cols], a1[, cols], contas_a3_fundeb()[, cols])
   out <- out[order(out$anexo, out$layout, out$papel, out$cod_conta), ]
   rownames(out) <- NULL
   out
@@ -391,4 +403,14 @@ fechar_anexo6 <- function(rreo, dic_contas, dic_colunas, tol = 1000) {
   out$periodo <- as.integer(vapply(p, `[`, "", 3)); out$layout <- as.character(layout_rreo(out$exercicio))
   out$chave <- NULL
   out
+}
+
+#' Linhas em que a reserva de contingência aparece com valor pago (paga, RP processado pago ou RPNP pago) diferente de zero.
+#' A reserva deveria ser só dotação; qualquer valor pago merece olhar antes de seguir (mapeada em "demais despesas").
+sinalizar_reserva_paga <- function(rreo) {
+  x <- rreo[rreo$anexo == "RREO-Anexo 06" & grepl("ReservaDeContingencia$", rreo$cod_conta), ]
+  if (!nrow(x)) return(x)
+  cl <- classificar_coluna(x$coluna, x$exercicio)
+  x <- x[cl$estagio %in% ESTAGIOS_CAIXA_DESPESA & !is.na(x$valor) & x$valor != 0, ]
+  x
 }

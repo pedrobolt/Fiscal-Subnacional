@@ -7,7 +7,7 @@ test_that("manifesto lista arquivos com md5 e resume por esfera e ano", {
   writeLines("a", file.path(p, "M", "2025", "1_b6_a01.json.gz"))
   writeLines("bb", file.path(p, "M", "2025", "2_b6_a01.json.gz"))
   writeLines("c", file.path(p, "E", "2024", "3_b6_a01.json.gz"))
-  write.csv(fileEncoding = "UTF-8", data.frame(momento = c("2026-10-23 10:00:00", "2026-10-23 11:00:00")), file.path(p, "_log.csv"), row.names = FALSE)
+  gravar_csv(data.frame(momento = c("2026-10-23 10:00:00", "2026-10-23 11:00:00")), file.path(p, "_log.csv"))
   m <- manifesto_arquivos(p)
   expect_equal(nrow(m), 4)
   expect_equal(m$md5[m$arquivo == "M/2025/1_b6_a01.json.gz"], unname(tools::md5sum(file.path(p, "M/2025/1_b6_a01.json.gz"))))

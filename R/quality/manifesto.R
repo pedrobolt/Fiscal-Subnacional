@@ -15,7 +15,7 @@ resumo_manifesto <- function(man, pasta = "data/raw/rreo", commit = NA_character
   esfera <- vapply(partes, `[`, "", 1); ano <- vapply(partes, `[`, "", 2)
   cont <- table(esfera, ano)
   logs <- list.files(pasta, pattern = "^_log.*\\.csv$", full.names = TRUE)
-  momentos <- unlist(lapply(logs, function(f) { x <- utils::read.csv(fileEncoding = "UTF-8", f, colClasses = "character"); momento_log_numerico(x$momento) }))
+  momentos <- unlist(lapply(logs, function(f) { x <- ler_csv(f, colClasses = "character"); momento_log_numerico(x$momento) }))
   list(criado_em = format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), commit_codigo = commit,
        arquivos = nrow(man), arquivos_json_gz = nrow(j), bytes_total = sum(man$bytes),
        arquivos_invalidos_na_validacao = invalidos,

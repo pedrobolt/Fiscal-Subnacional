@@ -1,5 +1,6 @@
 # E4.1: previsões fora da amostra dos candidatos da lista (incl. E4.1 e combinação) e diagnósticos, via montar_info.
 # Uso: Rscript scripts/e41_previsoes.R [--registrar]. Sem chamadas ao Siconfi. Não aplica a regra de aceitação (isso é o torneio do E4).
+source("R/utils_io.R", encoding = "UTF-8")
 arqs <- list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
 arqs <- c(arqs[!grepl("candidatos_p1", arqs)], arqs[grepl("candidatos_p1", arqs)])  # candidatos_p1 depende de ESPEC_RESTANTE
 invisible(lapply(arqs, source))
@@ -20,8 +21,8 @@ for (a in names(amostras)) {
   res[[a]] <- cbind(amostra = a, resumir_restante(bt, base = "srw_brl"))
 }
 res <- do.call(rbind, res)
-utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, bts), "outputs/e41_backtest.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", res, "outputs/e41_resumo.csv", row.names = FALSE)
+gravar_csv(do.call(rbind, bts), "outputs/e41_backtest.csv")
+gravar_csv(res, "outputs/e41_resumo.csv")
 if (registrar) for (a in names(amostras)) for (n in unique(res$modelo)) {
   registrar_experimento(res[res$amostra == a, ], n, "p1;alvo=regionais;cortes=1-11;min_treino=8;fontes=bcb+bcb_est+bcb_mun", a, commit)
 }

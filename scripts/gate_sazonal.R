@@ -1,5 +1,6 @@
 # Gate pré-E4: (a) SRW no BCB; (b) ganho do primário RREO dos estados. Uso: Rscript scripts/gate_sazonal.R [--registrar]
 # Escreve outputs/gate_*.csv e, com --registrar, acrescenta ao experiments/registro.csv.
+source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
@@ -16,7 +17,7 @@ bt_a <- do.call(rbind, lapply(names(mods_a), function(n) {
   b <- rodar_backtest(reg, anos = 2003:2025, modelos = list(x = function(s, t, m) mods_a[[n]](s, t, m))); b$modelo <- n; b }))
 amostras_a <- list("2016-2025" = 2016:2025, "2003-2025" = 2003:2025, "2003-2015" = 2003:2015, "2016-2019" = 2016:2019, "2020-2025" = 2020:2025)
 res_a <- do.call(rbind, lapply(names(amostras_a), function(a) cbind(amostra = a, resumir_erros(bt_a[bt_a$ano %in% amostras_a[[a]], ]))))
-utils::write.csv(fileEncoding = "UTF-8", res_a, "outputs/gate_a_srw_bcb.csv", row.names = FALSE)
+gravar_csv(res_a, "outputs/gate_a_srw_bcb.csv")
 
 # (b) RREO dos estados -> BCB (estaduais e regionais); anos-alvo 2018-2025, mas a amostra pareada efetiva é 2020-2025 (2018: RS sem Anexo 6 b1-5; 2019 precisa de 2018)
 rreo <- ler_rreo_pasta("data/raw/rreo", "E")
@@ -29,8 +30,8 @@ for (alvo in c("estaduais", "regionais")) {
   res_b[[alvo]] <- cbind(alvo = alvo, resumo_vs_srw(bt))
 }
 res_b <- do.call(rbind, res_b)
-utils::write.csv(fileEncoding = "UTF-8", res_b, "outputs/gate_b_rreo_vs_srw.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, lapply(names(bts), function(a) cbind(alvo = a, bts[[a]]))), "outputs/gate_b_backtest.csv", row.names = FALSE)
+gravar_csv(res_b, "outputs/gate_b_rreo_vs_srw.csv")
+gravar_csv(do.call(rbind, lapply(names(bts), function(a) cbind(alvo = a, bts[[a]]))), "outputs/gate_b_backtest.csv")
 
 if (registrar) {
   for (a in names(amostras_a)) for (n in names(mods_a)) {

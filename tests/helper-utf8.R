@@ -6,6 +6,8 @@ source_utf8 <- function(arquivo, envir = globalenv()) {
   invisible(NULL)
 }
 
+source_utf8("../R/utils_io.R")
+
 # Grava um JSON (texto) como .gz em bytes UTF-8, sem passar pelo encoding nativo (fixtures iguais em qualquer locale).
 grava_gz_utf8 <- function(json, arquivo) {
   dir.create(dirname(arquivo), showWarnings = FALSE, recursive = TRUE)

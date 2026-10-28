@@ -40,9 +40,18 @@ Somando as folhas pelo dicionário e comparando com o total publicado (tolerânc
 ## 7. Acumulado → fluxo do bimestre (E2.6)
 O RREO é acumulado no ano. `acumulado_para_fluxo()`: fluxo = acumulado do bimestre − acumulado do anterior; no bimestre 1, é o próprio acumulado; se o anterior não existe, o fluxo é NA (nunca zero). Testada com séries sintéticas e contra a coluna publicada "No Bimestre (b)" do Anexo 1: em 70.045 linhas comparadas, 97,56% batem em até R$ 1. As 1.706 divergências ficam em `outputs/e25_fluxo_divergencias.csv`. Concentram-se em totais e subtotais e em poucos estados (acumulado que não cresce ou fluxo negativo na própria publicação); é problema de qualidade da fonte, para o E2.7.
 
-## 8. Decisões para o Pedro
-1. `TransferenciasDoFUNDEB` está em "demais receitas" como receita bruta; a contrapartida está na despesa. Tratar no E5.
-2. `DemaisInversoesFinanceiras` (inversões financeiras primárias) está em "investimento".
-3. `ReservaDeContingencia` está em "custeio" (normalmente zero na execução).
-4. `RREO6FPM` (cota-parte do FPM recebida pelo estado) entra em "FPE/FPM". Os dois códigos de FPE (`RREO6FPE` e `RREO6CotaParteDoFPE`) têm o mesmo conteúdo, e cada ente usa um deles.
-5. As linhas de apuração alternativa da LC 156/2016, resultado nominal e dívida estão no dicionário como memo, fora do P2.
+## 8. Decisões de 28/10/2026 (Pedro) e o que mudou
+1. **FUNDEB:** impostos e FPE ficam pelo bruto. `TransferenciasDoFUNDEB` é categoria própria ("receita FUNDEB"). A dedução de formação do FUNDEB **não está nos Anexos 1 e 6**; está no Anexo 3 (RCL), linha `DeducaoDeReceitaParaFormacaoDoFUNDEB`, com 12 meses por coluna. Conferi em SP 2024: as transferências do FUNDEB do Anexo 3 batem com as do Anexo 6, e a dedução é maior que a receita (SP é contribuinte líquido). O dicionário tem a linha do Anexo 3 como `pendente` (categoria "deducao FUNDEB"). Líquido = bruto − dedução + receita FUNDEB. Falta baixar o Anexo 3 dos estados e inspecionar seus layouts de 2015–22.
+2. **Inversões financeiras:** `DemaisInversoesFinanceiras` passa a "demais despesas de capital" (fora de investimento).
+3. **Reserva de contingência:** "demais despesas". No bruto observado ela só tem dotação (nenhuma coluna paga); `sinalizar_reserva_paga()` roda no script e avisa se aparecer valor pago (hoje, 0 linhas).
+4. **FPM:** só o DF (53) tem `RREO6FPM`; fica em "FPE/FPM" com nota. Os 26 outros estados usam `RREO6CotaParteDoFPE` para o FPE, e o DF usa `RREO6FPE` (mesmo conteúdo, códigos diferentes).
+5. **Protocolo do E5:** despesa em caixa só desde 2018 (no máximo 8 anos-alvo até 2025). A avaliação do P2 é em painel de 27 UFs, não série a série com piso de 10 anos. Registrado em `docs/plano.md` (E5) e `docs/STATUS.md`.
+6. As linhas de apuração alternativa da LC 156/2016, resultado nominal e dívida seguem como memo, fora do P2.
+
+## 9. RREO dos estados antes de 2015: o que se verificou
+Só verificação, sem download em massa.
+- **API do Siconfi (testada em 28/10/2026):** o Anexo 6 de SP com 2014 volta 0 itens; com 2015, 186. O extrato de entregas de SP e do DF em 2013 e 2014 lista só o balanço anual (QDCC em 2013, DCA em 2014), sem RREO. Portanto **não há RREO bimestral dos estados pela API antes de 2015**.
+- **Tesouro (páginas oficiais):** a página de dados consolidados cita, além do Finbra municipal (1989–2012) e do QDCC (2008–2012), uma planilha "Execução Orçamentária de Estados, 1995 a 2013" (`pge_exec_orc_estados_1995_2013.xls`). **Não abri o arquivo**: periodicidade, colunas e se há despesa paga ou só liquidada/empenhada estão sem verificação. Pelo contexto das outras séries do Tesouro dessa época, deve ser anual, o que não serve ao RREO bimestral.
+- O SISTN foi o sistema de coleta anterior ao Siconfi, mas não achei série pública do RREO dos estados nele. Também não confirmei se o Tesouro mantém esse acervo em algum arquivo.
+- **Compatibilidade com o dicionário:** mesmo que exista, uma série anual sem a coluna paga não alimentaria o caixa (que só existe a partir de 2018 no Anexo 6) e caberia, no máximo, na liquidação, como o layout de 2015–17.
+- **Próximo passo, se você quiser:** localizar e abrir só a planilha de 1995–2013 (um arquivo) para ver colunas e granularidade, e checar com a STN se o SISTN tem RREO bimestral dos estados guardado.
