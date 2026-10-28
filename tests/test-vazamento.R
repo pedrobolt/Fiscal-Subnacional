@@ -1,10 +1,10 @@
 library(testthat)
-source("../R/models/fatia_minima.R")
-source("../R/evaluation/backtest_fatia.R")
-source("../R/models/candidatos_restante.R")
-source("../R/models/candidatos_p1.R")
-source("../R/evaluation/vazamento.R")
-source("../R/transform/stn.R")
+source_utf8("../R/models/fatia_minima.R")
+source_utf8("../R/evaluation/backtest_fatia.R")
+source_utf8("../R/models/candidatos_restante.R")
+source_utf8("../R/models/candidatos_p1.R")
+source_utf8("../R/evaluation/vazamento.R")
+source_utf8("../R/transform/stn.R")
 
 set.seed(10)
 anos <- 1998:2016

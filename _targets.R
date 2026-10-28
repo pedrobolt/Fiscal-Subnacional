@@ -3,7 +3,7 @@ library(targets)
 
 # Carrega todas as funções de R/ (subpastas incluídas)
 for (arquivo in list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)) {
-  source(arquivo)
+  source(arquivo, encoding = "UTF-8")
 }
 
 ano_t <- 2026  # ano-alvo; em jan/fev de t+1 trocar para fechar o ano anterior

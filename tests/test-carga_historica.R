@@ -1,9 +1,9 @@
 library(testthat)
-source("../R/download/snapshots.R")
-source("../R/download/siconfi_rreo.R")
-source("../R/download/extrato.R")
-source("../R/download/atualizacao_rreo.R")
-source("../R/download/carga_historica.R")
+source_utf8("../R/download/snapshots.R")
+source_utf8("../R/download/siconfi_rreo.R")
+source_utf8("../R/download/extrato.R")
+source_utf8("../R/download/atualizacao_rreo.R")
+source_utf8("../R/download/carga_historica.R")
 
 test_that("faixas seguem a ordem aprovada", {
   f <- faixas_carga()

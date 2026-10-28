@@ -1,5 +1,5 @@
 library(testthat)
-source("../R/quality/consistencia_sgs.R")
+source_utf8("../R/quality/consistencia_sgs.R")
 
 mk <- function(v) data.frame(data = as.Date("2020-01-01") + 31 * 0:2, valor = v)
 

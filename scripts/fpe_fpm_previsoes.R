@@ -42,12 +42,12 @@ for (a in names(amostras)) {
   }
 }
 res <- do.call(rbind, res); res_m3 <- do.call(rbind, res_m3); res_lag <- do.call(rbind, res_lag); elig <- do.call(rbind, elig); diag <- do.call(rbind, diag)
-utils::write.csv(do.call(rbind, bts), "outputs/fpe_fpm_backtest.csv", row.names = FALSE)
-utils::write.csv(res, "outputs/fpe_fpm_resumo.csv", row.names = FALSE)
-utils::write.csv(res_m3, "outputs/fpe_fpm_vs_m3.csv", row.names = FALSE)
-utils::write.csv(res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv", row.names = FALSE)
-utils::write.csv(elig, "outputs/fpe_fpm_elegibilidade.csv", row.names = FALSE)
-utils::write.csv(diag, "outputs/fpe_fpm_diag_g.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, bts), "outputs/fpe_fpm_backtest.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", res, "outputs/fpe_fpm_resumo.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", res_m3, "outputs/fpe_fpm_vs_m3.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", elig, "outputs/fpe_fpm_elegibilidade.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", diag, "outputs/fpe_fpm_diag_g.csv", row.names = FALSE)
 if (registrar) {
   if (!nrow(res_lag) || !all(c("srw_brl", "m3", "fpe_fpm_lag1") %in% res_lag$modelo)) stop("Sensibilidade vazia: nada foi registrado.", call. = FALSE)
   for (a in names(amostras)) {

@@ -1,7 +1,7 @@
 library(testthat)
-source("../R/models/fatia_minima.R")
-source("../R/evaluation/backtest_fatia.R")
-source("../R/evaluation/gate_rreo.R")
+source_utf8("../R/models/fatia_minima.R")
+source_utf8("../R/evaluation/backtest_fatia.R")
+source_utf8("../R/evaluation/gate_rreo.R")
 
 serie_sint <- function(anos, f) {
   d <- expand.grid(mes = 1:12, ano = anos)

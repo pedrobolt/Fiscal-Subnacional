@@ -31,7 +31,7 @@ registrar_experimento <- function(resumo, candidato, parametros, amostra, commit
                       MAE = round(r$MAE, 4), RMSE = round(r$RMSE, 4), commit = commit, status = status)
   dir.create(dirname(arquivo), showWarnings = FALSE, recursive = TRUE)
   existe <- file.exists(arquivo)
-  utils::write.table(novas[, COLUNAS_REGISTRO], arquivo, sep = ",", row.names = FALSE,
+  utils::write.table(fileEncoding = "UTF-8", novas[, COLUNAS_REGISTRO], arquivo, sep = ",", row.names = FALSE,
                      col.names = !existe, append = existe, qmethod = "double")
   invisible(arquivo)
 }
@@ -41,7 +41,7 @@ registrar_experimento <- function(resumo, candidato, parametros, amostra, commit
 #' métricas numéricas (MAE e RMSE >= 0), linhas duplicadas (candidato x parametros x amostra x corte x commit) e, se
 #' `checar_git`, que o commit existe no repositório.
 validar_registro <- function(arquivo = "experiments/registro.csv", checar_git = TRUE) {
-  d <- utils::read.csv(arquivo, stringsAsFactors = FALSE)
+  d <- utils::read.csv(fileEncoding = "UTF-8", arquivo, stringsAsFactors = FALSE)
   prob <- function(i, txt) if (length(i)) data.frame(linha = i + 1L, problema = txt) else NULL
   out <- list()
   if (!identical(names(d), COLUNAS_REGISTRO)) {

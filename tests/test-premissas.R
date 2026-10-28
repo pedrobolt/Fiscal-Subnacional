@@ -1,5 +1,5 @@
 library(testthat)
-source("../R/premissas.R")
+source_utf8("../R/premissas.R")
 
 escreve <- function(ipca = "0.045", pib_real = "0.02", pib_nom = "13000", extra = "") {
   f <- tempfile(fileext = ".yml")

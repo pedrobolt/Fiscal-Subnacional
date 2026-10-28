@@ -8,7 +8,7 @@ args <- commandArgs(TRUE)
 if (length(args) < 2) stop("Uso: Rscript scripts/restaurar_dados.R <arquivo.tar.gz> <manifesto.csv>")
 dir.create("data/raw", showWarnings = FALSE, recursive = TRUE)
 utils::untar(args[1], exdir = "data/raw", tar = "internal")
-man <- utils::read.csv(args[2], stringsAsFactors = FALSE)
+man <- utils::read.csv(fileEncoding = "UTF-8", args[2], stringsAsFactors = FALSE)
 atual <- manifesto_arquivos("data/raw/rreo")
 m <- merge(man, atual, by = "arquivo", all.x = TRUE, suffixes = c("", "_atual"))
 falta <- m$arquivo[is.na(m$md5_atual)]

@@ -13,14 +13,14 @@ bt <- backtest_p1(CANDIDATOS_P1["srw_brl"], fontes, 2000:2025)
 cat("Previsões do SRW:", nrow(bt), "linhas; alvos", min(bt$ano), "-", max(bt$ano), "\n")
 iv <- intervalos_backtest(bt, 2008:2025)
 dir.create("outputs", showWarnings = FALSE)
-utils::write.csv(iv, "outputs/e42_intervalos_backtest.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", iv, "outputs/e42_intervalos_backtest.csv", row.names = FALSE)
 cob <- rbind(
   cbind(amostra = "publicado (σ com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
   cbind(amostra = "publicado (σ com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
   cbind(amostra = "σ sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
-utils::write.csv(cob, "outputs/e42_cobertura.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", cob, "outputs/e42_cobertura.csv", row.names = FALSE)
 sig <- data.frame(corte = 1:11, sigma_com_bi = sigma_publicado(bt, 2026), sigma_sem_bi = sigma_publicado(bt, 2026, excluir = ANOS_PANDEMIA))
-utils::write.csv(sig, "outputs/e42_sigma_2026.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", sig, "outputs/e42_sigma_2026.csv", row.names = FALSE)
 cat("\nσ de produção (alvo 2026, R$ bi):\n"); print(round(sig, 2), row.names = FALSE)
 cat("\nCobertura (nominal 80%):\n"); print(cob[c("amostra", "faixa", "pares", "cobertura", "wilson_inf", "wilson_sup", "contem_80", "anos", "cobertura_anos", "wilson_anos_inf", "wilson_anos_sup", "contem_80_anos")], row.names = FALSE, digits = 3)
 # Ilustração (não é previsão oficial): SRW de 2026 no último corte com dado

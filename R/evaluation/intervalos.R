@@ -81,11 +81,11 @@ cobertura_faixas <- function(iv, coluna, faixas = FAIXAS_P1, anos_fora = integer
   }))
 }
 
-#' Texto de divulgação por faixa (regra de 28/10/2026): se o Wilson 90% por ano contém 80%, o intervalo pode ser divulgado como
-#' 80%; senão, divulga-se a cobertura empírica observada ("contém o resultado em X% dos anos-alvo"), nunca "80%".
-#' `cob`: saída de cobertura_faixas() de um único intervalo.
+#' Texto de divulgação por faixa (regra de 28/10/2026): linguagem uniforme em todas as faixas, sempre a cobertura empírica
+#' observada ("contém o resultado em X% dos anos-alvo"), nunca "intervalo de 80%". Se o Wilson 90% por ano contém 80%,
+#' acrescenta-se "compatível com 80%". `cob`: saída de cobertura_faixas() de um único intervalo.
 texto_divulgacao <- function(cob) {
-  data.frame(faixa = cob$faixa, publicavel_como_80 = cob$contem_80_anos,
-             texto = ifelse(cob$contem_80_anos, "Intervalo de 80%",
-                            sprintf("Contém o resultado em %.0f%% dos anos-alvo (n = %d)", 100 * cob$cobertura_anos, cob$anos)))
+  base <- sprintf("Contém o resultado em %.0f%% dos anos-alvo (n = %d)", 100 * cob$cobertura_anos, cob$anos)
+  data.frame(faixa = cob$faixa, compativel_com_80 = cob$contem_80_anos,
+             texto = ifelse(cob$contem_80_anos, paste0(base, ", compatível com 80%"), base))
 }

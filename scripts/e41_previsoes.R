@@ -20,8 +20,8 @@ for (a in names(amostras)) {
   res[[a]] <- cbind(amostra = a, resumir_restante(bt, base = "srw_brl"))
 }
 res <- do.call(rbind, res)
-utils::write.csv(do.call(rbind, bts), "outputs/e41_backtest.csv", row.names = FALSE)
-utils::write.csv(res, "outputs/e41_resumo.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, bts), "outputs/e41_backtest.csv", row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", res, "outputs/e41_resumo.csv", row.names = FALSE)
 if (registrar) for (a in names(amostras)) for (n in unique(res$modelo)) {
   registrar_experimento(res[res$amostra == a, ], n, "p1;alvo=regionais;cortes=1-11;min_treino=8;fontes=bcb+bcb_est+bcb_mun", a, commit)
 }

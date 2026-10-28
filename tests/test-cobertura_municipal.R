@@ -1,7 +1,7 @@
 library(testthat)
-source("../R/download/snapshots.R")
-source("../R/download/siconfi_rreo.R")
-source("../R/evaluation/cobertura_municipal.R")
+source_utf8("../R/download/snapshots.R")
+source_utf8("../R/download/siconfi_rreo.R")
+source_utf8("../R/evaluation/cobertura_municipal.R")
 
 base <- data.frame(cod_ibge = 1:6, uf = c("A", "A", "A", "B", "B", "B"),
                    populacao = c(100, 50, 50, 80, 10, 10),
