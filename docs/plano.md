@@ -4,7 +4,7 @@ Documentação é contínua: toda tarefa atualiza docs/STATUS.md e, quando coube
 
 Documento completo: documento "Plano de implementação — Previsão Fiscal Subnacional".
 Códigos (E1.1 etc.) são usados nos prompts e em `docs/STATUS.md`.
-Rótulos de semana atualizados em 28/10/2026 ao estado real: o P1 (E3 e E4) foi concluído na S2; as próximas semanas são do P2 (E5, E3.6 e E5.4), depois a entrega (E6) e a avaliação (E7). As datas de S3 em diante são previsão.
+Rótulos de semana atualizados em 28/10/2026 ao estado real: o P1 (E3 e E4) foi concluído na S2; as próximas semanas são do P2 (E5, E3.6 e E5.4), depois a entrega (E6) e a avaliação (E7). As datas de S3 em diante são previsão. Na S3: E2.5 (dicionário de contas por layout), E2.8 (nota de quebras) e E2.9 (conferência manual de amostra), antes do E5 (decisão de 28/10/2026).
 
 ## E1. Preparar o projeto e fazer um primeiro teste (S1)
 - E1.1 Repositório R (git, renv, targets, pastas)
@@ -14,16 +14,16 @@ Rótulos de semana atualizados em 28/10/2026 ao estado real: o P1 (E3 e E4) foi 
 - E1.5 Fatia mínima: primário regional do BCB → naïve e extrapolação do acumulado → backtest 2016–2025 por mês do cutoff → tabela de erro → número de 2026
 Aceite: a fatia roda com um comando, do download ao número.
 
-## E2. Montar e conferir a base de dados (S1–S3; em andamento: carga histórica municipal, E2.5, E2.7, E2.8, E2.9)
+## E2. Montar e conferir a base de dados (S1–S3; E2.5, E2.8 e E2.9 ficam na S3, antes do E5, porque o P2 depende delas; em andamento também: carga histórica municipal e E2.7)
 - E2.1 RREO Anexos 1 e 6: estados por UF
 - E2.2 RREO Anexos 1 e 6: municípios agregados por UF, imputação documentada
 - E2.3 BCB/SGS, transferências da STN, IPCA, PIB nominal anual histórico pelo IBGE (para % do PIB no backtest; `premissas.yml` só para anos projetados)
 - E2.4 Snapshots imutáveis e base canônica com available_at
-- E2.5 Dicionário de contas por layout (2015–17, 2018–22, 2023+)
+- E2.5 Dicionário de contas por layout (2015–17, 2018–22, 2023+), começando pelos estados (S3, pré-requisito do E5)
 - E2.6 Testes automáticos (duplicidade, ausente vs zero, acumulado → fluxo, identidades, cobertura)
 - E2.7 Pesquisa: defasagem real de publicação do RREO → regra de available_at
-- E2.8 Pesquisa: nota de quebras (2018, RPPS 2023, RJ/PR/RS 2025) — validar com o Pedro
-- E2.9 Conferência manual de amostra contra demonstrativos oficiais
+- E2.8 Pesquisa: nota de quebras (2018, RPPS 2023, RJ/PR/RS 2025; inclui o Anexo 6 do RS em 2018) — validar com o Pedro (S3, pré-requisito do E5)
+- E2.9 Conferência manual de amostra contra demonstrativos oficiais (S3, pré-requisito do E5)
 - E2.10 Verificar se a meta de primário da LDO vem no RREO Anexo 6 (feito em 27/10/2026: vem, só para estados, 2015–2025)
 Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 
@@ -43,7 +43,7 @@ Aceite: teste de vazamento passa; protocolo aprovado.
 - E4.3 Documentar modelo escolhido e justificativa
 Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 
-## E5. Projetar receitas e despesas — P2 (S3–S5)
+## E5. Projetar receitas e despesas — P2 (S4–S5, depois de E2.5, E2.8 e E2.9 na S3)
 - E5.0 (o critério de viés do protocolo do P2 deve ter tolerância, p. ex. |ME| ≤ |ME base| + 0,1·RMSE base; decisão de 28/10/2026) Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
 - E5.1 Categorias: receita corrente, ICMS, IPVA, ISS, FPE/FPM, demais (IPTU incluído), pessoal, custeio, investimento
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
