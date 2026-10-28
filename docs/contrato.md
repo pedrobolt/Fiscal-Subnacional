@@ -65,4 +65,6 @@ Mudança só por PR com justificativa; resultados que dependam de nova regra sã
 
 **Linguagem de divulgação dos intervalos (28/10/2026).** Em todas as faixas se divulga a cobertura observada em linguagem uniforme ("contém o resultado em X% dos anos-alvo"), nunca "intervalo de 80%"; na faixa em que o Wilson por ano contém 80% (cortes 9–11, 74%) acrescenta-se "compatível com 80%". A sensibilidade sem os alvos 2020–22 (cerca de 70% nas três faixas) é registrada como informação, sem mudar a regra.
 
+**Sensibilidade "sem 2020–21" do torneio do P1 (declarada em 28/10/2026, antes de executar).** Mesma lista (K = 8) e mesma regra congelada, com a amostra "sem 2020–21" (2022 permanece, em treino e teste) no lugar de "sem 2020–22" como amostra principal e a amostra completa como segunda. É só sensibilidade: a decisão do torneio (SRW em R$ nas três faixas) e o protocolo ficam como estão; nada vai ao registro de experimentos. O resultado fica no STATUS.
+
 **P2 (E5).** A comparação de métodos por UF × categoria é ampla e usa teste para muitos modelos (SPA de Hansen ou Model Confidence Set), no lugar do DM.
