@@ -6,7 +6,7 @@ Versão de 28/10/2026. Nota curta; o protocolo completo está em `docs/contrato.
 O resultado primário do ano corrente (t) de estados e municípios somados, no conceito do Banco Central (SGS 4642; 4643 estados; 4644 municípios), em R$ bilhões, superávit positivo. A previsão é refeita a cada divulgação mensal do BCB (corte m = 1 a 11: dados até o mês m). O P2 (receitas e despesas pelo RREO) e a ponte entre os conceitos ficam para o E5; o gap P1 × P2 é sempre mostrado.
 
 ## 2. Modelo escolhido: SRW em R$
-Total previsto = acumulado do ano até o corte + resultado do mesmo período restante do ano anterior (janela 1). Vale nas três faixas de corte (jan–abr, mai–ago, set–nov). Erro típico (RMSE, R$ bi, alvos 2007–2025 sem 2020–22): 11,8 no corte 3, 8,5 no corte 6 e 7,3 no corte 9.
+Total previsto = acumulado do ano até o corte + resultado do mesmo período restante do ano anterior (janela 1). Vale nas três faixas de corte (jan–abr, mai–ago, set–nov). Erro típico (RMSE por faixa, R$ bi, alvos 2007–2025 sem 2020–22): 13,2 nos cortes 1–4, 8,2 nos cortes 5–8 e 6,7 nos cortes 9–11.
 
 ## 3. Como foi escolhido
 Torneio único (28/10/2026, commit `ba5ccf3`), lista fechada de K = 8 (a base e sete desafiantes), regra congelada antes: o desafiante precisa, na faixa, reduzir o RMSE em pelo menos 10%, ser melhor em mais da metade dos anos-alvo, passar no teste de Diebold-Mariano com correção de Holm (α = 0,10), e não piorar acerto de sinal nem viés; nas amostras com e sem 2020–22. As previsões regeneradas reproduzem as do PR #25 (198 de 198 linhas).
@@ -21,10 +21,10 @@ Torneio único (28/10/2026, commit `ba5ccf3`), lista fechada de K = 8 (a base e 
 | FPE/FPM (m3 + g) | +44% | +27% | −28% |
 | combinação | +19% | +15% | −26% |
 
-Nenhum foi aceito. A meta da LDO saiu da lista antes ("não viável no P1": série só para estados, 2015–2025, abaixo do piso de 10 anos-alvo sem 2020–22 e revista dentro do ano). O m3 nos cortes 9–11 ficou perto: RMSE −41%, melhor em 81% dos anos-alvo e acerto de sinal maior, mas o DM não foi significativo (p bruto 0,13; ajustado 0,90, com 16 anos-alvo e 7 testes) e o viés dele (−0,20 bi contra 0,07 da base) violou um critério sem tolerância. Foi falta de poder e um critério de viés rígido, não uma rejeição forte do m3; a regra não foi alterada. O FPE/FPM não acrescenta nada ao m3 (diagnóstico). Decompor em estados e municípios piora a previsão.
+Nenhum foi aceito. O FPE/FPM é comparado com a base nos anos em que tem previsão (14, 12 e 11 anos-alvo sem 2020–22 nas três faixas, por lacunas da STN). A meta da LDO saiu da lista antes ("não viável no P1": série só para estados, 2015–2025; ver `docs/STATUS.md`). O m3 nos cortes 9–11 ficou perto: RMSE −41%, melhor em 81% dos anos-alvo e acerto de sinal de 96% contra 92%, mas o DM não foi significativo (p bruto 0,13; ajustado 0,90, com 16 anos-alvo e 7 testes) e o viés dele (−0,20 bi contra 0,07 da base) violou um critério sem tolerância. Foi falta de poder e um critério de viés rígido, não uma rejeição forte do m3; a regra não foi alterada. O FPE/FPM não acrescenta nada ao m3 (diagnóstico). Decompor em estados e municípios piora a previsão.
 
 ## 4. Intervalos
-O intervalo paramétrico de 80% com σ em R$ foi reprovado (cobertura de 44% a 60%) e não é divulgado. Por decisão do Pedro, uma única alternativa foi avaliada, **declarada como mudança de protocolo pós-resultado**: σ sobre os erros do SRW em % do PIB (rolante, suavizado entre cortes, pior caso com 2020–22), multiplicado pelo PIB do ano. Avaliada uma vez, nos alvos 2008–2025:
+O intervalo paramétrico de 80% com σ em R$ foi reprovado (cobertura de 46% a 50% dos anos-alvo, 2008–2025, abaixo de 80% nas três faixas) e não é divulgado. Por decisão do Pedro, uma única alternativa foi avaliada, **declarada como mudança de protocolo pós-resultado**: σ sobre os erros do SRW em % do PIB (rolante, suavizado entre cortes, pior caso com 2020–22), multiplicado pelo PIB do ano. Avaliada uma vez, nos alvos 2008–2025:
 
 | Faixa | O intervalo contém o resultado em | Wilson 90% por ano |
 |---|---|---|
