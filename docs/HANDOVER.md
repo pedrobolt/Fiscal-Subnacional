@@ -63,6 +63,9 @@ Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na
 - Antes de registrar resultados: commitar o código, rodar o script com `--registrar` (o hash precisa existir) e conferir `Rscript -e 'source("R/evaluation/registro.R"); print(validar_registro())'` (vazio = ok). Linhas nunca são apagadas; o campo `status` diz o que vale.
 - Calendário do BCB: se houver o calendário real de divulgação, passe-o em `calendario` (ano, mes, data); sem ele, vale a aproximação do último dia útil do mês seguinte.
 
+### 3g. Dicionário de contas dos estados (E2.5)
+`Rscript scripts/dicionario_e25.R` regenera `data/dicionario_contas_estados.csv` e `data/dicionario_colunas_estados.csv` a partir do bruto local e roda o fechamento do Anexo 6 e a conferência acumulado → fluxo (saídas em `outputs/e25_*.csv`). Se aparecer conta ou coluna nova no Siconfi, o script lista o que falta classificar; a decisão vai para `R/transform/dicionario_contas.R`. Caixa da despesa = paga + RP processados pagos + RP não processados pagos (só de 2018 em diante). Detalhes em `docs/dicionario_contas_estados.md`.
+
 ## 4. Quando rodar
 Sob demanda, após nova divulgação do BCB (fim do mês) ou de um bimestre do RREO. Não há agendamento.
 

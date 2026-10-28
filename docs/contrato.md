@@ -14,7 +14,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 
 ## Conceitos
 - **Sinal**: superávit positivo, déficit negativo.
-- **Estágio da despesa**: caixa = despesa paga + restos a pagar pagos. Empenho e liquidação são preservados, mas não são alvo.
+- **Estágio da despesa**: caixa = despesa paga + restos a pagar pagos (processados e não processados; confirmado em 28/10/2026 contra o resultado publicado do Anexo 6). Empenho e liquidação são preservados, mas não são alvo.
 - **RPPS**: receitas e despesas primárias **exceto fontes do RPPS** (como no Anexo 6).
 - **Primário**: juros, amortizações e operações de crédito ficam fora.
 - **FPE/FPM**: projetado a partir da série da STN (valor bruto transferido), convertido ao conceito RREO por fator de ponte (RREO declarado / STN), estimado no histórico por UF e esfera; avaliado contra o RREO declarado. A ponte cobre bruto vs. líquido do Fundeb, timing de decêndios e cobertura de entes. Se o fator for instável em alguma UF, sinalizar como achado de qualidade no E2.
