@@ -182,6 +182,21 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Recomendação:** não divulgar esse intervalo como "80%". Opções para Pedro decidir, qualquer uma declarada como nova e avaliada fora da amostra: (a) σ em % do PIB, multiplicado pelo PIB do ano; (b) quantis empíricos dos erros padronizados em janela expansiva; (c) multiplicador de calibração estimado de forma rolante sobre o erro padronizado. Não testei nenhuma delas: seria ajuste depois de ver o resultado.
 - Saídas (fora do git): `outputs/e42_intervalos_backtest.csv`, `e42_cobertura.csv`, `e42_sigma_2026.csv`.
 
+### E4.2b — Intervalos do SRW com σ em % do PIB (28/10/2026, branch `e4.2b-sigma-pib`, execução única no commit `6c43a79`)
+- **Mudança de protocolo pós-resultado, declarada como tal** (decisão do Pedro depois da reprovação do E4.2 em R$; registrada no contrato antes da execução; as outras alternativas não foram testadas). σ sobre os erros do SRW em % do PIB do ano do erro, mesmas regras de suavização e pior caso; intervalo = previsão ± 1,2816 × σ% × PIB do ano (no backtest, PIB realizado).
+- **Cobertura, alvos 2008–2025, intervalo publicado (σ com 2020–22), Wilson 90% por ano:**
+
+| Faixa | Cobertura (pares) | Cobertura por ano | Wilson por ano | Contém 80%? |
+|---|---|---|---|---|
+| 1–4 | 58% | 58% (18 anos) | [39%; 75%] | não |
+| 5–8 | 60% | 60% (18 anos) | [41%; 76%] | não |
+| 9–11 | 74% | 74% (18 anos) | [55%; 87%] | sim |
+
+- **Regra de divulgação aplicada:** cortes 1–4 e 5–8: "contém o resultado em 58% / 60% dos anos-alvo (n = 18)", nunca "80%". Cortes 9–11: o Wilson contém 80%, então pode ser divulgado como de 80%, mas a cobertura observada é de 74% e o intervalo de Wilson é largo (n = 18), então isso mostra falta de evidência contra os 80%, não calibração demonstrada. Sugiro registrar no informe também a cobertura observada nessa faixa.
+- **Sensibilidade (já prevista no contrato, não muda a regra):** sem os alvos 2020–22 a cobertura sobe para 70% / 70% / 73% e o Wilson por ano contém 80% nas três faixas (ex.: [49%; 85%]); a regra pré-registrada usa todos os alvos, e a diferença mostra o peso de 2020–22. Melhora em relação ao σ em R$ (50% / 50% / 46%), mas a cobertura segue abaixo do nominal.
+- **σ de produção (alvo 2026), em % do PIB, com e sem 2020–22:** corte 1: 0,247 e 0,206; corte 4: 0,222 e 0,158; corte 8: 0,131 e 0,096; corte 11: 0,077 e 0,074. Ilustração (não é previsão oficial): SRW de 2026 com dados até agosto = −5,3 bi; faixa publicada [−27,5; 16,9] bi (PIB aproximado em R$ 13,2 tri), que na faixa 5–8 deve ser descrita como "contém o resultado em 60% dos anos-alvo".
+- Saídas (fora do git): `outputs/e42b_*.csv`. O E4.2 (σ em R$) segue reprovado e não deve ser divulgado.
+
 ### Atualização do plano (28/10/2026, branch `docs-plano-pos-torneio`, só documentação)
 - `docs/plano.md`: E4 com o resultado do torneio (SRW em R$ nas três faixas) e o m3 como modelo-sombra (E6.3); removida a menção ao bottom-up como variante do E4.1; E4.2 com o resultado da 1ª tentativa e a mudança de protocolo pós-resultado (σ em % do PIB); E5.4 novo (mistura P2 → ponte → P1 como modelo-sombra, não candidato oficial); E3.6 com escopo de conciliação P1 × P2 e como pré-requisito do E5.4; E6.1 com a rodada mensal (Siconfi só t e t−1; revisão completa trimestral, `scripts/rodada_mensal.R`, a criar); sem ajuste de julgamento no número nesta fase (E6.2), a reavaliar no gate E7.1; rótulos de semana ao estado real (P1 concluído na S2; S3–S5 no P2, previsão).
 - `docs/HANDOVER.md` (3c): no Windows, `renv::restore(exclude = 'Matrix')` ou Rtools.
