@@ -55,3 +55,35 @@ test_that("cobertura por faixa: n = pares e n = anos; 80% dentro do Wilson quand
   expect_equal(nrow(c), 3); expect_true(all(c$contem_80)); expect_equal(c$cobertura, rep(0.8, 3))
   expect_equal(c$pares, c(80, 80, 60)); expect_equal(c$anos, rep(20, 3))
 })
+
+test_that("escala em % do PIB: com PIB constante coincide com R$; com PIB crescente o σ acompanha o PIB do alvo", {
+  e <- erros_sint(); e$pib <- 1000
+  a <- intervalos_backtest(e, 2010:2020); b <- intervalos_backtest(e, 2010:2020, escala = "pib")
+  expect_equal(b$sigma_com, a$sigma_com); expect_equal(b$dentro_com, a$dentro_com)
+  e2 <- erros_sint(); e2$pib <- 1000 * 1.1^(e2$ano - 2000); e2$erro <- e2$erro * e2$pib / 1000   # erro proporcional ao PIB
+  e2$previsao <- 100; e2$realizado <- e2$previsao - e2$erro
+  p <- intervalos_backtest(e2, 2010:2020, escala = "pib")
+  # identidade: σ publicado = σ dos erros em fração do PIB x PIB do alvo
+  ep <- e2; ep$erro <- e2$erro / e2$pib
+  for (t in c(2012, 2018)) {
+    esperado <- sigma_publicado(ep, t) * e2$pib[e2$ano == t & e2$corte == 1]
+    expect_equal(p$sigma_com[p$ano == t], esperado)
+  }
+  # com erro crescendo com o PIB, o σ em % do PIB é maior que o σ em R$ (que defasa o crescimento) nos anos finais
+  rb <- intervalos_backtest(e2, 2015:2020)
+  expect_gt(mean(p$sigma_com[p$ano >= 2015] / rb$sigma_com[match(paste(p$ano, p$corte)[p$ano >= 2015], paste(rb$ano, rb$corte))]), 1)
+})
+
+test_that("σ em % do PIB só usa erros de anos anteriores ao alvo", {
+  e <- erros_sint(); e$pib <- 1000 * 1.1^(e$ano - 2000)
+  a <- intervalos_backtest(e, 2015, escala = "pib")
+  e2 <- e; k <- e2$ano >= 2015; e2$erro[k] <- e2$erro[k] * 50; e2$pib[e2$ano > 2015] <- e2$pib[e2$ano > 2015] * 9
+  b <- intervalos_backtest(e2, 2015, escala = "pib")
+  expect_equal(a$sigma_com, b$sigma_com)
+})
+
+test_that("texto de divulgação: 80% só se o Wilson por ano contém 80%; senão cobertura empírica", {
+  cob <- data.frame(faixa = c("1-4", "5-8"), contem_80_anos = c(TRUE, FALSE), cobertura_anos = c(0.8, 0.55), anos = 18)
+  t <- texto_divulgacao(cob)
+  expect_equal(t$texto[1], "Intervalo de 80%"); expect_equal(t$texto[2], "Contém o resultado em 55% dos anos-alvo (n = 18)")
+})

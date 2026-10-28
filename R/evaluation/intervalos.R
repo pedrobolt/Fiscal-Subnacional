@@ -41,19 +41,25 @@ wilson <- function(k, n, conf = 0.90) {
   c(inf = centro - meia, sup = centro + meia)
 }
 
-#' Intervalos e cobertura para todos os alvos. `bt`: backtest do modelo publicado (ano, corte, previsao, realizado, erro),
-#' com anos suficientes antes do primeiro alvo. Retorna uma linha por alvo x corte com σ com e sem 2020–22 e as coberturas.
-intervalos_backtest <- function(bt, alvos, cortes = 1:11, pandemia = 2020:2022, min_anos = MIN_ANOS_SIGMA) {
+#' Intervalos e cobertura para todos os alvos. `bt`: backtest do modelo publicado (ano, corte, previsao, realizado, erro, pib),
+#' com anos suficientes antes do primeiro alvo. `escala`: "brl" (σ do erro em R$ bi) ou "pib" (σ do erro em fração do PIB do
+#' ano do erro, multiplicado pelo PIB do ano-alvo; E4.2b). Retorna uma linha por alvo x corte com σ (na unidade de R$ bi) com e
+#' sem 2020–22 e as coberturas.
+intervalos_backtest <- function(bt, alvos, cortes = 1:11, pandemia = 2020:2022, min_anos = MIN_ANOS_SIGMA, escala = c("brl", "pib")) {
+  escala <- match.arg(escala)
+  err <- bt
+  if (escala == "pib") { err$erro <- bt$erro / bt$pib }
   linhas <- list()
   for (t in alvos) {
-    s_com <- sigma_publicado(bt, t, cortes, integer(0), min_anos)
-    s_sem <- sigma_publicado(bt, t, cortes, pandemia, min_anos)
+    s_com <- sigma_publicado(err, t, cortes, integer(0), min_anos)
+    s_sem <- sigma_publicado(err, t, cortes, pandemia, min_anos)
     for (i in seq_along(cortes)) {
       b <- bt[bt$ano == t & bt$corte == cortes[i], ]
       if (nrow(b) != 1 || is.na(b$previsao) || is.na(s_com[i])) next
-      ic <- intervalo_80(b$previsao, s_com[i]); is <- intervalo_80(b$previsao, s_sem[i])
+      fator <- if (escala == "pib") b$pib else 1
+      ic <- intervalo_80(b$previsao, s_com[i] * fator); is <- intervalo_80(b$previsao, s_sem[i] * fator)
       linhas[[length(linhas) + 1]] <- data.frame(ano = t, corte = cortes[i], previsao = b$previsao, realizado = b$realizado,
-        sigma_com = s_com[i], sigma_sem = s_sem[i], inf_com = ic$inf, sup_com = ic$sup, inf_sem = is$inf, sup_sem = is$sup,
+        sigma_com = s_com[i] * fator, sigma_sem = s_sem[i] * fator, inf_com = ic$inf, sup_com = ic$sup, inf_sem = is$inf, sup_sem = is$sup,
         dentro_com = b$realizado >= ic$inf & b$realizado <= ic$sup,
         dentro_sem = if (is.na(s_sem[i])) NA else b$realizado >= is$inf & b$realizado <= is$sup)
     }
@@ -73,4 +79,13 @@ cobertura_faixas <- function(iv, coluna, faixas = FAIXAS_P1, anos_fora = integer
                contem_80 = w[["inf"]] <= 0.8 & 0.8 <= w[["sup"]], anos = length(por_ano), cobertura_anos = mean(por_ano),
                wilson_anos_inf = wa[["inf"]], wilson_anos_sup = wa[["sup"]], contem_80_anos = wa[["inf"]] <= 0.8 & 0.8 <= wa[["sup"]])
   }))
+}
+
+#' Texto de divulgação por faixa (regra de 28/10/2026): se o Wilson 90% por ano contém 80%, o intervalo pode ser divulgado como
+#' 80%; senão, divulga-se a cobertura empírica observada ("contém o resultado em X% dos anos-alvo"), nunca "80%".
+#' `cob`: saída de cobertura_faixas() de um único intervalo.
+texto_divulgacao <- function(cob) {
+  data.frame(faixa = cob$faixa, publicavel_como_80 = cob$contem_80_anos,
+             texto = ifelse(cob$contem_80_anos, "Intervalo de 80%",
+                            sprintf("Contém o resultado em %.0f%% dos anos-alvo (n = %d)", 100 * cob$cobertura_anos, cob$anos)))
 }
