@@ -239,6 +239,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ### Exclusão de anos: P1 (sensibilidade) e P2 (variante de robustez) (28/10/2026, branch `p1-sens-2020-21`)
 - P1: protocolo congelado mantido (com e sem 2020–22). Sensibilidade "sem 2020–21" declarada no contrato antes de executar (`scripts/torneio_sens_2020_21.R`); não altera a decisão do torneio.
+- Resultado da sensibilidade "sem 2020–21" (executada após o commit da declaração; `outputs/torneio_sens_2020_21_*.csv`): 21 de 21 decisões iguais às do torneio congelado (todos os desafiantes rejeitados; menor p-valor de Holm 0,972); SRW em R$ segue escolhido nas três faixas. Decisão inalterada.
 - P2: variante de robustez definida no plano antes de qualquer resultado: "sem 2020–21", com 2022 mantido e marcado pela LC 194/2022.
 
 ## Pendências abertas
