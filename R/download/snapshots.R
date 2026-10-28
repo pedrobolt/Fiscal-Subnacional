@@ -111,3 +111,27 @@ baixado_em_vigente <- function(base, momentos = NULL) {
 vigente_rreo <- function(pasta, esfera, id_ente, ano, periodo, anexo, tipo = "RREO") {
   arquivo_vigente(caminho_rreo(pasta, esfera, id_ente, ano, periodo, anexo, tipo))
 }
+
+# --- JSON em UTF-8 independente do locale ---------------------------------------------------------------------------
+# Os brutos do Siconfi são UTF-8. Ler/gravar via conexão de texto usa o encoding nativo (CP1252/850 no Windows) e
+# estraga os acentos. Aqui o conteúdo é sempre tratado como bytes UTF-8, sem tradução.
+
+#' Lê um JSON (texto puro ou .gz) como UTF-8, qualquer que seja o locale.
+ler_json_utf8 <- function(arquivo) {
+  con <- gzfile(arquivo, "rb"); on.exit(close(con))
+  partes <- list()
+  repeat { b <- readBin(con, "raw", 1e6); if (!length(b)) break; partes[[length(partes) + 1L]] <- b }
+  txt <- rawToChar(unlist(partes)); Encoding(txt) <- "UTF-8"
+  jsonlite::fromJSON(txt)
+}
+
+#' Copia `origem` (JSON em texto) para `destino` comprimido em gzip, byte a byte (sem passar pelo encoding nativo).
+gravar_gz_bytes <- function(origem, destino) {
+  bytes <- readBin(origem, "raw", file.size(origem))
+  con <- gzfile(destino, "wb"); on.exit(close(con))
+  writeBin(bytes, con)
+  invisible(destino)
+}
+
+#' Caminho normalizado (barras "/", sem exigir que exista), para comparar caminhos em qualquer sistema.
+caminho_norm <- function(x) normalizePath(x, winslash = "/", mustWork = FALSE)

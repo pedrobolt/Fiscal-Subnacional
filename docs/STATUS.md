@@ -213,6 +213,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Testes carregam o código com `source_utf8()` (`tests/helper-utf8.R`; lê como UTF-8 e avalia sem tradução, vale também em locale C); scripts e `_targets.R` usam `source(..., encoding = "UTF-8")`; leitura e escrita de CSV com `fileEncoding = "UTF-8"`. A suíte passa sem `LC_ALL`.
 - `texto_divulgacao()` segue a regra de 28/10: sempre "contém o resultado em X% dos anos-alvo", com ", compatível com 80%" quando o Wilson por ano contém 80%; coluna `publicavel_como_80` renomeada para `compativel_com_80`.
 
+### Fixtures UTF-8, caminhos e quarentena (28/10/2026, branch `fix-fixtures-utf8-quarentena`)
+- Windows do Pedro: FAIL 14 (11 de encoding, 3 de caminho) em `test-cobertura_municipal`, `test-siconfi_rreo` e `test-snapshots`; modelo e avaliação passavam inteiros.
+- Encoding: fixtures gravadas como bytes UTF-8 (`grava_gz_utf8()` em `tests/helper-utf8.R`); produção lê com `ler_json_utf8()` e grava com `gravar_gz_bytes()` (`R/download/snapshots.R`), sem passar pelo encoding nativo. Teste novo com texto acentuado pelo caminho de produção (`baixar_rreo`/`baixar_extrato` com `download.file` simulado, depois leitura).
+- Caminhos: `caminho_norm()` (`normalizePath(winslash = "/", mustWork = FALSE)`) onde se comparam caminhos, no código e nos testes.
+- `validar_rreo_pasta(quarentenar = TRUE)` substitui `remover`: nunca apaga; move inválidos e sobras `.tmp` para `data/raw/_quarentena/` e registra em `_quarentena/_registro.csv`. Teste cobre o movimento, o registro e que nada é apagado.
+- Verificado no sandbox Linux (locale C e UTF-8): 423 testes, 0 falhas. Não verificado em Windows; a confirmação é a rodada do Pedro.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

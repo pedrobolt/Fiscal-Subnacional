@@ -13,7 +13,7 @@ item <- function(valor = 1, coluna = "Até o Bimestre (c)") {
 }
 grava <- function(items, arq, mtime = NULL) {
   dir.create(dirname(arq), showWarnings = FALSE, recursive = TRUE)
-  con <- gzfile(arq, "wb"); writeLines(jsonlite::toJSON(list(items = items, hasMore = FALSE), auto_unbox = TRUE), con); close(con)
+  grava_gz_utf8(jsonlite::toJSON(list(items = items, hasMore = FALSE), auto_unbox = TRUE), arq)
   if (!is.null(mtime)) Sys.setFileTime(arq, mtime)
   arq
 }
@@ -23,11 +23,11 @@ test_that("snapshot tem nome com carimbo UTC e a vigente é a mais recente", {
   pasta <- tempfile()
   base <- caminho_rreo(pasta, "M", 1, 2025, 6, "RREO-Anexo 01")
   grava(list(item(1)), base, utc("2026-10-23 12:00:00"))
-  expect_equal(arquivo_vigente(base), base)
+  expect_equal(caminho_norm(arquivo_vigente(base)), caminho_norm(base))
   snap <- caminho_snapshot(base, utc("2026-11-05 09:30:00"))
   expect_match(basename(snap), "^1_b6_a01_s20261105T093000Z\\.json\\.gz$")
   grava(list(item(2)), snap)
-  expect_equal(arquivo_vigente(base), snap)
+  expect_equal(caminho_norm(arquivo_vigente(base)), caminho_norm(snap))
   expect_equal(nrow(versoes_rreo(base)), 2)
   expect_equal(baixado_em_vigente(base), utc("2026-11-05 09:30:00"))
 })
