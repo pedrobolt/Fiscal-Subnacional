@@ -8,7 +8,7 @@ test_that("registra linhas do candidato e acrescenta sem sobrescrever", {
   f <- tempfile(fileext = ".csv")
   registrar_experimento(resumo, "naive", "-", "2016-2025", "abc1234", f, data = as.Date("2026-10-23"))
   registrar_experimento(resumo, "acumulado", "janela=5", "2016-2025", "abc1234", f, data = as.Date("2026-10-23"))
-  d <- read.csv(fileEncoding = "UTF-8", f)
+  d <- ler_csv(f)
   expect_equal(names(d), COLUNAS_REGISTRO)
   expect_equal(nrow(d), 3)
   expect_equal(d$candidato, c("naive", "naive", "acumulado"))
@@ -28,16 +28,16 @@ test_that("validar_registro aponta os problemas e não acusa um registro correto
   f <- tempfile(fileext = ".csv")
   registrar_experimento(resumo, "naive", "-", "2016-2025", "abc1234", f, data = as.Date("2026-10-23"))
   expect_equal(nrow(validar_registro(f, checar_git = FALSE)), 0)
-  d <- read.csv(fileEncoding = "UTF-8", f, stringsAsFactors = FALSE)
+  d <- ler_csv(f)
   ruim <- rbind(d, d[1, ])                                # duplicada
   ruim$status[2] <- "valido"                              # naive não está na lista
   ruim$amostra[2] <- ""; ruim$RMSE[2] <- -1; ruim$corte[2] <- 12
-  write.csv(fileEncoding = "UTF-8", ruim, f, row.names = FALSE)
+  gravar_csv(ruim, f)
   p <- validar_registro(f, checar_git = FALSE)$problema
   expect_true(all(c("amostra vazia", "corte fora de 1-11", "métrica inválida") %in% p))
   expect_true(any(grepl("fora da lista fechada", p))); expect_true(any(grepl("duplicada", p)))
-  d$status <- "ok"; write.csv(fileEncoding = "UTF-8", d, f, row.names = FALSE)
+  d$status <- "ok"; gravar_csv(d, f)
   expect_true(any(grepl("status fora", validar_registro(f, checar_git = FALSE)$problema)))
-  d$status <- "valido"; d$commit <- "0000000"; write.csv(fileEncoding = "UTF-8", d, f, row.names = FALSE)
+  d$status <- "valido"; d$commit <- "0000000"; gravar_csv(d, f)
   expect_true(any(grepl("commit inexistente", validar_registro(f, checar_git = TRUE)$problema)))
 })

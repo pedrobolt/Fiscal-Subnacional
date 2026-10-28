@@ -1,5 +1,6 @@
 # Candidatos do restante do ano em % do PIB (E3.4/E4). Uso: Rscript scripts/candidatos_restante.R [--registrar]
 # Saídas: outputs/restante_*.csv. Não faz chamadas à API do Siconfi (usa só o BCB baixado e o RREO local dos estados).
+source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
@@ -25,8 +26,8 @@ for (a in names(amostras)) {
   resumos[[a]] <- cbind(amostra = a, resumir_restante(bt))
 }
 res <- do.call(rbind, resumos)
-utils::write.csv(fileEncoding = "UTF-8", res, "outputs/restante_resumo.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, bts), "outputs/restante_backtest.csv", row.names = FALSE)
+gravar_csv(res, "outputs/restante_resumo.csv")
+gravar_csv(do.call(rbind, bts), "outputs/restante_backtest.csv")
 
 # Diagnóstico de tendência (o coeficiente do acumulado capta o declive 2004-2025?), corte ago (8), amostra completa e sem 2020-22
 diag <- list()
@@ -38,7 +39,7 @@ for (ex in list(integer(0), ANOS_PANDEMIA)) {
       termo = rownames(s), coef = s[, 1], p = s[, 4], n = nrow(pm))
   }
 }
-diag <- do.call(rbind, diag); utils::write.csv(fileEncoding = "UTF-8", diag, "outputs/restante_diag_tendencia.csv", row.names = FALSE)
+diag <- do.call(rbind, diag); gravar_csv(diag, "outputs/restante_diag_tendencia.csv")
 cat("cor(a_t, ano) no corte 8:", round(stats::cor(painel$a[painel$corte == 8], painel$ano[painel$corte == 8], use = "complete.obs"), 2), "\n")
 
 # Candidato 4 (estados): indicativo
@@ -48,7 +49,7 @@ pe <- painel_restante(est, pib)
 com_amostra <- function(nome, d) if (is.null(d) || nrow(d) == 0) NULL else cbind(amostra = nome, d)
 c4 <- rbind(com_amostra("2019-2025", teste_pendencias(pe, pend)),
             com_amostra("2019-2025 sem 2020-22 (n<=4: sem validade)", teste_pendencias(pe, pend, ANOS_PANDEMIA)))
-utils::write.csv(fileEncoding = "UTF-8", c4, "outputs/restante_candidato4_estados.csv", row.names = FALSE)
+gravar_csv(c4, "outputs/restante_candidato4_estados.csv")
 
 if (registrar) {
   for (a in names(amostras)) for (n in setdiff(unique(res$modelo), character(0))) {
@@ -75,5 +76,5 @@ prev26 <- do.call(rbind, lapply(c("srw_pib", "m2", "m3", "m3_tend", "m3_jan10"),
     data.frame(modelo = n, treino = if (length(ex)) "sem 2020-22" else "com 2020-22", corte = mcorte,
                acumulado_bi = al$A, total_previsto_bi = al$A + rh * pib26) })) }))
 prev26 <- rbind(prev26, data.frame(modelo = "srw_brl", treino = "-", corte = mcorte, acumulado_bi = al$A, total_previsto_bi = prever_srw(reg, 2026, mcorte)))
-utils::write.csv(fileEncoding = "UTF-8", prev26, "outputs/restante_previsao_2026.csv", row.names = FALSE)
+gravar_csv(prev26, "outputs/restante_previsao_2026.csv")
 cat("2026: dados até mês", mcorte, "| PIB 2026 aprox.", round(pib26), "\n"); print(prev26, row.names = FALSE)

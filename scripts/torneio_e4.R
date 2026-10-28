@@ -2,6 +2,7 @@
 # Ordem obrigatória (Pedro, 28/10/2026): commit do script e da lista final -> execução -> registro, tudo no mesmo hash.
 # Uso: Rscript scripts/torneio_e4.R [--registrar]. Com --registrar, aborta se houver código/documentos sem commit.
 # Sem chamadas ao Siconfi. Saídas em outputs/torneio_*.csv.
+source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- system("git rev-parse --short HEAD", intern = TRUE)
@@ -27,11 +28,11 @@ stopifnot(length(LISTA) == 8, setequal(DESAFIANTES, c("srw_pib", "acumulado_j5",
 amostras <- list("2007-2025" = integer(0), "2007-2025 sem 2020-22" = ANOS_PANDEMIA)
 bts <- lapply(amostras, function(ex) backtest_p1(c(LISTA, CANDIDATOS_DIAGNOSTICO), fontes, anos, excluir = ex))
 dir.create("outputs", showWarnings = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, Map(function(a, b) cbind(amostra = a, b), names(bts), bts)), "outputs/torneio_backtest.csv", row.names = FALSE)
+gravar_csv(do.call(rbind, Map(function(a, b) cbind(amostra = a, b), names(bts), bts)), "outputs/torneio_backtest.csv")
 
 # --- Conferência de reprodutibilidade contra o PR #25 (regra 7): aborta se algo divergir ---
 PARAM_25 <- "p1;alvo=regionais;cortes=1-11;min_treino=8;fontes=bcb+bcb_est+bcb_mun"
-reg <- utils::read.csv(fileEncoding = "UTF-8", "experiments/registro.csv", stringsAsFactors = FALSE)
+reg <- ler_csv("experiments/registro.csv")
 antigo <- reg[reg$parametros == PARAM_25 & reg$status %in% c("valido", "diagnostico"), ]
 names(antigo)[names(antigo) == "candidato"] <- "modelo"
 M25 <- c("srw_brl", "srw_pib", "acumulado_j5", "m2", "m3", "e41", "diag_combinacao_sem_fpe", "diag_e41_est_m3", "diag_e41_mun_m3")
@@ -41,15 +42,15 @@ novo <- do.call(rbind, lapply(names(amostras), function(a) {
 }))
 novo$modelo[novo$modelo == "diag_combinacao_sem_fpe"] <- "combinacao"      # no #25 a combinação ainda não incluía fpe_fpm
 div <- conferir_reproducao(novo, antigo[c("modelo", "amostra", "corte", "n", "ME", "MAE", "RMSE")])
-utils::write.csv(fileEncoding = "UTF-8", div, "outputs/torneio_conferencia_pr25.csv", row.names = FALSE)
+gravar_csv(div, "outputs/torneio_conferencia_pr25.csv")
 cat("Conferência contra o PR #25:", nrow(novo), "linhas regeneradas,", nrow(antigo), "registradas,", nrow(div), "divergências\n")
 if (nrow(div) > 0 || nrow(novo) != nrow(antigo)) { print(utils::head(div, 20)); stop("As previsões regeneradas não reproduzem o PR #25; torneio abortado.", call. = FALSE) }
 
 # --- Torneio ---
 tab <- torneio_p1(bts[["2007-2025 sem 2020-22"]], bts[["2007-2025"]], DESAFIANTES, base = BASE)
 esc <- escolher_por_faixa(tab, BASE)
-utils::write.csv(fileEncoding = "UTF-8", tab, "outputs/torneio_decisao.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", esc, "outputs/torneio_escolha.csv", row.names = FALSE)
+gravar_csv(tab, "outputs/torneio_decisao.csv")
+gravar_csv(esc, "outputs/torneio_escolha.csv")
 
 # --- Resumo por corte (pareado com a base) e registro ---
 resumo_corte <- function(bt, cand) {

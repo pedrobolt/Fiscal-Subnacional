@@ -133,7 +133,7 @@ escreve_log <- function(pasta, momentos, base_args = list(esfera = "M", id = 1, 
                   periodo = base_args$periodo, anexo = base_args$anexo, tipo = base_args$tipo, tentativa = 1,
                   ok = TRUE, linhas = 10, segundos = 1, msg = "")
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
-  utils::write.csv(fileEncoding = "UTF-8", d, file.path(pasta, nome), row.names = FALSE)
+  gravar_csv(d, file.path(pasta, nome))
 }
 
 test_that("data da original vem do log, não do mtime (cópia/restauração muda o mtime)", {

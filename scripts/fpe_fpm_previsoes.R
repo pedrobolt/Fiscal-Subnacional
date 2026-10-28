@@ -1,5 +1,6 @@
 # E4.1b: previsões fora da amostra do candidato fpe_fpm (m3 + g) e diagnósticos. Uso: Rscript scripts/fpe_fpm_previsoes.R [--registrar]
 # Sem chamadas ao Siconfi. Não aplica a regra de aceitação (isso é o torneio do E4).
+source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
@@ -42,12 +43,12 @@ for (a in names(amostras)) {
   }
 }
 res <- do.call(rbind, res); res_m3 <- do.call(rbind, res_m3); res_lag <- do.call(rbind, res_lag); elig <- do.call(rbind, elig); diag <- do.call(rbind, diag)
-utils::write.csv(fileEncoding = "UTF-8", do.call(rbind, bts), "outputs/fpe_fpm_backtest.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", res, "outputs/fpe_fpm_resumo.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", res_m3, "outputs/fpe_fpm_vs_m3.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", elig, "outputs/fpe_fpm_elegibilidade.csv", row.names = FALSE)
-utils::write.csv(fileEncoding = "UTF-8", diag, "outputs/fpe_fpm_diag_g.csv", row.names = FALSE)
+gravar_csv(do.call(rbind, bts), "outputs/fpe_fpm_backtest.csv")
+gravar_csv(res, "outputs/fpe_fpm_resumo.csv")
+gravar_csv(res_m3, "outputs/fpe_fpm_vs_m3.csv")
+gravar_csv(res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv")
+gravar_csv(elig, "outputs/fpe_fpm_elegibilidade.csv")
+gravar_csv(diag, "outputs/fpe_fpm_diag_g.csv")
 if (registrar) {
   if (!nrow(res_lag) || !all(c("srw_brl", "m3", "fpe_fpm_lag1") %in% res_lag$modelo)) stop("Sensibilidade vazia: nada foi registrado.", call. = FALSE)
   for (a in names(amostras)) {

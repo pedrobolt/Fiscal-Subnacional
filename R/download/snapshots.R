@@ -41,7 +41,7 @@ momentos_originais <- function(pasta) {
   logs <- list.files(pasta, pattern = "^_log.*\\.csv$", full.names = TRUE)
   logs <- logs[!grepl("_log_extrato", basename(logs))]
   partes <- lapply(logs, function(f) {
-    d <- tryCatch(utils::read.csv(fileEncoding = "UTF-8", f, stringsAsFactors = FALSE, colClasses = "character"), error = function(e) NULL)
+    d <- tryCatch(ler_csv(f, colClasses = "character"), error = function(e) NULL)
     if (is.null(d) || !all(c("momento", "esfera", "id_ente", "ano", "periodo", "anexo", "tipo", "ok") %in% names(d))) return(NULL)
     d <- d[d$ok == "TRUE", , drop = FALSE]
     if (nrow(d) == 0) return(NULL)
