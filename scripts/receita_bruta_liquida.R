@@ -1,0 +1,15 @@
+# Receita mensal bruta e líquida por UF x imposto (A3 calibrado à DCA) e estabilidade dos fatores.
+# Uso: LC_ALL=C.UTF-8 Rscript scripts/receita_bruta_liquida.R  (precisa de data/raw/rreo/E com Anexo 3 e data/raw/dca)
+source("R/utils_io.R", encoding = "UTF-8")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/siconfi_dca.R", "R/transform/receita_mensal_a3.R",
+            "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R")) source(f, encoding = "UTF-8")
+a3 <- ler_a3_estados(); dca <- ler_dca_impostos()
+fat <- fatores_dca(dca, a3)
+gravar_csv(fat, "outputs/a3_fatores_dca.csv")
+est <- estabilidade_fatores(fat)
+gravar_csv(est, "outputs/a3_fatores_estabilidade.csv")
+cat("fatores:", nrow(fat), "| origem:\n"); print(table(fat$categoria, fat$origem))
+cat("\nUF x imposto com ano corrente menos confiável:", sum(est$corrente_menos_confiavel), "de", nrow(est), "\n")
+rb <- receita_bruta_liquida(receita_mensal_a3(a3), fat)
+gravar_csv(rb, "outputs/receita_mensal_bruta_liquida.csv")
+cat("meses UF x imposto:", nrow(rb), "| sem fator em tempo real:", sum(is.na(rb$fator_tr)), "\n")
