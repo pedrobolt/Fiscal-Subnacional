@@ -44,7 +44,7 @@ test_that("extrair_municipio cai para o Simplificado e devolve NA sem dados", {
   pasta <- tempfile()
   grava <- function(items, arq) {
     dir.create(dirname(arq), showWarnings = FALSE, recursive = TRUE)
-    con <- gzfile(arq, "wb"); writeLines(jsonlite::toJSON(list(items = items, hasMore = FALSE), auto_unbox = TRUE), con); close(con)
+    grava_gz_utf8(jsonlite::toJSON(list(items = items, hasMore = FALSE), auto_unbox = TRUE), arq)
   }
   it <- function(cod_conta, coluna, valor) list(exercicio = 2025, periodo = 6, periodicidade = "B", cod_ibge = 1,
     instituicao = "x", uf = "A", populacao = 1, esfera = "M", anexo = "a", rotulo = "r", coluna = coluna,

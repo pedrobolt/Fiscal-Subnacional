@@ -5,3 +5,11 @@ source_utf8 <- function(arquivo, envir = globalenv()) {
   for (e in parse(text = linhas, keep.source = FALSE, encoding = "UTF-8")) eval(e, envir)
   invisible(NULL)
 }
+
+# Grava um JSON (texto) como .gz em bytes UTF-8, sem passar pelo encoding nativo (fixtures iguais em qualquer locale).
+grava_gz_utf8 <- function(json, arquivo) {
+  dir.create(dirname(arquivo), showWarnings = FALSE, recursive = TRUE)
+  con <- gzfile(arquivo, "wb"); on.exit(close(con))
+  writeBin(charToRaw(enc2utf8(as.character(json))), con)
+  invisible(arquivo)
+}

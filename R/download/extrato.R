@@ -18,7 +18,7 @@ baixar_extrato <- function(id_ente, ano, pasta = "data/raw/rreo", tentativas = 4
     t0 <- Sys.time()
     res <- tryCatch({
       utils::download.file(url_extrato(id_ente, ano), tmp, quiet = TRUE, method = "libcurl")
-      x <- jsonlite::fromJSON(tmp)
+      x <- ler_json_utf8(tmp)
       if (!is.list(x) || is.null(x$items)) stop("resposta sem 'items'")
       if (isTRUE(x$hasMore)) stop("extrato paginado (hasMore): tratar paginação")
       list(ok = TRUE, linhas = NROW(x$items), msg = "")
@@ -30,7 +30,7 @@ baixar_extrato <- function(id_ente, ano, pasta = "data/raw/rreo", tentativas = 4
       segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 2), msg = substr(res$msg, 1, 120)), log)
     if (res$ok) {
       parcial <- paste0(destino, ".tmp")
-      con <- gzfile(parcial, "wb"); writeLines(readLines(tmp, warn = FALSE, encoding = "UTF-8"), con, useBytes = TRUE); close(con)
+      gravar_gz_bytes(tmp, parcial)
       if (!file.rename(parcial, destino)) stop("Falha ao renomear ", parcial, call. = FALSE)
       Sys.sleep(pausa)
       return(destino)
@@ -53,7 +53,7 @@ extrato_vigente <- function(pasta, id_ente, ano) {
 #' Lê um extrato e devolve só as entregas do RREO (padrão e simplificado), uma linha por período.
 #' tipo = "RREO" ou "RREO Simplificado"; status: HO (homologado) ou RE (retificado); data_status em UTC.
 ler_extrato <- function(arquivo) {
-  x <- jsonlite::fromJSON(gzfile(arquivo))$items
+  x <- ler_json_utf8(arquivo)$items
   vazio <- data.frame(cod_ibge = integer(0), exercicio = integer(0), periodo = integer(0), tipo = character(0),
                       status = character(0), data_status = as.POSIXct(character(0), tz = "UTC"))
   if (NROW(x) == 0) return(vazio)

@@ -46,7 +46,7 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
     t0 <- Sys.time()
     res <- tryCatch({
       utils::download.file(url_rreo(id_ente, ano, periodo, anexo, tipo), tmp, quiet = TRUE, method = "libcurl")
-      x <- jsonlite::fromJSON(tmp)
+      x <- ler_json_utf8(tmp)
       if (!is.list(x) || is.null(x$items)) stop("resposta sem 'items'")
       if (isTRUE(x$hasMore)) stop("resposta paginada (hasMore): tratar paginação")
       list(ok = TRUE, linhas = NROW(x$items), msg = "")
@@ -61,7 +61,7 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
       # Gravação atômica: escreve em .tmp e renomeia. Se o processo morrer no meio, sobra só o .tmp
       # (ignorado) e o arquivo final nunca fica truncado.
       parcial <- paste0(destino, ".tmp")
-      con <- gzfile(parcial, "wb"); writeLines(readLines(tmp, warn = FALSE, encoding = "UTF-8"), con, useBytes = TRUE); close(con)
+      gravar_gz_bytes(tmp, parcial)
       if (!file.rename(parcial, destino)) stop("Falha ao renomear ", parcial, call. = FALSE)
       Sys.sleep(pausa)
       return(destino)
@@ -74,12 +74,12 @@ baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "dat
 #' Número de linhas do arquivo (NA se não existir).
 linhas_rreo <- function(arquivo) {
   if (is.na(arquivo) || !file.exists(arquivo)) return(NA_integer_)
-  NROW(jsonlite::fromJSON(gzfile(arquivo))$items)
+  NROW(ler_json_utf8(arquivo)$items)
 }
 
 #' Lê um arquivo do RREO e devolve formato longo: uma linha por conta x coluna, sem somar nem reclassificar.
 ler_rreo <- function(arquivo) {
-  x <- jsonlite::fromJSON(gzfile(arquivo))$items
+  x <- ler_json_utf8(arquivo)$items
   if (NROW(x) == 0) return(data.frame())
   cols <- c("exercicio", "periodo", "periodicidade", "cod_ibge", "instituicao", "uf", "populacao", "esfera",
             "anexo", "rotulo", "coluna", "cod_conta", "conta", "valor")
@@ -104,7 +104,7 @@ baixar_entes <- function(pasta = "data/raw/rreo", hoje = Sys.Date()) {
 }
 
 ler_entes <- function(arquivo) {
-  x <- jsonlite::fromJSON(arquivo)
+  x <- ler_json_utf8(arquivo)
   if (isTRUE(x$hasMore)) stop("Lista de entes paginada: tratar paginação", call. = FALSE)
   x$items
 }
@@ -173,16 +173,33 @@ baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO
 }
 
 #' Valida todos os .json.gz de `pasta` (descompacta e interpreta o JSON). Retorna os caminhos inválidos.
-#' Com `remover = TRUE`, apaga os inválidos para a retomada rebaixá-los. Também apaga sobras .tmp.
-validar_rreo_pasta <- function(pasta = "data/raw/rreo", remover = FALSE) {
+#' Nunca apaga: com `quarentenar = TRUE`, move os inválidos e as sobras .tmp para `<pasta>/../_quarentena/` (mesmo caminho
+#' relativo; nome com carimbo se já existir lá) e registra cada movimento em `_quarentena/_registro.csv`
+#' (momento, origem, destino, motivo). A retomada da coleta rebaixa o que foi movido.
+validar_rreo_pasta <- function(pasta = "data/raw/rreo", quarentenar = FALSE) {
   tmps <- list.files(pasta, pattern = "\\.tmp$", recursive = TRUE, full.names = TRUE)
-  if (remover && length(tmps) > 0) unlink(tmps)
   arqs <- list.files(pasta, pattern = "\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
   ok <- vapply(arqs, function(a) {
-    r <- try(suppressWarnings(jsonlite::fromJSON(gzfile(a))), silent = TRUE)
+    r <- try(suppressWarnings(ler_json_utf8(a)), silent = TRUE)
     !inherits(r, "try-error") && is.list(r) && !is.null(r$items)
   }, logical(1))
   ruins <- arqs[!ok]
-  if (remover && length(ruins) > 0) unlink(ruins)
+  if (quarentenar && (length(ruins) + length(tmps)) > 0) {
+    quar <- file.path(dirname(caminho_norm(pasta)), "_quarentena")
+    base <- caminho_norm(pasta)
+    mover <- function(a, motivo) {
+      rel <- sub(paste0("^", base, "/?"), "", caminho_norm(a))
+      dest <- file.path(quar, rel)
+      if (file.exists(dest)) dest <- paste0(dest, ".", carimbo_utc())
+      dir.create(dirname(dest), showWarnings = FALSE, recursive = TRUE)
+      if (!file.rename(a, dest) && !(file.copy(a, dest) && file.remove(a))) stop("Falha ao mover para quarentena: ", a, call. = FALSE)
+      data.frame(momento = format(Sys.time(), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"), origem = caminho_norm(a),
+                 destino = caminho_norm(dest), motivo = motivo, stringsAsFactors = FALSE)
+    }
+    reg <- do.call(rbind, c(lapply(ruins, mover, motivo = "json.gz invalido"), lapply(tmps, mover, motivo = "sobra .tmp")))
+    arq_reg <- file.path(quar, "_registro.csv")
+    utils::write.table(reg, arq_reg, sep = ",", row.names = FALSE, col.names = !file.exists(arq_reg), append = file.exists(arq_reg),
+                       qmethod = "double", fileEncoding = "UTF-8")
+  }
   ruins
 }
