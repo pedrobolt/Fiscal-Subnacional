@@ -201,6 +201,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - `docs/plano.md`: E4 com o resultado do torneio (SRW em R$ nas três faixas) e o m3 como modelo-sombra (E6.3); removida a menção ao bottom-up como variante do E4.1; E4.2 com o resultado da 1ª tentativa e a mudança de protocolo pós-resultado (σ em % do PIB); E5.4 novo (mistura P2 → ponte → P1 como modelo-sombra, não candidato oficial); E3.6 com escopo de conciliação P1 × P2 e como pré-requisito do E5.4; E6.1 com a rodada mensal (Siconfi só t e t−1; revisão completa trimestral, `scripts/rodada_mensal.R`, a criar); sem ajuste de julgamento no número nesta fase (E6.2), a reavaliar no gate E7.1; rótulos de semana ao estado real (P1 concluído na S2; S3–S5 no P2, previsão).
 - `docs/HANDOVER.md` (3c): no Windows, `renv::restore(exclude = 'Matrix')` ou Rtools.
 
+### E4.3 — Nota do P1 (28/10/2026, branch `e4.3-nota-p1`, só documentação)
+- `docs/nota_p1.md`: modelo escolhido (SRW em R$), torneio, intervalos (E4.2b), limitações e modelo-sombra (m3, E6.3; mistura P2 → ponte → P1, E5.4).
+- Decisão do Pedro sobre a divulgação: cobertura observada nas três faixas em linguagem uniforme ("contém o resultado em X% dos anos-alvo"), com "compatível com 80%" na faixa 9–11 (74%); a sensibilidade sem 2020–22 (cerca de 70% em todas) fica como informação, sem mudar a regra. Registrado em `docs/contrato.md`.
+
 ### Plano: E2.5, E2.8 e E2.9 na S3 (28/10/2026, branch `docs-plano-s3`, só documentação)
 - `docs/plano.md`: E2.5, E2.8 e E2.9 ficam na S3, antes do E5 (o P2 depende delas); E5 passa para S4–S5 (previsão); E2.5 começa pelos estados.
 
