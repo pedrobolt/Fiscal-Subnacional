@@ -15,7 +15,7 @@ amostras <- list("2007-2025" = integer(0), "2007-2025 sem 2020-22" = ANOS_PANDEM
 dir.create("outputs", showWarnings = FALSE)
 bts <- list(); res <- list()
 for (a in names(amostras)) {
-  bt <- backtest_p1(c(CANDIDATOS_P1, CANDIDATOS_DIAGNOSTICO), fontes, anos, excluir = amostras[[a]])
+  bt <- backtest_p1(c(CANDIDATOS_P1_25, CANDIDATOS_DIAGNOSTICO[c("diag_e41_est_m3", "diag_e41_mun_m3")]), fontes, anos, excluir = amostras[[a]])
   bts[[a]] <- cbind(amostra = a, bt)
   res[[a]] <- cbind(amostra = a, resumir_restante(bt, base = "srw_brl"))
 }

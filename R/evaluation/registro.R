@@ -5,7 +5,7 @@
 # `corte` = dados até o mês m. Valores em R$ bi (superávit positivo).
 
 COLUNAS_REGISTRO <- c("data", "candidato", "parametros", "amostra", "corte", "n", "ME", "MAE", "RMSE", "commit", "status")
-STATUS_REGISTRO <- c("valido", "diagnostico", "obsoleto_pib4382")
+STATUS_REGISTRO <- c("valido", "diagnostico", "obsoleto_pib4382", "obsoleto_execucao_incompleta")
 
 # Lista fechada do P1 (contrato, 27/10/2026): K = 9 = base + 8 desafiantes. Nomes usados no registro; os desafiantes
 # ainda não implementados entram por prefixo (e41_, fpe_fpm_, ldo_, combinacao).
@@ -47,7 +47,7 @@ validar_registro <- function(arquivo = "experiments/registro.csv", checar_git = 
   if (!identical(names(d), COLUNAS_REGISTRO)) {
     return(data.frame(linha = 0L, problema = paste("colunas diferentes de", paste(COLUNAS_REGISTRO, collapse = ","))))
   }
-  out[[1]] <- prob(which(!(d$status %in% STATUS_REGISTRO)), "status fora de valido/diagnostico/obsoleto_pib4382")
+  out[[1]] <- prob(which(!(d$status %in% STATUS_REGISTRO)), paste("status fora de", paste(STATUS_REGISTRO, collapse = "/")))
   out[[2]] <- prob(which(d$status == "valido" & !na_lista_p1(d$candidato)), "status valido para candidato fora da lista fechada")
   out[[3]] <- prob(which(is.na(d$amostra) | d$amostra == ""), "amostra vazia")
   out[[4]] <- prob(which(!(d$corte %in% 1:11)), "corte fora de 1-11")
