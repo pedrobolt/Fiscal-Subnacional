@@ -41,13 +41,29 @@ por_ano <- aggregate(confere ~ categoria + exercicio, r, function(x) round(100 *
 print(reshape(por_ano, idvar = "exercicio", timevar = "categoria", direction = "wide"), row.names = FALSE)
 gravar_csv(r[!r$confere, ], "outputs/a3_a6_regra_legal_excecoes.csv")
 
+# (1b) Acréscimo após o primeiro resultado (a regra declarada só fecha para SP, AC, AM e DF em ICMS/IPVA): segundo regime, em que o
+# A6 também deduz a cota-parte dos municípios (ICMS: 1 - 0,25 - 0,15 = 0,60 do A3, razão 0,40; IPVA: 1 - 0,50 - 0,10 = 0,40, razão 0,60).
+# Cada UF x ano x categoria é classificada pelo regime mais próximo; "fora" se nenhum fecha em 0,5 p.p.
+ESP2 <- c(ICMS = 0.40, IPVA = 0.60)
+r$esperado_liq <- ifelse(r$categoria %in% names(ESP2), ESP2[r$categoria], NA_real_)
+r$regime <- ifelse(r$confere, "bruto_municipal", ifelse(!is.na(r$esperado_liq) & is.finite(r$razao) & abs(r$razao - r$esperado_liq) <= TOL, "liquido_municipal", "fora"))
+r$regime[r$categoria %in% c("FPE", "ITCD", "IRRF") & r$confere] <- "unico"
+gravar_csv(r, "outputs/a3_a6_regra_legal.csv")
+print(table(r$categoria, r$regime))
+reg <- reshape(aggregate(regime ~ uf + exercicio, r[r$categoria == "ICMS", ], function(x) substr(x[1], 1, 1)), idvar = "uf", timevar = "exercicio", direction = "wide")
+print(reg, row.names = FALSE)
+
 # (2) Fluxo bimestral do A6 x soma dos 2 meses do A3 (já líquida da regra: A6 ~ A3 x (1 - esperado))
-fl <- acumulado_para_fluxo(a6, serie = c("cod_ibge", "categoria"))
+fl <- acumulado_para_fluxo(a6, serie = c("cod_ibge", "categoria"), valor = "a6_acum")
 m2 <- mensal; m2$ex <- as.integer(format(m2$mes, "%Y")); m2$p <- (as.integer(format(m2$mes, "%m")) + 1L) %/% 2L
 m2 <- aggregate(valor ~ cod_ibge + categoria + ex + p, m2, sum); names(m2) <- c("cod_ibge", "categoria", "exercicio", "periodo", "a3_2m")
+names(fl)[names(fl) == "fluxo"] <- "fluxo_a6"
 f2 <- merge(fl, m2, by = c("cod_ibge", "categoria", "exercicio", "periodo"))
 f2 <- f2[!f2$acum_anterior_ausente & f2$categoria %in% names(ESPERADO), ]
-f2$razao <- (f2$a3_2m - f2$fluxo) / f2$a3_2m; f2$esperado <- ESPERADO[f2$categoria]
-f2$confere <- is.finite(f2$razao) & abs(f2$razao - f2$esperado) <= 0.01
+f2$razao <- (f2$a3_2m - f2$fluxo_a6) / f2$a3_2m
+f2 <- merge(f2, r[, c("cod_ibge", "exercicio", "categoria", "esperado", "esperado_liq", "regime")], by = c("cod_ibge", "exercicio", "categoria"))
+f2$esp_uso <- ifelse(f2$regime == "liquido_municipal", f2$esperado_liq, f2$esperado)
+f2 <- f2[f2$regime != "fora", ]
+f2$confere <- is.finite(f2$razao) & abs(f2$razao - f2$esp_uso) <= 0.01
 gravar_csv(f2, "outputs/a3_a6_fluxo_bimestral.csv")
 print(aggregate(confere ~ categoria, f2, function(x) c(n = length(x), pct = round(100 * mean(x), 1))))
