@@ -19,7 +19,7 @@ Aceite: a fatia roda com um comando, do download ao número.
 - E2.2 RREO Anexos 1 e 6: municípios agregados por UF, imputação documentada
 - E2.3 BCB/SGS, transferências da STN, IPCA, PIB nominal anual histórico pelo IBGE (para % do PIB no backtest; `premissas.yml` só para anos projetados)
 - E2.4 Snapshots imutáveis e base canônica com available_at
-- E2.5 Dicionário de contas por layout (2015–17, 2018–22, 2023+), começando pelos estados (S3, pré-requisito do E5)
+- E2.5 Dicionário de contas por layout (2015–17, 2018–22, 2023+), começando pelos estados (S3, pré-requisito do E5). Estados feitos em 28/10/2026 (`docs/dicionario_contas_estados.md`); municípios pendentes
 - E2.6 Testes automáticos (duplicidade, ausente vs zero, acumulado → fluxo, identidades, cobertura)
 - E2.7 Pesquisa: defasagem real de publicação do RREO → regra de available_at
 - E2.8 Pesquisa: nota de quebras (2018, RPPS 2023, RJ/PR/RS 2025; inclui o Anexo 6 do RS em 2018) — validar com o Pedro (S3, pré-requisito do E5)

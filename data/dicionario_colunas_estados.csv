@@ -1,0 +1,121 @@
+anexo,layout,padrao,estagio,ano_rel,papel
+RREO-Anexo 01,2015-17,% (b/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,% (c/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,Até o Bimestre (c),receita_realizada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,Até o Bimestre (f),memo_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,Até o Bimestre (h),memo_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS EMPENHADAS ATÉ O BIMESTRE (f),empenhada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS EMPENHADAS NO BIMESTRE,empenhada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS LIQUIDADAS ATÉ O BIMESTR,outro,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h),liquidada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS LIQUIDADAS NO BIMESTRE,liquidada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DESPESAS PAGAS ATÉ O BIMESTRE (j),paga,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DOTAÇÃO ATUALIZADA (e),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,DOTAÇÃO INICIAL (d),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k),rp_inscrito,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,No Bimestre,outro,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,No Bimestre (b),receita_realizada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,PREVISÃO ATUALIZADA (a),previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,PREVISÃO INICIAL,previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,SALDO (a-c),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,SALDO (g) = (e-f),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2015-17,SALDO (i) = (e-h),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,% (b/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,% (c/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,Até o Bimestre (c),receita_realizada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DESPESAS EMPENHADAS ATÉ O BIMESTRE (f),empenhada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DESPESAS EMPENHADAS NO BIMESTRE,empenhada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h),liquidada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DESPESAS LIQUIDADAS NO BIMESTRE,liquidada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DESPESAS PAGAS ATÉ O BIMESTRE (j),paga,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DOTAÇÃO ATUALIZADA (e),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,DOTAÇÃO INICIAL (d),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k),rp_inscrito,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,No Bimestre (b),receita_realizada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,PREVISÃO ATUALIZADA (a),previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,PREVISÃO INICIAL,previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,SALDO (a-c),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,SALDO (g) = (e-f),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2018-22,SALDO (i) = (e-h),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,% (b/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,% (c/a),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,Até o Bimestre (c),receita_realizada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DESPESAS EMPENHADAS ATÉ O BIMESTRE (f),empenhada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DESPESAS EMPENHADAS NO BIMESTRE,empenhada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DESPESAS LIQUIDADAS ATÉ O BIMESTRE (h),liquidada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DESPESAS LIQUIDADAS NO BIMESTRE,liquidada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DESPESAS PAGAS ATÉ O BIMESTRE (j),paga,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DOTAÇÃO ATUALIZADA (e),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,DOTAÇÃO INICIAL (d),dotacao,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,INSCRITAS EM RESTOS A PAGAR NÃO PROCESSADOS (k),rp_inscrito,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,No Bimestre (b),receita_realizada_no_bimestre,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,PREVISÃO ATUALIZADA (a),previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,PREVISÃO INICIAL,previsao,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,SALDO (a-c),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,SALDO (g) = (e-f),derivada,nao_se_aplica,referencia
+RREO-Anexo 01,2023+,SALDO (i) = (e-h),derivada,nao_se_aplica,referencia
+RREO-Anexo 06,2015-17,Despesas Empenhadas Até o Bimestre / AAAA,empenhada,corrente,despesa_sem_caixa
+RREO-Anexo 06,2015-17,DESPESAS EMPENHADAS ATÉ O BIMESTRE / AAAA,empenhada,corrente,despesa_sem_caixa
+RREO-Anexo 06,2015-17,Despesas Liquidadas Até o Bimestre / AAAA,liquidada,corrente,despesa_sem_caixa
+RREO-Anexo 06,2015-17,DESPESAS LIQUIDADAS ATÉ O BIMESTRE / AAAA,liquidada,corrente,despesa_sem_caixa
+RREO-Anexo 06,2015-17,Até o Bimestre / AAAA,receita_realizada,corrente,receita_p2
+RREO-Anexo 06,2015-17,Até o Bimestre / AAAA,receita_realizada,anterior,referencia
+RREO-Anexo 06,2015-17,Despesas Empenhadas Até o Bimestre / AAAA,empenhada,anterior,referencia
+RREO-Anexo 06,2015-17,DESPESAS EMPENHADAS ATÉ O BIMESTRE / AAAA,empenhada,anterior,referencia
+RREO-Anexo 06,2015-17,Despesas Liquidadas Até o Bimestre / AAAA,liquidada,anterior,referencia
+RREO-Anexo 06,2015-17,DESPESAS LIQUIDADAS ATÉ O BIMESTRE / AAAA,liquidada,anterior,referencia
+RREO-Anexo 06,2015-17,Dotação Atualizada,dotacao,nao_se_aplica,referencia
+RREO-Anexo 06,2015-17,Em AAAA,saldo_rp,corrente,referencia
+RREO-Anexo 06,2015-17,Em AAAA,saldo_rp,anterior,referencia
+RREO-Anexo 06,2015-17,Previsão Atualizada,previsao,nao_se_aplica,referencia
+RREO-Anexo 06,2015-17,Valor Corrente,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2018-22,DESPESAS  PAGAS (a),paga,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2018-22,DESPESAS PAGAS (a),paga,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2018-22,PAGOS (c),rpnp_pago,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2018-22,RESTOS A PAGAR PROCESSADOS PAGOS (b),rp_processado_pago,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2018-22,Até o Bimestre / AAAA,receita_realizada,corrente,receita_p2
+RREO-Anexo 06,2018-22,RECEITAS REALIZADAS (a),receita_realizada,nao_se_aplica,receita_p2
+RREO-Anexo 06,2018-22,Até o Bimestre (b),memo_bimestre,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,Até o Bimestre (VIc - VIa),memo_bimestre,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,Até o Bimestre / AAAA,receita_realizada,anterior,referencia
+RREO-Anexo 06,2018-22,Até o Bimestre AAAA (b),memo_bimestre,corrente,referencia
+RREO-Anexo 06,2018-22,DESPESAS EMPENHADAS,empenhada,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,Despesas Empenhadas Até o Bimestre / AAAA,empenhada,anterior,referencia
+RREO-Anexo 06,2018-22,Despesas Empenhadas Até o Bimestre / AAAA,empenhada,corrente,referencia
+RREO-Anexo 06,2018-22,Despesas Empenhadas Até o Bimestre/AAAA,empenhada,anterior,referencia
+RREO-Anexo 06,2018-22,Despesas Empenhadas Até o Bimestre/AAAA,empenhada,corrente,referencia
+RREO-Anexo 06,2018-22,DESPESAS LIQUIDADAS,liquidada,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,Despesas Liquidadas Até o Bimestre / AAAA,liquidada,corrente,referencia
+RREO-Anexo 06,2018-22,Despesas Liquidadas Até o Bimestre / AAAA,liquidada,anterior,referencia
+RREO-Anexo 06,2018-22,Despesas Liquidadas Até o Bimestre/AAAA,liquidada,anterior,referencia
+RREO-Anexo 06,2018-22,Despesas Liquidadas Até o Bimestre/AAAA,liquidada,corrente,referencia
+RREO-Anexo 06,2018-22,Dotação Atualizada,dotacao,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,DOTAÇÃO ATUALIZADA,dotacao,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,Em 31/12/AAAA (a),saldo_rp,anterior,referencia
+RREO-Anexo 06,2018-22,Em AAAA,saldo_rp,corrente,referencia
+RREO-Anexo 06,2018-22,Em AAAA,saldo_rp,anterior,referencia
+RREO-Anexo 06,2018-22,Inscritas Em RPNP Até o Bimestre/AAAA,rp_inscrito,anterior,referencia
+RREO-Anexo 06,2018-22,Inscritas Em RPNP Até o Bimestre/AAAA,rp_inscrito,corrente,referencia
+RREO-Anexo 06,2018-22,LIQUIDADOS,rpnp_liquidado,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,No Bimestre (VIc -VIb),outro,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,PREVISÃO ATUALIZADA,previsao,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,PREVISÃO ORÇAMENTÁRIA,previsao,nao_se_aplica,referencia
+RREO-Anexo 06,2018-22,VALOR,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2018-22,VALOR CORRENTE,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2018-22,VALOR INCORRIDO,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2023+,DESPESAS PAGAS (a),paga,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2023+,PAGOS (c),rpnp_pago,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2023+,RESTOS A PAGAR PROCESSADOS PAGOS (b),rp_processado_pago,nao_se_aplica,despesa_caixa_p2
+RREO-Anexo 06,2023+,RECEITAS REALIZADAS (a),receita_realizada,nao_se_aplica,receita_p2
+RREO-Anexo 06,2023+,Até o Bimestre AAAA (b),memo_bimestre,corrente,referencia
+RREO-Anexo 06,2023+,DESPESAS EMPENHADAS,empenhada,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,DESPESAS LIQUIDADAS,liquidada,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,DOTAÇÃO ATUALIZADA,dotacao,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,Em 31/12/AAAA (a),saldo_rp,anterior,referencia
+RREO-Anexo 06,2023+,Em 31/12/AAAA (a),saldo_rp,outro,referencia
+RREO-Anexo 06,2023+,LIQUIDADOS,rpnp_liquidado,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,PREVISÃO ATUALIZADA,previsao,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,PREVISÃO ORÇAMENTÁRIA,previsao,nao_se_aplica,referencia
+RREO-Anexo 06,2023+,VALOR,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2023+,VALOR CORRENTE,valor,nao_se_aplica,resultado_ou_meta
+RREO-Anexo 06,2023+,VALOR INCORRIDO,valor,nao_se_aplica,resultado_ou_meta

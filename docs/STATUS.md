@@ -220,6 +220,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - `validar_rreo_pasta(quarentenar = TRUE)` substitui `remover`: nunca apaga; move inválidos e sobras `.tmp` para `data/raw/_quarentena/` e registra em `_quarentena/_registro.csv`. Teste cobre o movimento, o registro e que nada é apagado.
 - Verificado no sandbox Linux (locale C e UTF-8): 423 testes, 0 falhas. Não verificado em Windows; a confirmação é a rodada do Pedro.
 
+### E2.5 e parte do E2.6 — Dicionário de contas dos estados e acumulado → fluxo (28/10/2026, branch `e2.5-dicionario-estados`)
+- `data/dicionario_contas_estados.csv` e `data/dicionario_colunas_estados.csv`, `R/transform/dicionario_contas.R`, `scripts/dicionario_e25.R`, `tests/test-dicionario.R`; detalhes e decisões abertas em `docs/dicionario_contas_estados.md`.
+- Caixa da despesa confirmado: paga (a) + RP processados pagos (b) + RP não processados pagos (c). Receita realizada − (a + b + c) reproduz o resultado publicado em todos os arquivos de 2018 em diante (805 de 805 em 2018–22, 594 de 594 em 2023+). Antes de 2018 não há despesa paga.
+- Fechamento do Anexo 6: receita e despesa fecham em todos os arquivos; resultado fecha em 481 de 483 em 2015–17 (2 inconsistências de publicação em 2015 b1).
+- Acumulado → fluxo: 97,56% de 70.045 linhas batem com "No Bimestre (b)"; o resto é inconsistência da fonte (E2.7).
+- Encoding: dicionários lidos com `data.table::fread` e gravados com `fwrite` (UTF-8 em qualquer locale).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
