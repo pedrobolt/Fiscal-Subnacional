@@ -197,6 +197,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **σ de produção (alvo 2026), em % do PIB, com e sem 2020–22:** corte 1: 0,247 e 0,206; corte 4: 0,222 e 0,158; corte 8: 0,131 e 0,096; corte 11: 0,077 e 0,074. Ilustração (não é previsão oficial): SRW de 2026 com dados até agosto = −5,3 bi; faixa publicada [−27,5; 16,9] bi (PIB aproximado em R$ 13,2 tri), que na faixa 5–8 deve ser descrita como "contém o resultado em 60% dos anos-alvo".
 - Saídas (fora do git): `outputs/e42b_*.csv`. O E4.2 (σ em R$) segue reprovado e não deve ser divulgado.
 
+### Atualização do plano (28/10/2026, branch `docs-plano-pos-torneio`, só documentação)
+- `docs/plano.md`: E4 com o resultado do torneio (SRW em R$ nas três faixas) e o m3 como modelo-sombra (E6.3); removida a menção ao bottom-up como variante do E4.1; E4.2 com o resultado da 1ª tentativa e a mudança de protocolo pós-resultado (σ em % do PIB); E5.4 novo (mistura P2 → ponte → P1 como modelo-sombra, não candidato oficial); E3.6 com escopo de conciliação P1 × P2 e como pré-requisito do E5.4; E6.1 com a rodada mensal (Siconfi só t e t−1; revisão completa trimestral, `scripts/rodada_mensal.R`, a criar); sem ajuste de julgamento no número nesta fase (E6.2), a reavaliar no gate E7.1; rótulos de semana ao estado real (P1 concluído na S2; S3–S5 no P2, previsão).
+- `docs/HANDOVER.md` (3c): no Windows, `renv::restore(exclude = 'Matrix')` ou Rtools.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

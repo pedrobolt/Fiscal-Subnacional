@@ -4,6 +4,7 @@ Documentação é contínua: toda tarefa atualiza docs/STATUS.md e, quando coube
 
 Documento completo: documento "Plano de implementação — Previsão Fiscal Subnacional".
 Códigos (E1.1 etc.) são usados nos prompts e em `docs/STATUS.md`.
+Rótulos de semana atualizados em 28/10/2026 ao estado real: o P1 (E3 e E4) foi concluído na S2; as próximas semanas são do P2 (E5, E3.6 e E5.4), depois a entrega (E6) e a avaliação (E7). As datas de S3 em diante são previsão.
 
 ## E1. Preparar o projeto e fazer um primeiro teste (S1)
 - E1.1 Repositório R (git, renv, targets, pastas)
@@ -13,7 +14,7 @@ Códigos (E1.1 etc.) são usados nos prompts e em `docs/STATUS.md`.
 - E1.5 Fatia mínima: primário regional do BCB → naïve e extrapolação do acumulado → backtest 2016–2025 por mês do cutoff → tabela de erro → número de 2026
 Aceite: a fatia roda com um comando, do download ao número.
 
-## E2. Montar e conferir a base de dados (S2–S3)
+## E2. Montar e conferir a base de dados (S1–S3; em andamento: carga histórica municipal, E2.5, E2.7, E2.8, E2.9)
 - E2.1 RREO Anexos 1 e 6: estados por UF
 - E2.2 RREO Anexos 1 e 6: municípios agregados por UF, imputação documentada
 - E2.3 BCB/SGS, transferências da STN, IPCA, PIB nominal anual histórico pelo IBGE (para % do PIB no backtest; `premissas.yml` só para anos projetados)
@@ -26,37 +27,38 @@ Aceite: a fatia roda com um comando, do download ao número.
 - E2.10 Verificar se a meta de primário da LDO vem no RREO Anexo 6 (feito em 27/10/2026: vem, só para estados, 2015–2025)
 Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 
-## E3. Definir como avaliar as projeções (S3–S4)
+## E3. Definir como avaliar as projeções (S2; protocolo congelado em 27/10/2026)
 - E3.1 Backtest de evento fixo (cutoffs mensais BCB e bimestrais RREO)
 - E3.2 Métricas e teste de Diebold-Mariano
 - E3.3 Regra de aceitação escrita e congelada (27/10/2026, em `docs/contrato.md`, seção "Protocolo do P1"): lista fechada K = 9, aceitação por faixa de corte (jan–abr, mai–ago, set–nov) com RMSE −10% vs SRW em R$, melhor em >50% dos anos, DM com Holm, sinal e viés não piores, duas amostras (com/sem 2020–22); intervalo paramétrico a 80% (pior caso). Sem tolerância de erro externa
 - E3.4 Base do P1: SRW em R$ (e SRW em % do PIB, acumulado j=5, m2, m3 como desafiantes). ETS, SARIMA, participação sazonal e variantes do m3 (tendência, janela móvel, eleição municipal) ficam só como diagnóstico; ARDL e modelos mais ricos foram considerados e excluídos do P1 por falta de poder (16–19 anos-alvo). A previsão atualizada do RREO (Anexo 1) fica para o P2 (E5)
 - E3.5 Viés das metas da LDO, rolante (encerrado em 27/10/2026: "LDO não viável no P1"; ver STATUS)
-- E3.6 Série do gap RREO × BCB e candidatos simples para prevê-lo
+- E3.6 Conciliação P1 × P2: série histórica do gap RREO × BCB e regra de narrativa do gap no informe (inclui o tratamento do RPPS). É pré-requisito do E5.4
 - E3.7 Teste automático de vazamento e registro de experimentos
 Aceite: teste de vazamento passa; protocolo aprovado.
 
-## E4. Projetar o resultado fiscal dos governos regionais — P1 (S5)
-- E4.1 (definição fixada em 27/10/2026, ver contrato): E4.1 = m3 por componente (estadual com eleição estadual; municipal com eleição municipal); combinação = média simples dos candidatos disponíveis no corte. Torneio (K = 8 após a saída da LDO; regras operacionais no contrato, 28/10/2026) dentro da lista fechada do contrato: estados + municípios separados; FPE/FPM observáveis; meta da LDO; combinação (média simples, pesos iguais); bottom-up + gap só como variante de (5) se o contrato for atualizado
-- E4.2 Intervalos de previsão
+## E4. Projetar o resultado fiscal dos governos regionais — P1 (S2; concluído em 28/10/2026, exceto o intervalo do E4.2)
+- E4.1 **Concluído (torneio de 28/10/2026, commit de execução `ba5ccf3`, K = 8, regras no contrato):** nenhum desafiante foi aceito; **vale o SRW em R$ nas três faixas** de corte. Candidatos avaliados: SRW em % do PIB, acumulado j=5, m2, m3, E4.1 (m3 por componente: estados com eleição estadual e municípios com eleição municipal), fpe_fpm (m3 + FPE/FPM observáveis) e combinação (média simples dos candidatos da lista). A meta da LDO saiu da lista ("LDO não viável no P1", E3.5). O m3 (melhor em 9–11, RMSE −41%, mas sem passar no DM com Holm nem no viés, n = 16) vira **modelo-sombra** (E6.3): calculado e arquivado em cada rodada ao lado do SRW, não publicado, para avaliação prospectiva. Mudança de protocolo só com evidência prospectiva, declarada como nova
+- E4.2 Intervalos de previsão. 1ª tentativa (σ em R$, 28/10/2026): reprovada, cobertura de 44–60% contra 80% nominal. **Mudança de protocolo pós-resultado, declarada como tal (decisão de 28/10/2026):** σ calculado sobre os erros do SRW em % do PIB (rolante, mesmas regras de suavização e de pior caso), multiplicado pelo PIB do ano (as premissas, em produção); avaliada uma única vez, com cobertura por ano (Wilson). Se ainda não cobrir 80%, a divulgação é a faixa com a cobertura empírica observada ("contém o resultado em X% dos anos-alvo"), nunca "80%". As outras alternativas não serão testadas
 - E4.3 Documentar modelo escolhido e justificativa
 Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 
-## E5. Projetar receitas e despesas — P2 (S6)
+## E5. Projetar receitas e despesas — P2 (S3–S5)
 - E5.0 (o critério de viés do protocolo do P2 deve ter tolerância, p. ex. |ME| ≤ |ME base| + 0,1·RMSE base; decisão de 28/10/2026) Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
 - E5.1 Categorias: receita corrente, ICMS, IPVA, ISS, FPE/FPM, demais (IPTU incluído), pessoal, custeio, investimento
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
 - E5.3 Resultado RREO (estados, municípios, total), variação real e contribuição de cada item
+- E5.4 (novo) Mistura P2 → ponte (gap RREO × BCB) → P1, calculada em cada rodada como **modelo-sombra** ao lado do SRW e arquivada para avaliação prospectiva. Não é candidato oficial do P1: o RREO em base caixa existe só desde 2018, abaixo do piso de 10 anos-alvo. Depende do E3.6
 Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benchmark.
 
 ## E6. Rodar o modelo e entregar a planilha final (S6)
-- E6.1 Comando único (baixar → validar → projetar → exportar)
-- E6.2 Excel final: P1, P2, gap, linha "Regionais", candidato de origem de cada número
+- E6.1 Comando único (baixar → validar → projetar → exportar). Rodada mensal (`scripts/rodada_mensal.R`): verifica no Siconfi só os exercícios t e t−1; a revisão completa do histórico é trimestral
+- E6.2 Excel final: P1, P2, gap, linha "Regionais", candidato de origem de cada número. Sem ajuste de julgamento no número nesta fase: divergências com o mercado vão no texto do informe
 - E6.3 Arquivo de previsões emitidas, com o m3 como modelo-sombra (calculado e arquivado em cada rodada ao lado do SRW, não publicado; avaliação prospectiva; decisão de 28/10/2026)
 - E6.4 Primeira rodada oficial — validar com o Pedro
 
 ## E7. Avaliar, melhorar e documentar (S7–S8)
-- E7.1 Gate: tabela de erro → no máximo um item da Fase 2
+- E7.1 Gate: tabela de erro → no máximo um item da Fase 2. Reavaliar aqui o ajuste de julgamento no número (hoje não há; divergências com o mercado ficam no texto do informe)
 - E7.2 Implementar e validar o item escolhido
 - E7.3 Nota metodológica
 - E7.4 Checklist e playbook da rodada mensal
