@@ -168,6 +168,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Limitações que continuam valendo:** PIB realizado no backtest; fpe_fpm avaliado sem 2023–24 (lacunas da STN); parcela "FPM 1%" corrigida no leitor.
 - Saídas (fora do git): `outputs/torneio_decisao.csv`, `torneio_escolha.csv`, `torneio_backtest.csv`, `torneio_conferencia_pr25.csv`.
 
+### Decisões do Pedro após o torneio (28/10/2026)
+1. **Resultado aceito: SRW em R$ nas três faixas.** O m3 em 9–11 falhou por falta de poder (DM com Holm, n = 16 anos-alvo, família de 7) e por um critério de viés sem tolerância (|ME| de 0,20 contra 0,07 bi, ambos irrelevantes frente ao RMSE da faixa). A regra não foi alterada.
+2. **m3 é modelo-sombra:** calculado e arquivado em cada rodada ao lado do SRW (E6.3), não publicado, para avaliação prospectiva. Qualquer mudança de protocolo futura só com evidência prospectiva, declarada como nova.
+3. **Protocolo do P2 (E5), ainda não congelado:** o critério de viés deve ter tolerância, por exemplo |ME| ≤ |ME da base| + 0,1 × RMSE da base. O protocolo do P1 permanece como foi congelado.
+4. E4.2 (intervalos do SRW em R$) segue em PR separado.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
