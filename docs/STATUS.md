@@ -233,6 +233,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - RREO dos estados antes de 2015: a API do Siconfi não tem (Anexo 6 de 2014 volta 0 itens; extrato de 2013–14 só tem balanço anual). Há uma planilha anual de execução orçamentária dos estados de 1995 a 2013 no Tesouro, não aberta. Detalhes em `docs/dicionario_contas_estados.md`, seção 9.
 - Todo CSV passa por `ler_csv()`/`gravar_csv()` (`R/utils_io.R`, fread/fwrite em UTF-8), com o mesmo formato de saída do write.csv (aspas, NA como "NA"); `experiments/registro.csv` continua sem alteração e válido (1.162 linhas, 0 problemas).
 
+### Pré-2015 e Anexo 3 (28/10/2026, branch `docs-fase2-pre2015`, só documentação)
+- RREO dos estados antes de 2015: decisão do Pedro de não seguir agora. Entra na Fase 2 (`docs/plano.md`) como "Execução Orçamentária de Estados 1995–2013", anual, não verificada; SISTN sem série pública; API do Siconfi só a partir de 2015.
+- Próximo: baixar o Anexo 3 (RCL) dos estados de 2015 a 2026 (no máximo 2 conexões) para obter a dedução do FUNDEB, montar a receita mensal por categoria e conferir os fluxos bimestrais do Anexo 6. Plano de 5 linhas enviado ao Pedro antes de codar.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
