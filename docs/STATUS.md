@@ -237,6 +237,11 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - RREO dos estados antes de 2015: decisão do Pedro de não seguir agora. Entra na Fase 2 (`docs/plano.md`) como "Execução Orçamentária de Estados 1995–2013", anual, não verificada; SISTN sem série pública; API do Siconfi só a partir de 2015.
 - Próximo: baixar o Anexo 3 (RCL) dos estados de 2015 a 2026 (no máximo 2 conexões) para obter a dedução do FUNDEB, montar a receita mensal por categoria e conferir os fluxos bimestrais do Anexo 6. Plano de 5 linhas enviado ao Pedro antes de codar.
 
+### Exclusão de anos: P1 (sensibilidade) e P2 (variante de robustez) (28/10/2026, branch `p1-sens-2020-21`)
+- P1: protocolo congelado mantido (com e sem 2020–22). Sensibilidade "sem 2020–21" declarada no contrato antes de executar (`scripts/torneio_sens_2020_21.R`); não altera a decisão do torneio.
+- Resultado da sensibilidade "sem 2020–21" (executada após o commit da declaração; `outputs/torneio_sens_2020_21_*.csv`): 21 de 21 decisões iguais às do torneio congelado (todos os desafiantes rejeitados; menor p-valor de Holm 0,972); SRW em R$ segue escolhido nas três faixas. Decisão inalterada.
+- P2: variante de robustez definida no plano antes de qualquer resultado: "sem 2020–21", com 2022 mantido e marcado pela LC 194/2022.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

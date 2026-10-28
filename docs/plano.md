@@ -45,6 +45,7 @@ Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 
 ## E5. Projetar receitas e despesas — P2 (S4–S5, depois de E2.5, E2.8 e E2.9 na S3)
 - E5.0 (o critério de viés do protocolo do P2 deve ter tolerância, p. ex. |ME| ≤ |ME base| + 0,1·RMSE base; decisão de 28/10/2026) Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
+- E5 (variante de robustez, definida em 28/10/2026 antes de qualquer resultado do P2): além da amostra completa, rodar "sem 2020–21", mantendo 2022 com marcação da LC 194/2022 (choque de ICMS no 2º semestre), para não confundir esse efeito com o eleitoral. A marcação de 2022 entra como variável indicadora no E5 e como nota nos resultados. A variante é só robustez e não muda a regra de decisão do protocolo, que será congelado depois.
 - E5.1 Categorias: receita corrente, ICMS, IPVA, ISS, FPE/FPM, demais (IPTU incluído), pessoal, custeio, investimento. No dicionário (`docs/dicionario_contas_estados.md`) há ainda categorias próprias: receita FUNDEB, dedução FUNDEB (Anexo 3, pendente), demais despesas de capital e demais despesas. Impostos e FPE pelo bruto
 - E5 (protocolo, decisão de 28/10/2026): a despesa em caixa só existe desde 2018 (no máximo 8 anos-alvo até 2025), abaixo do piso de 10 anos por série; por isso o P2 é avaliado em painel de 27 UFs, não série a série.
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
