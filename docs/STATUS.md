@@ -168,6 +168,20 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Limitações que continuam valendo:** PIB realizado no backtest; fpe_fpm avaliado sem 2023–24 (lacunas da STN); parcela "FPM 1%" corrigida no leitor.
 - Saídas (fora do git): `outputs/torneio_decisao.csv`, `torneio_escolha.csv`, `torneio_backtest.csv`, `torneio_conferencia_pr25.csv`.
 
+### Decisões do Pedro após o torneio (28/10/2026)
+1. **Resultado aceito: SRW em R$ nas três faixas.** O m3 em 9–11 falhou por falta de poder (DM com Holm, n = 16 anos-alvo, família de 7) e por um critério de viés sem tolerância (|ME| de 0,20 contra 0,07 bi, ambos irrelevantes frente ao RMSE da faixa). A regra não foi alterada.
+2. **m3 é modelo-sombra:** calculado e arquivado em cada rodada ao lado do SRW (E6.3), não publicado, para avaliação prospectiva. Qualquer mudança de protocolo futura só com evidência prospectiva, declarada como nova.
+3. **Protocolo do P2 (E5), ainda não congelado:** o critério de viés deve ter tolerância, por exemplo |ME| ≤ |ME da base| + 0,1 × RMSE da base. O protocolo do P1 permanece como foi congelado.
+4. E4.2 (intervalos do SRW em R$) segue em PR separado.
+
+### E4.2 — Intervalos de 80% do SRW em R$ (28/10/2026, branch `e4.2-intervalos`, execução no commit `ea4c5e6`)
+- Implementado conforme o contrato (σ rolante do SRW por corte, suavização 1-2-1, isotônica não crescente, ±1,2816σ; definições operacionais fixadas antes da execução) em `R/evaluation/intervalos.R`, `scripts/intervalos_e42.R`, 25 testes novos (405 no total).
+- **Resultado: o intervalo paramétrico NÃO é aceitável pela regra do contrato.** A cobertura observada fica muito abaixo de 80% e o Wilson 90% não contém 80% em nenhuma faixa nem em nenhuma das duas leituras (por ano × corte e por ano). Alvos 2008–2025, intervalo publicado (σ com 2020–22): 50% (cortes 1–4), 50% (5–8), 46% (9–11); sem os alvos 2020–22: 60%, 58%, 47%; σ sem 2020–22 (alvos fora de 2020–22): 55%, 53%, 44%. Wilson por ano da faixa 1–4: [32%; 68%].
+- **Diagnóstico (sem alterar o método):** os erros padronizados (erro/σ) têm desvio-padrão de 2,5, quando o calibrado seria 1, e a média de 0,4, então o problema é a escala, não o viés. A cobertura é de tudo ou nada por ano (0% em 2011, 2012, 2014 e 2022; 100% em 2008, 2016 e 2018): os cortes de um mesmo ano compartilham o erro, e há anos em que o erro passa muito do σ histórico (variância não estacionária em R$ nominais, caudas pesadas).
+- **σ de produção (alvo 2026, R$ bi), com e sem 2020–22:** corte 1: 18,4 e 12,7; corte 4: 17,3 e 8,6; corte 8: 11,0 e 6,4; corte 11: 6,0 e 5,4. Ilustração (não é previsão oficial): SRW de 2026 com dados até agosto = −5,3 bi, IC80 publicado [−19,4; 8,7].
+- **Recomendação:** não divulgar esse intervalo como "80%". Opções para Pedro decidir, qualquer uma declarada como nova e avaliada fora da amostra: (a) σ em % do PIB, multiplicado pelo PIB do ano; (b) quantis empíricos dos erros padronizados em janela expansiva; (c) multiplicador de calibração estimado de forma rolante sobre o erro padronizado. Não testei nenhuma delas: seria ajuste depois de ver o resultado.
+- Saídas (fora do git): `outputs/e42_intervalos_backtest.csv`, `e42_cobertura.csv`, `e42_sigma_2026.csv`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

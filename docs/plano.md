@@ -43,7 +43,7 @@ Aceite: teste de vazamento passa; protocolo aprovado.
 Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 
 ## E5. Projetar receitas e despesas — P2 (S6)
-- E5.0 Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
+- E5.0 (o critério de viés do protocolo do P2 deve ter tolerância, p. ex. |ME| ≤ |ME base| + 0,1·RMSE base; decisão de 28/10/2026) Comparação ampla de métodos por UF × categoria, com teste para muitos modelos (SPA de Hansen ou Model Confidence Set) em vez do DM (decisão de 27/10/2026)
 - E5.1 Categorias: receita corrente, ICMS, IPVA, ISS, FPE/FPM, demais (IPTU incluído), pessoal, custeio, investimento
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
 - E5.3 Resultado RREO (estados, municípios, total), variação real e contribuição de cada item
@@ -52,7 +52,7 @@ Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benc
 ## E6. Rodar o modelo e entregar a planilha final (S6)
 - E6.1 Comando único (baixar → validar → projetar → exportar)
 - E6.2 Excel final: P1, P2, gap, linha "Regionais", candidato de origem de cada número
-- E6.3 Arquivo de previsões emitidas
+- E6.3 Arquivo de previsões emitidas, com o m3 como modelo-sombra (calculado e arquivado em cada rodada ao lado do SRW, não publicado; avaliação prospectiva; decisão de 28/10/2026)
 - E6.4 Primeira rodada oficial — validar com o Pedro
 
 ## E7. Avaliar, melhorar e documentar (S7–S8)
