@@ -205,6 +205,9 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - `docs/nota_p1.md`: modelo escolhido (SRW em R$), torneio, intervalos (E4.2b), limitações e modelo-sombra (m3, E6.3; mistura P2 → ponte → P1, E5.4).
 - Decisão do Pedro sobre a divulgação: cobertura observada nas três faixas em linguagem uniforme ("contém o resultado em X% dos anos-alvo"), com "compatível com 80%" na faixa 9–11 (74%); a sensibilidade sem 2020–22 (cerca de 70% em todas) fica como informação, sem mudar a regra. Registrado em `docs/contrato.md`.
 
+### Plano: E2.5, E2.8 e E2.9 na S3 (28/10/2026, branch `docs-plano-s3`, só documentação)
+- `docs/plano.md`: E2.5, E2.8 e E2.9 ficam na S3, antes do E5 (o P2 depende delas); E5 passa para S4–S5 (previsão); E2.5 começa pelos estados.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
