@@ -5,7 +5,7 @@
 # `corte` = dados até o mês m. Valores em R$ bi (superávit positivo).
 
 COLUNAS_REGISTRO <- c("data", "candidato", "parametros", "amostra", "corte", "n", "ME", "MAE", "RMSE", "commit", "status")
-STATUS_REGISTRO <- c("valido", "diagnostico", "obsoleto_pib4382", "obsoleto_execucao_incompleta")
+STATUS_REGISTRO <- c("valido", "diagnostico", "obsoleto_pib4382", "obsoleto_execucao_incompleta", "obsoleto_leitor_stn")
 
 # Lista fechada do P1 (contrato, 27/10/2026): K = 9 = base + 8 desafiantes. Nomes usados no registro; os desafiantes
 # ainda não implementados entram por prefixo (e41_, fpe_fpm_, ldo_, combinacao).

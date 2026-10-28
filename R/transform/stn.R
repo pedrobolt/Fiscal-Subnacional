@@ -10,15 +10,18 @@ ler_stn_arquivo <- function(arq, esfera = c("estados", "municipios")) {
   x <- data.table::fread(arq, sep = ";", encoding = "Latin-1", colClasses = "character", header = TRUE, fill = TRUE)
   p <- if (esfera == "estados") 0L else 1L          # municípios têm a coluna extra "Município" na frente
   col <- function(i) x[[i + p]]
-  item <- if (esfera == "estados") "FPE" else "FPM"
+  # Municípios: a partir de jul/2025 as parcelas extras de 1% do FPM (jul, set, dez; EC 55/2007, EC 84/2014 e EC 112/2021)
+  # vêm em linhas próprias, com item e transferência "FPM 1%"; antes estavam dentro do "FPM". Somam-se ao FPM.
+  itens <- if (esfera == "estados") "FPE" else c("FPM", "FPM 1%")
   if (ncol(x) < 8 + p) stop("Layout inesperado em ", arq, call. = FALSE)
-  k <- which(col(7) == item & col(8) == item & grepl("^[0-9]+$", col(2)))
+  # Layout sem a coluna "Transferência" preenchida (ex.: mai/2018) não permite separar o FPE do que vai ao FUNDEB: sem linhas.
+  k <- which(col(7) %in% itens & col(8) == col(7) & grepl("^[0-9]+$", col(2)))
   if (!length(k)) return(data.frame())
   num <- function(v) suppressWarnings(as.numeric(v[k]))
   d1 <- num(col(4)); d2 <- num(col(5)); d3 <- num(col(6))
   data.frame(ente = if (esfera == "estados") col(1)[k] else paste(x[[1]][k], col(1)[k], sep = "/"),
              ano = as.integer(col(2)[k]), mes = as.integer(col(3)[k]),
-             valor = d1 + d2 + d3, arquivo = basename(arq), stringsAsFactors = FALSE)
+             item = col(7)[k], valor = d1 + d2 + d3, arquivo = basename(arq), stringsAsFactors = FALSE)
 }
 
 #' Todas as linhas de uma pasta (`data/raw/stn/estados` ou `.../municipios`), sem deduplicar.
@@ -31,7 +34,7 @@ ler_stn_pasta <- function(pasta, esfera = c("estados", "municipios")) {
 
 #' Remove linhas repetidas (ente x ano x mês) vindas de arquivos sobrepostos. Falha se os valores repetidos diferirem.
 deduplicar_stn <- function(x) {
-  chave <- paste(x$ente, x$ano, x$mes)
+  chave <- paste(x$ente, x$item, x$ano, x$mes)
   dup <- duplicated(chave) | duplicated(chave, fromLast = TRUE)
   if (any(dup)) {
     v <- tapply(x$valor[dup], chave[dup], function(z) length(unique(round(z, 2))))

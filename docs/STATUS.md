@@ -141,6 +141,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Verificação não concluída:** a consulta ao endpoint `/anexos-relatorios` do Siconfi (para ver se RGF, DCA ou MSC têm campo de meta) falhou duas vezes (timeout do cliente e HTTP 504). O fechamento se apoia só no Anexo 06 do RREO; RGF/DCA/MSC não foram verificados. Sem mais chamadas ao Siconfi desta frente, a menos que você peça.
 - A meta pode entrar depois como contexto do informe, fora do torneio.
 
+### E4 — Correção do leitor da STN antes do torneio (28/10/2026, branch `e4-torneio`)
+- Pedro pediu para checar se a parcela extra de set/2025 aparecia sob outro nome: **aparecia**. Desde jul/2025 as parcelas de 1% do FPM (jul, set, dez) vêm nos CSV de municípios com item/transferência "FPM 1%", que o filtro do leitor (só "FPM") não capturava. Em set/2025 são R$ 7,83 bi (a razão FPM/FPE vai de 1,047 para 1,79). O leitor agora soma "FPM 1%" ao FPM; teste novo.
+- Efeito no PR #27: o g de 2025 (cortes 9–10) estava subestimado; os números do `fpe_fpm` em STATUS (#27) valem só como preliminares e as 42 linhas registradas (fpe_fpm e fpe_fpm_lag1) foram marcadas `obsoleto_leitor_stn`, sem apagar. O torneio regenera o candidato com o leitor corrigido e o registra no novo hash.
+- Mai/2018: causa esclarecida (arquivo sem o nome da transferência, não separa FPE de FUNDEB); segue NA.
+- Primeira execução do torneio (commit 873d75e) foi interrompida por mim antes de qualquer resultado ou registro, para corrigir o leitor; a execução válida é a do commit seguinte.
+- Pareamento do torneio: por par (cada desafiante contra a base, nos anos em que o par tem todos os cortes da faixa), nunca global; lacunas da STN só afetam o fpe_fpm e a combinação.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
