@@ -237,13 +237,18 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - RREO dos estados antes de 2015: decisão do Pedro de não seguir agora. Entra na Fase 2 (`docs/plano.md`) como "Execução Orçamentária de Estados 1995–2013", anual, não verificada; SISTN sem série pública; API do Siconfi só a partir de 2015.
 - Próximo: baixar o Anexo 3 (RCL) dos estados de 2015 a 2026 (no máximo 2 conexões) para obter a dedução do FUNDEB, montar a receita mensal por categoria e conferir os fluxos bimestrais do Anexo 6. Plano de 5 linhas enviado ao Pedro antes de codar.
 
+### Conceito único do Anexo 6 e docs do E5.1 (28/10/2026, branch `anexo3-conceito-unico`, PR (b))
+- `R/transform/conceito_unico.R`, `scripts/conceito_unico.R`, `tests/test-conceito_unico.R`: o Anexo 6 passa ao conceito único (líquido de FUNDEB e cota-parte; despesa sem os repasses); detalhes e números em `docs/dicionario_contas_estados.md`, seção 10.
+- Validação do ajuste: custeio reconstruído positivo (6 violações), sem quebra na troca de conceito (9 de 11 trocas passam e melhoram em relação ao Anexo 6; falham RR 2019 e PA 2022 no limite). 186 bimestres UF não reconstruíveis, nenhum de 2022 em diante.
+- Docs: E5.1 corrigido no plano (base do P2 = Anexo 6 em conceito único; bruto do Anexo 3 como complementar) e regra de consolidação estados + municípios registrada.
+
 ### Anexo 3 (RCL) e DCA dos estados: receita mensal bruta e líquida (28/10/2026, branch `anexo3-rcl`, PR da linha 1–2 do plano)
 - Coletados o RREO Anexo 3 (27 UFs, 2015–2026, 1.890 arquivos) e a DCA Anexo I-C (27 UFs, 2015–2025, 297 arquivos). `scripts/baixar_anexo3.R`, `scripts/baixar_dca.R`.
 - Validação (`scripts/dca_validacao_a3.R`, `outputs/dca_a3_a6.csv`): o Anexo 3 é bruto na maioria das UFs, mas não em todas (ICMS 74,4% dos UF-anos dentro de 0,5% do bruto da DCA; IPVA 91,6%; ITCD 80,8%; FPE 99,0%). O Anexo 6 acompanha o conceito declarado na DCA (líquido de cota-parte onde há dedução de transferências; bruto de cota-parte onde não há). O teste de 15%/10% do plano só vale para parte das UFs; o regime deve vir da DCA, não ser inferido.
 - Método (aprovado): perfil mensal do Anexo 3 calibrado ao bruto anual da DCA (fator = bruto DCA ÷ A3 de 12 meses), origem `a3_direto` ou `a3_calibrado_dca`; tempo real usa só fatores já disponíveis (premissa: DCA em 31/05 do ano seguinte; bimestre do A3 em fim do bimestre + 30 dias). `R/transform/receita_bruta_liquida.R`, `scripts/receita_bruta_liquida.R`.
 - Alertas automáticos (não bloqueiam): quebra do fator (variação anual > 2% ou troca de regime), fator defasado, sem fator. Limite definido em 28/10/2026.
 - DF: não tem municípios; até 2021 o Anexo 3 já vem líquido do FUNDEB (igual ao Anexo 6) e a partir de 2022 vem bruto; regime próprio `sem_cota_parte` e quebra de 2022 esperada.
-- Pendente: comparação única com o CONFAZ (2–3 UFs) para testar a proporcionalidade intra-anual; PR (b) com reconstrução em conceito único e testes; correção do E5.1 e regra de consolidação no PR de docs.
+- Pendente: comparação única com o CONFAZ (RJ, se sobrar tempo antes do E5) para testar a proporcionalidade intra-anual.
 
 ### Exclusão de anos: P1 (sensibilidade) e P2 (variante de robustez) (28/10/2026, branch `p1-sens-2020-21`)
 - P1: protocolo congelado mantido (com e sem 2020–22). Sensibilidade "sem 2020–21" declarada no contrato antes de executar (`scripts/torneio_sens_2020_21.R`); não altera a decisão do torneio.
