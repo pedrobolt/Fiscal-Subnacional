@@ -1,6 +1,6 @@
 library(testthat)
-source("../R/evaluation/torneio.R")
-source("../R/evaluation/intervalos.R")
+source_utf8("../R/evaluation/torneio.R")
+source_utf8("../R/evaluation/intervalos.R")
 
 test_that("suavização 1-2-1 com extremos refletidos: constante não muda; pico é espalhado", {
   expect_equal(suavizar_121(rep(5, 6)), rep(5, 6))
@@ -82,8 +82,9 @@ test_that("σ em % do PIB só usa erros de anos anteriores ao alvo", {
   expect_equal(a$sigma_com, b$sigma_com)
 })
 
-test_that("texto de divulgação: 80% só se o Wilson por ano contém 80%; senão cobertura empírica", {
+test_that("texto de divulgação: sempre a cobertura observada; 'compatível com 80%' só se o Wilson por ano contém 80%", {
   cob <- data.frame(faixa = c("1-4", "5-8"), contem_80_anos = c(TRUE, FALSE), cobertura_anos = c(0.8, 0.55), anos = 18)
   t <- texto_divulgacao(cob)
-  expect_equal(t$texto[1], "Intervalo de 80%"); expect_equal(t$texto[2], "Contém o resultado em 55% dos anos-alvo (n = 18)")
+  expect_equal(t$texto[1], "Contém o resultado em 80% dos anos-alvo (n = 18), compatível com 80%")
+  expect_equal(t$texto[2], "Contém o resultado em 55% dos anos-alvo (n = 18)")
 })

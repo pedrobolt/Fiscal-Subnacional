@@ -10,7 +10,7 @@ if (length(system2("git", c("status", "--porcelain", "R", "scripts"), stdout = T
 man <- manifesto_arquivos(pasta)
 res <- resumo_manifesto(man, pasta, commit = commit, invalidos = length(invalidos))
 nome <- sprintf("rreo_bruto_%s", dia)
-utils::write.csv(man, file.path(saida, paste0(nome, "_manifesto.csv")), row.names = FALSE)
+utils::write.csv(fileEncoding = "UTF-8", man, file.path(saida, paste0(nome, "_manifesto.csv")), row.names = FALSE)
 writeLines(jsonlite::toJSON(res, auto_unbox = TRUE, pretty = TRUE, na = "null"), file.path(saida, paste0(nome, "_manifesto.json")))
 old <- setwd("data/raw"); on.exit(setwd(old))
 utils::tar(file.path(old, saida, paste0(nome, ".tar.gz")), files = "rreo", compression = "gzip", tar = "internal")

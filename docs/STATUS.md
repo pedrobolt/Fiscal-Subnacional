@@ -208,6 +208,11 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 ### Plano: E2.5, E2.8 e E2.9 na S3 (28/10/2026, branch `docs-plano-s3`, só documentação)
 - `docs/plano.md`: E2.5, E2.8 e E2.9 ficam na S3, antes do E5 (o P2 depende delas); E5 passa para S4–S5 (previsão); E2.5 começa pelos estados.
 
+### Encoding independente de locale e texto de divulgação (28/10/2026, branch `fix-encoding-divulgacao`)
+- Motivo: as máquinas Windows do Pedro rodam R fora de UTF-8 (code page ≠ 65001); `test-intervalos` e `test-registro` falhavam sem `LC_ALL`.
+- Testes carregam o código com `source_utf8()` (`tests/helper-utf8.R`; lê como UTF-8 e avalia sem tradução, vale também em locale C); scripts e `_targets.R` usam `source(..., encoding = "UTF-8")`; leitura e escrita de CSV com `fileEncoding = "UTF-8"`. A suíte passa sem `LC_ALL`.
+- `texto_divulgacao()` segue a regra de 28/10: sempre "contém o resultado em X% dos anos-alvo", com ", compatível com 80%" quando o Wilson por ano contém 80%; coluna `publicavel_como_80` renomeada para `compativel_com_80`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

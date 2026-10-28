@@ -1,6 +1,6 @@
 library(testthat)
-source("../R/models/fatia_minima.R")
-source("../R/evaluation/backtest_fatia.R")
+source_utf8("../R/models/fatia_minima.R")
+source_utf8("../R/evaluation/backtest_fatia.R")
 
 # Série sintética: padrão sazonal fixo 1..12 todo ano (total anual = 78), 2010-2026
 serie_sazonal <- function(fator = function(ano) 1) {

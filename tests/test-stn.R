@@ -1,7 +1,7 @@
 library(testthat)
-source("../R/models/fatia_minima.R")
-source("../R/evaluation/vazamento.R")
-source("../R/transform/stn.R")
+source_utf8("../R/models/fatia_minima.R")
+source_utf8("../R/evaluation/vazamento.R")
+source_utf8("../R/transform/stn.R")
 
 escrever <- function(dir, nome, linhas, municipio = FALSE) {
   cab <- if (municipio) "Município;UF;ANO;Mês;1º Decêndio;2º Decêndio;3º Decêndio;Item transferência;Transferência;"

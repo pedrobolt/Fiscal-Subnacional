@@ -1,6 +1,6 @@
 library(testthat)
-source("../R/download/snapshots.R")
-source("../R/download/siconfi_rreo.R")
+source_utf8("../R/download/snapshots.R")
+source_utf8("../R/download/siconfi_rreo.R")
 
 item <- function(coluna = "Até o Bimestre (c)", valor = 100) {
   list(exercicio = 2024, demonstrativo = "RREO", periodo = 6, periodicidade = "B", instituicao = "Estado X",

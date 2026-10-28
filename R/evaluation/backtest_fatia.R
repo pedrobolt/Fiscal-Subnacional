@@ -55,8 +55,8 @@ gravar_saidas_fatia <- function(bt, resumo, previsao, pasta = "outputs") {
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
   arqs <- c(file.path(pasta, "fatia_erros.csv"), file.path(pasta, "fatia_resumo.csv"),
             file.path(pasta, "fatia_previsao_ano_corrente.csv"))
-  utils::write.csv(bt, arqs[1], row.names = FALSE)
-  utils::write.csv(resumo, arqs[2], row.names = FALSE)
-  utils::write.csv(previsao, arqs[3], row.names = FALSE)
+  utils::write.csv(fileEncoding = "UTF-8", bt, arqs[1], row.names = FALSE)
+  utils::write.csv(fileEncoding = "UTF-8", resumo, arqs[2], row.names = FALSE)
+  utils::write.csv(fileEncoding = "UTF-8", previsao, arqs[3], row.names = FALSE)
   arqs
 }

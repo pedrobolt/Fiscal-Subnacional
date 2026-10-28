@@ -1,10 +1,10 @@
 library(testthat)
-source("../R/download/snapshots.R")
-source("../R/download/siconfi_rreo.R")
-source("../R/download/extrato.R")
-source("../R/download/atualizacao_rreo.R")
-source("../R/quality/cobertura_rreo.R")
-source("../R/transform/rreo.R")
+source_utf8("../R/download/snapshots.R")
+source_utf8("../R/download/siconfi_rreo.R")
+source_utf8("../R/download/extrato.R")
+source_utf8("../R/download/atualizacao_rreo.R")
+source_utf8("../R/quality/cobertura_rreo.R")
+source_utf8("../R/transform/rreo.R")
 
 item <- function(valor = 1, coluna = "Até o Bimestre (c)") {
   list(exercicio = 2025, demonstrativo = "RREO", periodo = 6, periodicidade = "B", instituicao = "x",
@@ -133,7 +133,7 @@ escreve_log <- function(pasta, momentos, base_args = list(esfera = "M", id = 1, 
                   periodo = base_args$periodo, anexo = base_args$anexo, tipo = base_args$tipo, tentativa = 1,
                   ok = TRUE, linhas = 10, segundos = 1, msg = "")
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
-  utils::write.csv(d, file.path(pasta, nome), row.names = FALSE)
+  utils::write.csv(fileEncoding = "UTF-8", d, file.path(pasta, nome), row.names = FALSE)
 }
 
 test_that("data da original vem do log, não do mtime (cópia/restauração muda o mtime)", {

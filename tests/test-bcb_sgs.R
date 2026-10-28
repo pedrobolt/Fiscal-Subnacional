@@ -1,5 +1,5 @@
 library(testthat)
-source("../R/download/bcb_sgs.R")
+source_utf8("../R/download/bcb_sgs.R")
 
 test_that("ler_sgs lê o JSON do SGS e ordena por data", {
   f <- tempfile(fileext = ".json")

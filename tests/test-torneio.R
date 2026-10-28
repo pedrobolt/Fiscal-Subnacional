@@ -1,6 +1,6 @@
 library(testthat)
-source("../R/models/candidatos_restante.R")
-source("../R/evaluation/torneio.R")
+source_utf8("../R/models/candidatos_restante.R")
+source_utf8("../R/evaluation/torneio.R")
 
 # Backtest sintético: base com erros variados; candidato = fator x erro da base (mesmo sinal) em anos x cortes dados
 fazer_bt <- function(anos, cortes, fatores, semente = 3) {

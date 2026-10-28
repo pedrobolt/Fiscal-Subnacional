@@ -1,9 +1,9 @@
 library(testthat)
-source("../R/models/fatia_minima.R")
-source("../R/download/bcb_sgs.R")
-source("../R/download/ibge_pib.R")
-source("../R/models/candidatos_restante.R")
-source("../R/models/candidato_pendencias_rreo.R")
+source_utf8("../R/models/fatia_minima.R")
+source_utf8("../R/download/bcb_sgs.R")
+source_utf8("../R/download/ibge_pib.R")
+source_utf8("../R/models/candidatos_restante.R")
+source_utf8("../R/models/candidato_pendencias_rreo.R")
 
 set.seed(1)
 serie_sint <- function(anos) {
