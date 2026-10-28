@@ -182,6 +182,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - **Recomendação:** não divulgar esse intervalo como "80%". Opções para Pedro decidir, qualquer uma declarada como nova e avaliada fora da amostra: (a) σ em % do PIB, multiplicado pelo PIB do ano; (b) quantis empíricos dos erros padronizados em janela expansiva; (c) multiplicador de calibração estimado de forma rolante sobre o erro padronizado. Não testei nenhuma delas: seria ajuste depois de ver o resultado.
 - Saídas (fora do git): `outputs/e42_intervalos_backtest.csv`, `e42_cobertura.csv`, `e42_sigma_2026.csv`.
 
+### Atualização do plano (28/10/2026, branch `docs-plano-pos-torneio`, só documentação)
+- `docs/plano.md`: E4 com o resultado do torneio (SRW em R$ nas três faixas) e o m3 como modelo-sombra (E6.3); removida a menção ao bottom-up como variante do E4.1; E4.2 com o resultado da 1ª tentativa e a mudança de protocolo pós-resultado (σ em % do PIB); E5.4 novo (mistura P2 → ponte → P1 como modelo-sombra, não candidato oficial); E3.6 com escopo de conciliação P1 × P2 e como pré-requisito do E5.4; E6.1 com a rodada mensal (Siconfi só t e t−1; revisão completa trimestral, `scripts/rodada_mensal.R`, a criar); sem ajuste de julgamento no número nesta fase (E6.2), a reavaliar no gate E7.1; rótulos de semana ao estado real (P1 concluído na S2; S3–S5 no P2, previsão).
+- `docs/HANDOVER.md` (3c): no Windows, `renv::restore(exclude = 'Matrix')` ou Rtools.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
