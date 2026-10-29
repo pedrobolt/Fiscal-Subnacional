@@ -27,6 +27,16 @@ Rscript -e "testthat::test_dir('tests')"     # confere
 ```
 Passo a passo detalhado, com o que conferir antes de enviar os números: `docs/playbook_rodada.md` (E7.4).
 
+### 3a. Windows da CNI sem PowerShell: usar o Prompt de Comando (cmd)
+No PC da CNI o PowerShell está bloqueado (acesso negado). Todos os comandos deste documento funcionam no **Prompt de Comando** (tecla Windows, digitar `cmd`), com estas diferenças:
+- Não existe o operador `&`. Onde o texto diz `& "C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts/x.R 1`, no cmd é só `"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts/x.R 1`. Use **sempre o caminho completo** do Rscript entre aspas (a versão da pasta pode ser outra; para descobrir: `dir "C:\Program Files\R"`).
+- `-e` com aspas duplas por fora e aspas simples por dentro: `"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" -e "testthat::test_dir('tests')"`. Aspas duplas dentro do código R precisam ser trocadas por simples.
+- Entrar na raiz do repositório: `cd /d C:\caminho\Fiscal-Subnacional` (o `/d` troca de disco, se for o caso).
+- Dois terminais para a carga histórica: abrir duas janelas do cmd, uma por fatia (ou `start cmd /k ""C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts\carga_historica.R 1"` e o mesmo com `2`). Nunca mais de dois.
+- Variáveis de ambiente (quando necessário): `set NOME=valor` na mesma janela; não precisa de `LC_ALL` (o código não depende do locale).
+- Comando de teste padrão: `"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" -e "r <- as.data.frame(testthat::test_dir('tests', reporter = 'silent', stop_on_failure = FALSE)); cat('FAIL', sum(r$failed), 'ERR', sum(r$error), 'PASS', sum(r$passed), '\n')"`.
+- Se o cmd também estiver bloqueado, abrir o R GUI ou o RStudio e rodar o mesmo código com `source("scripts/arquivo.R")` na raiz do repositório (`setwd()`), anotando o que falhar no STATUS.
+
 ### 3b. Dados brutos do RREO: carga inicial e rodada incremental
 O bruto (`data/raw/rreo/`, ~125 MB compactado, 30 mil arquivos) não está no git. Cópia de referência: **GitHub Release `dados-rreo-20261023`** do repositório (publicado à mão pelo Pedro: a sessão de desenvolvimento não pode criar Releases; a tag aponta para `main` e o commit do código que gerou os dados consta em `commit_codigo` do manifesto JSON; restauração testada em 24/10/2026: 30.428 arquivos, MD5 conferido, 32 s) (dados públicos do Siconfi), com o pacote `rreo_bruto_20261023.tar.gz` e o manifesto (`_manifesto.csv` com arquivo, tamanho e MD5; `_manifesto.json` com contagens, datas de coleta e o commit do código que gerou os dados).
 - **Carga inicial** (máquina nova ou ambiente perdido): baixar os dois arquivos do Release (página Releases, ou `gh release download dados-rreo-20261023`) e, na raiz do repositório, `Rscript scripts/restaurar_dados.R rreo_bruto_20261023.tar.gz rreo_bruto_20261023_manifesto.csv`. O script extrai em `data/raw/rreo/` e confere tamanho e MD5 de todos os arquivos; falha se algo estiver ausente ou diferente.
