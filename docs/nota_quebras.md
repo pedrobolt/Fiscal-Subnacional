@@ -25,11 +25,11 @@ O início da reclassificação foi medido nos dados (excedente de pessoal do RRE
 
 ## 3. Regra de uso no E5 (ordem aprovada em 29/10/2026)
 
-Harmonizar quando possível → dummy de quebra (com robustez excluindo a UF) → excluir só em último caso. A dummy vale enquanto a quebra durar: pulso para quebras pontuais; degrau para mudanças que persistem. Se a UF reverter, o alerta (b) detecta e o degrau termina ali.
+Harmonizar quando possível (RPPS separável desde 2023) → dummy de quebra (com robustez excluindo a UF) → excluir só em último caso. Para RJ/PR/RS a harmonização pela proporção do RGF não é o primeiro passo (ver 3.3). A dummy vale enquanto a quebra durar: pulso para quebras pontuais; degrau para mudanças que persistem. Se a UF reverter, o alerta (b) detecta e o degrau termina ali.
 
 1. **RS 2018:** sem harmonização possível; fluxos NA; categorias do P2 só desde 2019, de qualquer modo.
 2. **RPPS:** usar os totais "sem RPPS" do layout 2023+ como referência. Só as categorias demais receitas e pessoal são afetadas e a separação por categoria não existe na série anterior; logo, nessas duas categorias o RPPS fica em dummy de degrau 2023+, e o total e o primário são harmonizados.
-3. **RJ/PR/RS:** recomendação (diverge do plano de harmonizar o primário): **não** harmonizar o primário, que é a variável-alvo, pela proporção do RGF, porque o RGF cobre só o Executivo e em base liquidada, e a proporção é uma estimativa com erro do mesmo tamanho do ajuste. Usar: (i) degrau na despesa total e no primário, de 1 a partir do início de cada UF, inclusive na projeção de 2026; (ii) categoria pessoal harmonizada com linha própria de excedente (`outputs/quebras_pessoal_harmonizado.csv`); (iii) harmonização pela proporção do RGF apenas como sensibilidade; (iv) robustez excluindo as três UFs.
+3. **RJ/PR/RS (decisão de 29/10/2026, ordem diferente da geral):** **não** harmonizar o primário, que é a variável-alvo, pela proporção do RGF, porque o RGF cobre só o Executivo e em base liquidada, e a proporção é uma estimativa com erro do mesmo tamanho do ajuste. Usar: (i) degrau na despesa total e no primário, de 1 a partir do início de cada UF, inclusive na projeção de 2026; (ii) categoria pessoal harmonizada com linha própria de excedente (`outputs/quebras_pessoal_harmonizado.csv`); (iii) harmonização pela proporção do RGF apenas como sensibilidade; (iv) robustez excluindo as três UFs.
 
 ## 4. Detecção automática na rodada mensal
 
@@ -40,6 +40,9 @@ Alertas em tabela única (`tipo, subtipo, cod_ibge, serie, exercicio, periodo, v
 - **(b) × RGF:** quando o salto de pessoal vem com RREO − RGF > 20 p.p. no crescimento anual, emite `reclassificacao_pessoal`. É extensão do alerta (b) declarada no contrato; no histórico, 128 UF-bimestres com suspeita de 1.233 comparáveis, 27 deles também em (b).
 - **(c)** troca de regime, fator instável, defasado ou ausente, `conceito_original`, `custeio_nao_positivo`, `quebra_na_troca_de_conceito`.
 - **(d)** entrega atrasada (> 30 dias do prazo) ou retificação, pelo extrato.
+
+### Status e prioridade
+`marcar_conhecidas()` marca as quebras da tabela 1 como `conhecida` (RPPS 2023 em pessoal e demais receitas; reclassificação RJ/PR/RS com Δ > 0 a partir do início; RS 2018 b1–b5; flags do conceito único; quebras anuais do fator até 2025) e elas não disparam de novo; o restante é `nova`. `priorizar_alertas()` ordena as novas por |Δ|/receita da UF (alerta (b)) e devolve o resumo por tipo e status. Resultado sobre o histórico (`outputs/alertas_resumo.csv`, `alertas_novos_por_rodada.csv`, `scripts/alertas_priorizados.R`): ver STATUS.
 
 ## 5. Limitações
 
