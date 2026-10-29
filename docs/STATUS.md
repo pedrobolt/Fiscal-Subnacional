@@ -237,6 +237,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - RREO dos estados antes de 2015: decisão do Pedro de não seguir agora. Entra na Fase 2 (`docs/plano.md`) como "Execução Orçamentária de Estados 1995–2013", anual, não verificada; SISTN sem série pública; API do Siconfi só a partir de 2015.
 - Próximo: baixar o Anexo 3 (RCL) dos estados de 2015 a 2026 (no máximo 2 conexões) para obter a dedução do FUNDEB, montar a receita mensal por categoria e conferir os fluxos bimestrais do Anexo 6. Plano de 5 linhas enviado ao Pedro antes de codar.
 
+### Ajustes de docs após o #41 (29/10/2026, branch `docs-e5-categorias-2019`)
+- Plano E5: categorias do P2 começam em 2019 (2018 tem 50,2% da receita em conceito original); o primário de 2018 segue válido.
+- HANDOVER 3a: R também em `%LOCALAPPDATA%\Programs\R` (PC da CNI).
+
 ### Conceito único do Anexo 6 e docs do E5.1 (28/10/2026, branch `anexo3-conceito-unico`, PR (b))
 - `R/transform/conceito_unico.R`, `scripts/conceito_unico.R`, `tests/test-conceito_unico.R`: o Anexo 6 passa ao conceito único (líquido de FUNDEB e cota-parte; despesa sem os repasses); detalhes e números em `docs/dicionario_contas_estados.md`, seção 10.
 - Validação do ajuste: custeio reconstruído positivo (6 violações), sem quebra na troca de conceito (9 de 11 trocas passam e melhoram em relação ao Anexo 6; falham RR 2019 e PA 2022 no limite). 186 bimestres UF em conceito original (nenhum de 2022 em diante; 78 em 2018–2021), mantidos no agregado com flag `conceito_original` e rótulo "parcial" quando passam de 5% da receita (2018 e 2019). Continuidade de SP 2022→2023 sem quebra; 22 quebras em 163 trocas de conceito, para a nota do E2.8. Flags automáticos, sem correção manual. HANDOVER 3a: comandos para o Prompt de Comando (cmd) no PC da CNI.
