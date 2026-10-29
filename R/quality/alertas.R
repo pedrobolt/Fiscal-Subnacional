@@ -156,3 +156,45 @@ totais_rpps <- function(rreo, dic_contas, dic_colunas) {
   out <- merge(com, sem, by = c("cod_ibge", "exercicio"), all.x = TRUE, suffixes = c("_com", "_sem"))
   out[, !names(out) %in% c("rpps_com", "rpps_sem")]
 }
+
+# ---- RGF: despesa de pessoal mensal (Executivo) e comparação com o RREO ---------------------------------------------------
+
+#' Lê o RGF Anexo 01 dos estados (data/raw/rgf/E) e devolve a despesa bruta com pessoal mensal do Poder Executivo:
+#' cod_ibge, mes (1o dia), valor. O mês vem da coluna "<MR-k>" (MR = último mês do quadrimestre = 4 x q); o mesmo mês aparece em até 3
+#' arquivos (revisões): vale o do arquivo mais recente.
+pessoal_rgf_mensal <- function(pasta = "data/raw/rgf") {
+  arqs <- list.files(file.path(pasta, "E"), "^[0-9]+_q[1-3]_a01\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
+  out <- lapply(arqs, function(a) {
+    x <- ler_json_utf8(a)$items
+    if (NROW(x) == 0) return(NULL)
+    x <- x[x$cod_conta == "DespesaComPessoalBruta" & grepl("^<MR", x$coluna), ]
+    if (!nrow(x)) return(NULL)
+    k <- ifelse(x$coluna == "<MR>", 0L, as.integer(sub("^<MR-([0-9]+)>$", "\\1", x$coluna)))
+    m <- 4L * x$periodo - k
+    ano <- x$exercicio + (m - 1L) %/% 12L; mes <- (m - 1L) %% 12L + 1L
+    data.frame(cod_ibge = x$cod_ibge, mes = as.Date(sprintf("%04d-%02d-01", ano, mes)), pub = x$exercicio * 10L + x$periodo, valor = x$valor)
+  })
+  d <- do.call(rbind, out)
+  d <- d[order(d$cod_ibge, d$mes, d$pub), ]
+  d[!duplicated(paste(d$cod_ibge, d$mes), fromLast = TRUE), c("cod_ibge", "mes", "valor")]
+}
+
+#' Variação anual do pessoal por UF x bimestre no RREO (categoria "desp:pessoal", fluxo do bimestre) e no RGF (soma dos 2 meses do
+#' bimestre). Devolve cod_ibge, exercicio, periodo, rreo_yoy, rgf_yoy, dif (pontos) e a marca de suspeita de reclassificação.
+yoy_pessoal_rreo_rgf <- function(fluxos_cat, rgf_mensal, pp = ALERTA_RGF_PP) {
+  r <- fluxos_cat[fluxos_cat$serie == "desp:pessoal", c("cod_ibge", "exercicio", "periodo", "valor")]
+  g <- rgf_mensal; g$exercicio <- as.integer(format(g$mes, "%Y")); g$periodo <- (as.integer(format(g$mes, "%m")) + 1L) %/% 2L
+  n_m <- tapply(g$valor, paste(g$cod_ibge, g$exercicio, g$periodo), length)
+  g <- aggregate(valor ~ cod_ibge + exercicio + periodo, g, sum)
+  g <- g[n_m[paste(g$cod_ibge, g$exercicio, g$periodo)] == 2L, ]              # só bimestres com os 2 meses
+  yoy <- function(d) {
+    d <- d[order(d$cod_ibge, d$periodo, d$exercicio), ]
+    ch <- paste(d$cod_ibge, d$periodo); ant <- c(NA, seq_len(nrow(d) - 1L)); ant[c(TRUE, ch[-1] != ch[-nrow(d)])] <- NA
+    ok <- !is.na(ant) & d$exercicio - d$exercicio[ant] == 1L
+    d$y <- ifelse(ok, d$valor / d$valor[ant] - 1, NA_real_); d
+  }
+  r <- yoy(r); g <- yoy(g)
+  m <- merge(r[, c("cod_ibge", "exercicio", "periodo", "y")], g[, c("cod_ibge", "exercicio", "periodo", "y")], by = c("cod_ibge", "exercicio", "periodo"), suffixes = c("_rreo", "_rgf"))
+  names(m)[4:5] <- c("rreo_yoy", "rgf_yoy"); m$dif <- m$rreo_yoy - m$rgf_yoy
+  marcar_reclassificacao(m, pp)
+}

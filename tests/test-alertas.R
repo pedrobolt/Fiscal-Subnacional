@@ -54,3 +54,12 @@ test_that("(a) conta nova fora do conjunto conhecido", {
   expect_equal(nrow(a), 1); expect_match(a$serie, "NovaConta")
   expect_equal(nrow(alerta_contas_conhecidas("ICMS", c("ICMS"), "x")), 0)
 })
+
+test_that("yoy do pessoal RREO x RGF e suspeita de reclassificacao", {
+  fl <- rbind(data.frame(cod_ibge = 1, serie = "desp:pessoal", exercicio = 2024:2025, periodo = 1, valor = c(100, 200)),
+              data.frame(cod_ibge = 2, serie = "desp:pessoal", exercicio = 2024:2025, periodo = 1, valor = c(100, 110)))
+  g <- data.frame(cod_ibge = rep(1:2, each = 4), mes = rep(as.Date(c("2024-01-01", "2024-02-01", "2025-01-01", "2025-02-01")), 2), valor = c(50, 50, 52, 52, 50, 50, 55, 55))
+  y <- yoy_pessoal_rreo_rgf(fl, g); y <- y[y$exercicio == 2025, ]
+  expect_equal(y$suspeita_reclassificacao[y$cod_ibge == 1], TRUE); expect_equal(y$suspeita_reclassificacao[y$cod_ibge == 2], FALSE)
+  expect_equal(round(y$rgf_yoy[y$cod_ibge == 1], 3), 0.04)
+})
