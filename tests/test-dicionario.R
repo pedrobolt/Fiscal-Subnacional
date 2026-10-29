@@ -137,11 +137,12 @@ test_that("cobertura_dicionario lista conta e coluna nunca vistas", {
   expect_equal(cob$contas$cod_conta, "ContaNova"); expect_equal(cob$colunas$padrao, "COLUNA NOVA")
 })
 
-test_that("FUNDEB: receita própria, impostos e FPE pelo bruto, dedução em linha própria (Anexo 3, pendente)", {
-  f <- CONTAS[CONTAS$cod_conta == "TransferenciasDoFUNDEB", ]
+test_that("FUNDEB: receita própria; dedução só no Anexo 3, como conta acompanhada fora da soma do P2", {
+  f <- CONTAS[CONTAS$cod_conta == "TransferenciasDoFUNDEB" & CONTAS$anexo == "RREO-Anexo 06", ]
   expect_true(all(f$categoria_p2 == "receita FUNDEB"))
   d <- CONTAS[CONTAS$cod_conta == "DeducaoDeReceitaParaFormacaoDoFUNDEB", ]
-  expect_equal(nrow(d), 1); expect_equal(d$categoria_p2, "deducao FUNDEB"); expect_equal(d$usar_no_p2, "pendente")
+  expect_true(nrow(d) >= 1); expect_true(all(d$categoria_p2 == "FUNDEB_deducao")); expect_true(all(d$usar_no_p2 == "nao"))
+  expect_true(all(d$anexo == "RREO-Anexo 03")); expect_true(all(d$papel == "rcl_acompanhada"))
   expect_false(any(CONTAS$usar_no_p2[CONTAS$anexo == "RREO-Anexo 03"] == "soma"))
 })
 
