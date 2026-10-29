@@ -34,6 +34,8 @@ classificar_coluna <- function(coluna, exercicio) {
   est <- rep("outro", length(n))
   set <- function(padrao, valor) { k <- est == "outro" & grepl(padrao, n); est[k] <<- valor }
   set("^previsao (inicial|atualizada|orcamentaria)", "previsao")
+  set("^mr(-[0-9]+)?$", "mes_mr")                      # Anexo 3 (RCL): 12 colunas mensais, MR = último mês do bimestre
+  set("^total \\(ultimos 12 meses\\)", "total_12m")
   set("^dotacao (inicial|atualizada)", "dotacao")
   set("^receitas realizadas", "receita_realizada")
   set("^despesas empenhadas no bimestre", "empenhada_no_bimestre")
@@ -71,7 +73,9 @@ papel_coluna <- function(anexo, layout, estagio, ano_rel) {
   ifelse(a6 & layout != "2015-17" & estagio %in% ESTAGIOS_CAIXA_DESPESA, "despesa_caixa_p2",
   ifelse(a6 & layout == "2015-17" & estagio %in% c("empenhada", "liquidada") & corrente, "despesa_sem_caixa",
   ifelse(a6 & estagio == "valor", "resultado_ou_meta",
-         "referencia"))))
+  ifelse(anexo == "RREO-Anexo 03" & estagio == "mes_mr", "rcl_mensal",
+  ifelse(anexo == "RREO-Anexo 03" & estagio == "total_12m", "rcl_total12m",
+         "referencia"))))))
 }
 
 #' Constrói a tabela de colunas a partir do que existe no bruto (`rreo` = saída de ler_rreo_pasta()).
@@ -289,15 +293,24 @@ contas_a1 <- function(rreo) {
              usar_no_p2 = "nao", stringsAsFactors = FALSE)
 }
 
-#' Linha do Anexo 3 (RCL) necessária ao líquido do FUNDEB. Não está baixada: o Anexo 3 traz 12 meses por coluna ("<MR>"),
-#' não acumulado. Verificada só em SP 2024 (dedução de R$ 38,6 bi nos 12 meses; transferências do FUNDEB iguais às do Anexo 6).
-#' Os layouts de 2015–2022 do Anexo 3 ainda não foram inspecionados.
-contas_a3_fundeb <- function() {
-  data.frame(anexo = "RREO-Anexo 03", layout = "2023+", cod_conta = "DeducaoDeReceitaParaFormacaoDoFUNDEB",
-             conta = "Dedução de Receita para Formação do FUNDEB", papel = "ded_fundeb", nivel = "folha", usar_no_p2 = "pendente",
-             estagio_p2 = "receita_deduzida", categoria_p2 = "deducao FUNDEB", natureza = "corrente", pai = NA,
-             rpps = "nao_se_aplica", nota = "Anexo 3 ainda não baixado; verificado só em 2024. Entra no líquido (bruto − dedução + receita FUNDEB)",
-             stringsAsFactors = FALSE)
+# Anexo 3 (RCL) dos estados: informação complementar (bruto por imposto, FUNDEB), não entra na soma do P2. As contas acompanhadas
+# (CATEGORIAS_A3) alimentam a receita mensal bruta/líquida; as demais ficam como memo.
+CATEGORIAS_A3 <- c(
+  ICMSLiquidoExcetoTransferenciasEFUNDEB = "ICMS", IPVALiquidoExcetoTransferenciasEFUNDEB = "IPVA",
+  ITCDLiquidoExcetoTransferenciasEFUNDEB = "ITCD", IRRFLiquidoExcetoTransferenciasEFUNDEB = "IRRF",
+  CotaParteDoFPE = "FPE", TransferenciasDoFUNDEB = "FUNDEB_receita", DeducaoDeReceitaParaFormacaoDoFUNDEB = "FUNDEB_deducao")
+
+#' Contas do Anexo 3 observadas no bruto, por layout (o prefixo RREO3 aparece a partir de 2018 e é tirado para achar a categoria).
+contas_a3 <- function(rreo) {
+  u <- unique(rreo[rreo$anexo == "RREO-Anexo 03", c("exercicio", "cod_conta", "conta")])
+  if (!nrow(u)) return(NULL)
+  u$layout <- as.character(layout_rreo(u$exercicio))
+  ag <- stats::aggregate(conta ~ layout + cod_conta, u, function(z) z[1])
+  cat <- unname(CATEGORIAS_A3[sub("^RREO3", "", ag$cod_conta)])
+  data.frame(anexo = "RREO-Anexo 03", layout = ag$layout, cod_conta = ag$cod_conta, conta = ag$conta,
+             papel = ifelse(is.na(cat), "rcl_memo", "rcl_acompanhada"), nivel = "folha", usar_no_p2 = "nao",
+             estagio_p2 = NA, categoria_p2 = cat, natureza = "corrente", pai = NA, rpps = "nao_se_aplica",
+             nota = ifelse(is.na(cat), NA, "Alimenta a receita mensal bruta/líquida (calibrada pela DCA)"), stringsAsFactors = FALSE)
 }
 
 #' Dicionário completo de contas dos estados (Anexos 6 e 1) a partir do bruto observado (`rreo`). Conta observada e não
@@ -319,7 +332,8 @@ dicionario_contas_estados <- function(rreo) {
   cols <- c("anexo", "layout", "cod_conta", "conta", "papel", "nivel", "usar_no_p2", "estagio_p2", "categoria_p2", "natureza", "pai", "rpps", "nota")
   for (n in setdiff(cols, names(a1))) a1[[n]] <- NA
   a1$rpps <- "nao_se_aplica"
-  out <- rbind(a6[, cols], a1[, cols], contas_a3_fundeb()[, cols])
+  a3 <- contas_a3(rreo)
+  out <- rbind(a6[, cols], a1[, cols], if (!is.null(a3)) a3[, cols])
   out <- out[order(out$anexo, out$layout, out$papel, out$cod_conta), ]
   rownames(out) <- NULL
   out

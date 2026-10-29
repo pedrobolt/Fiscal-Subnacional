@@ -54,6 +54,48 @@ RREO-Anexo 01,2023+,PREVISÃO INICIAL,previsao,nao_se_aplica,referencia
 RREO-Anexo 01,2023+,SALDO (a-c),derivada,nao_se_aplica,referencia
 RREO-Anexo 01,2023+,SALDO (g) = (e-f),derivada,nao_se_aplica,referencia
 RREO-Anexo 01,2023+,SALDO (i) = (e-h),derivada,nao_se_aplica,referencia
+RREO-Anexo 03,2015-17,<MR-1>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-10>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-11>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-2>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-3>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-4>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-5>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-6>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-7>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-8>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR-9>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,<MR>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2015-17,TOTAL (ÚLTIMOS 12 MESES),total_12m,nao_se_aplica,rcl_total12m
+RREO-Anexo 03,2015-17,PREVISÃO ATUALIZADA AAAA,previsao,corrente,referencia
+RREO-Anexo 03,2018-22,<MR-1>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-10>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-11>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-2>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-3>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-4>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-5>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-6>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-7>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-8>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR-9>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,<MR>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2018-22,TOTAL (ÚLTIMOS 12 MESES),total_12m,nao_se_aplica,rcl_total12m
+RREO-Anexo 03,2018-22,PREVISÃO ATUALIZADA AAAA,previsao,corrente,referencia
+RREO-Anexo 03,2023+,<MR-1>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-10>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-11>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-2>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-3>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-4>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-5>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-6>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-7>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-8>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR-9>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,<MR>,mes_mr,nao_se_aplica,rcl_mensal
+RREO-Anexo 03,2023+,TOTAL (ÚLTIMOS 12 MESES),total_12m,nao_se_aplica,rcl_total12m
+RREO-Anexo 03,2023+,PREVISÃO ATUALIZADA AAAA,previsao,corrente,referencia
 RREO-Anexo 06,2015-17,Despesas Empenhadas Até o Bimestre / AAAA,empenhada,corrente,despesa_sem_caixa
 RREO-Anexo 06,2015-17,DESPESAS EMPENHADAS ATÉ O BIMESTRE / AAAA,empenhada,corrente,despesa_sem_caixa
 RREO-Anexo 06,2015-17,Despesas Liquidadas Até o Bimestre / AAAA,liquidada,corrente,despesa_sem_caixa

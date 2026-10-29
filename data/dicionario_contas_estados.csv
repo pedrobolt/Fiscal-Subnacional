@@ -473,7 +473,120 @@ RREO-Anexo 01,2023+,TotalDespesas,TOTAL DAS DESPESAS (XII) = (X + XI),total_orca
 RREO-Anexo 01,2023+,TotalDespesasComSuperavit,TOTAL COM SUPERÁVIT (XIV) = (XII + XIII),total_orcamentario,total,nao,,,,,nao_se_aplica,
 RREO-Anexo 01,2023+,TotalReceitas,TOTAL DAS RECEITAS (V) = (III + IV),total_orcamentario,total,nao,,,,,nao_se_aplica,
 RREO-Anexo 01,2023+,TotalReceitasComDeficit,TOTAL COM DÉFICIT (VII) = (V + VI),total_orcamentario,total,nao,,,,,nao_se_aplica,
-RREO-Anexo 03,2023+,DeducaoDeReceitaParaFormacaoDoFUNDEB,Dedução de Receita para Formação do FUNDEB,ded_fundeb,folha,pendente,receita_deduzida,deducao FUNDEB,corrente,,nao_se_aplica,Anexo 3 ainda não baixado; verificado só em 2024. Entra no líquido (bruto − dedução + receita FUNDEB)
+RREO-Anexo 03,2015-17,CotaParteDoFPE,Cota-Parte do FPE,rcl_acompanhada,folha,nao,,FPE,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,DeducaoDeReceitaParaFormacaoDoFUNDEB,Dedução de Receita para Formação do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_deducao,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,ICMSLiquidoExcetoTransferenciasEFUNDEB,ICMS,rcl_acompanhada,folha,nao,,ICMS,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,IPVALiquidoExcetoTransferenciasEFUNDEB,IPVA,rcl_acompanhada,folha,nao,,IPVA,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,IRRFLiquidoExcetoTransferenciasEFUNDEB,IRRF,rcl_acompanhada,folha,nao,,IRRF,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,ITCDLiquidoExcetoTransferenciasEFUNDEB,ITCD,rcl_acompanhada,folha,nao,,ITCD,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,RREO3CotaParteDoFPE,Cota-Parte do FPE,rcl_acompanhada,folha,nao,,FPE,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,RREO3TransferenciasDoFUNDEB,Transferências do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_receita,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,TransferenciasDoFUNDEB,Transferências do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_receita,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2015-17,CompensacaoFinanceiraEntreRegimesPrevidencia,Compensações Financ. entre Regimes Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ContribuicaoDoServidorParaOPlanoDePrevidencia,Contrib. do Servidor para o Plano de Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ContribuicaoParaOCusteioDasPensoesMilitares,Contrib. dos Militares para o Custeio das Pensões,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,CotaParteDoFPM,Cota-Parte do FPM,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,CotaParteDoITR,Cota-Parte do ITR,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,DeducoesDaReceitaCorrenteLiquida,DEDUÇÕES (II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,IPTULiquidoExcetoTransferenciasEFUNDEB,IPTU,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ISSLiquidoExcetoTransferenciasEFUNDEB,ISS,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ITBILiquidoExcetoTransferenciasEFUNDEB,ITBI,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,OutrasReceitasTributarias,Outras Receitas Tributárias,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,OutrasTransferenciasCorrentes,Outras Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ReceitaCorrenteLiquida,RECEITA CORRENTE LÍQUIDA (III) = (I - II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ReceitaDeTransferenciasConstitucionaisELegais,Transferências Constitucionais e Legais,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ReceitasCorrentesLiquidasExcetoTransferenciasEFUNDEB,RECEITAS CORRENTES (I),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,ReceitaTributariaLiquidaExcetoTransferenciasEFUNDEB,Receita Tributária,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3CotaParteDoFPM,Cota-Parte do FPM,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3CotaParteDoITR,Cota-Parte do ITR,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3OutrasReceitasCorrentes,Outras Receitas Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3OutrasTransferenciasCorrentes,Outras Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3ReceitaAgropecuaria,Receita Agropecuária,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3ReceitaDeContribuicoes,Receita de Contribuições,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3ReceitaDeServicos,Receita de Serviços,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3ReceitaIndustrial,Receita Industrial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3ReceitaPatrimonial,Receita Patrimonial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3TransferenciasCorrentes,Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3TransferenciasDaLC611989,Transferências da LC nº 61/1989,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,RREO3TransferenciasDaLC871996,Transferências da LC nº 87/1996,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,TransferenciasDaLC611989,Transferências da LC 61/1989,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2015-17,TransferenciasDaLC871996,Transferências da LC 87/1996,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,DeducaoDeReceitaParaFormacaoDoFUNDEB,Dedução de Receita para Formação do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_deducao,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,ICMSLiquidoExcetoTransferenciasEFUNDEB,ICMS,rcl_acompanhada,folha,nao,,ICMS,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,IPVALiquidoExcetoTransferenciasEFUNDEB,IPVA,rcl_acompanhada,folha,nao,,IPVA,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,IRRFLiquidoExcetoTransferenciasEFUNDEB,IRRF,rcl_acompanhada,folha,nao,,IRRF,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,ITCDLiquidoExcetoTransferenciasEFUNDEB,ITCD,rcl_acompanhada,folha,nao,,ITCD,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,RREO3CotaParteDoFPE,Cota-Parte do FPE,rcl_acompanhada,folha,nao,,FPE,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,RREO3TransferenciasDoFUNDEB,Transferências do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_receita,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2018-22,CompensacaoFinanceiraEntreRegimesPrevidencia,Compensações Financ. entre Regimes Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ContribuicaoDoServidorParaOPlanoDePrevidencia,Contrib. do Servidor para o Plano de Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,DeducoesDaReceitaCorrenteLiquida,DEDUÇÕES (II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,IPTULiquidoExcetoTransferenciasEFUNDEB,IPTU,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ISSLiquidoExcetoTransferenciasEFUNDEB,ISS,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ITBILiquidoExcetoTransferenciasEFUNDEB,ITBI,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,OutrasReceitasPatrimoniais,Outras Receitas Patrimoniais,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,OutrasReceitasTributarias,"Outros Impostos, Taxas e Contribuições de Melhoria",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ReceitaDeTransferenciasConstitucionaisELegais,Transferências Constitucionais e Legais,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ReceitasCorrentesLiquidasExcetoTransferenciasEFUNDEB,RECEITAS CORRENTES (I),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,ReceitaTributariaLiquidaExcetoTransferenciasEFUNDEB,"Impostos, Taxas e Contribuições de Melhoria",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RendimentosDeAplicacaoFinanceira,Rendimentos de Aplicação Financeira,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RendimentosDeAplicacoesDeRecursosPrevidenciarios,Rendimentos de Aplicações de Recursos Previdenciários,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3CotaParteDoFPM,Cota-Parte do FPM,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3CotaParteDoITR,Cota-Parte do ITR,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3OutrasReceitasCorrentes,Outras Receitas Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3OutrasTransferenciasCorrentes,Outras Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaAgropecuaria,Receita Agropecuária,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaCorrenteLiquida,RECEITA CORRENTE LÍQUIDA (III) = (I - II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDaDespesaComPessoal,RECEITA CORRENTE LÍQUIDA AJUSTADA PARA CÁLCULO DOS LIMITES DA DESPESA COM PESSOAL (VII) = (V - VI),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDeEndividamento,RECEITA CORRENTE LÍQUIDA AJUSTADA PARA CÁLCULO DOS LIMITES DE ENDIVIDAMENTO (V) = (III - IV),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaDeContribuicoes,Contribuições,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaDeServicos,Receita de Serviços,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaIndustrial,Receita Industrial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3ReceitaPatrimonial,Receita Patrimonial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3TransferenciasCorrentes,Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3TransferenciasDaLC611989,Transferências da LC nº 61/1989,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3TransferenciasDaLC871996,Transferências da LC nº 87/1996,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3TransferenciasObrigatoriasDaUniaoRelativasAsEmendasDeBancada,"(-) Transferências obrigatórias da União relativas às emendas de bancada  (art. 166, § 16, da CF)  (VI)",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2018-22,RREO3TransferenciasObrigatoriasDaUniaoRelativasAsEmendasIndividuais,"(-) Transferências obrigatórias da União relativas às emendas individuais (art. 166-A, § 1º, da CF)  (IV)",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,DeducaoDeReceitaParaFormacaoDoFUNDEB,Dedução de Receita para Formação do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_deducao,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,ICMSLiquidoExcetoTransferenciasEFUNDEB,ICMS,rcl_acompanhada,folha,nao,,ICMS,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,IPVALiquidoExcetoTransferenciasEFUNDEB,IPVA,rcl_acompanhada,folha,nao,,IPVA,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,IRRFLiquidoExcetoTransferenciasEFUNDEB,IRRF,rcl_acompanhada,folha,nao,,IRRF,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,ITCDLiquidoExcetoTransferenciasEFUNDEB,ITCD,rcl_acompanhada,folha,nao,,ITCD,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,RREO3CotaParteDoFPE,Cota-Parte do FPE,rcl_acompanhada,folha,nao,,FPE,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,RREO3TransferenciasDoFUNDEB,Transferências do FUNDEB,rcl_acompanhada,folha,nao,,FUNDEB_receita,corrente,,nao_se_aplica,Alimenta a receita mensal bruta/líquida (calibrada pela DCA)
+RREO-Anexo 03,2023+,CompensacaoFinanceiraEntreRegimesPrevidencia,Compensações Financ. entre Regimes Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ContribuicaoDoServidorParaOPlanoDePrevidencia,Contrib. do Servidor para o Plano de Previdência,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,DeducoesDaReceitaCorrenteLiquida,DEDUÇÕES (II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,IBSAnexo3,IBS,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,IPTULiquidoExcetoTransferenciasEFUNDEB,IPTU,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ISSLiquidoExcetoTransferenciasEFUNDEB,ISS,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ITBILiquidoExcetoTransferenciasEFUNDEB,ITBI,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,OutrasReceitasPatrimoniais,Outras Receitas Patrimoniais,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,OutrasReceitasTributarias,"Outros Impostos, Taxas e Contribuições de Melhoria",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ReceitaDeTransferenciasConstitucionaisELegais,Transferências Constitucionais e Legais,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ReceitasCorrentesLiquidasExcetoTransferenciasEFUNDEB,RECEITAS CORRENTES (I),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,ReceitaTributariaLiquidaExcetoTransferenciasEFUNDEB,"Impostos, Taxas e Contribuições de Melhoria",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RendimentosDeAplicacaoFinanceira,Rendimentos de Aplicação Financeira,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RendimentosDeAplicacoesDeRecursosPrevidenciarios,Rendimentos de Aplicações de Recursos Previdenciários,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3CotaParteDoFPM,Cota-Parte do FPM,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3CotaParteDoITR,Cota-Parte do ITR,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3OutrasDeducoesConstitucionaisOuLegais,( - ) Outras Deduções Constitucionais ou Legais (VIII),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3OutrasReceitasCorrentes,Outras Receitas Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3OutrasTransferenciasCorrentes,Outras Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaAgropecuaria,Receita Agropecuária,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaCorrenteLiquida,RECEITA CORRENTE LÍQUIDA (III) = (I - II),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDaDespesaComPessoal,RECEITA CORRENTE LÍQUIDA AJUSTADA PARA CÁLCULO DOS LIMITES DA DESPESA COM PESSOAL (VII) = (V - VI),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaCorrenteLiquidaAjustadaParaCalculoDosLimitesDeEndividamento,RECEITA CORRENTE LÍQUIDA AJUSTADA PARA CÁLCULO DOS LIMITES DE ENDIVIDAMENTO (V) = (III - IV),rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaDeContribuicoes,Contribuições,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaDeServicos,Receita de Serviços,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaIndustrial,Receita Industrial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3ReceitaPatrimonial,Receita Patrimonial,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3TransferenciasCorrentes,Transferências Correntes,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3TransferenciasDaLC611989,Transferências da LC nº 61/1989,rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3TransferenciasDaUniaoRelativasARemuneracaoDosAgentesComunitariosDeSaude,"( - ) Transferências da União relativas  a remuneração dos agentes comunitários de saúde e de combate às endemias (CF, art. 198, §11) (VII)",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3TransferenciasObrigatoriasDaUniaoRelativasAsEmendasDeBancada,"(-) Transferências obrigatórias da União relativas às emendas de bancada (art. 166, § 16, da CF) (VI)",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
+RREO-Anexo 03,2023+,RREO3TransferenciasObrigatoriasDaUniaoRelativasAsEmendasIndividuais,"(-) Transferências obrigatórias da União relativas às emendas individuais (art. 166-A, § 1º, da CF) (IV)",rcl_memo,folha,nao,,,corrente,,nao_se_aplica,
 RREO-Anexo 06,2015-17,RREO6DemaisInversoesFinanceiras,Demais Inversões Financeiras,desp_folha,folha,soma,sem_caixa(liquidada),demais despesas de capital,capital,,nao_se_aplica,Inversões financeiras primárias (sem concessão de empréstimos e títulos); fora de investimento
 RREO-Anexo 06,2015-17,RREO6Investimentos,Investimentos,desp_folha,folha,soma,sem_caixa(liquidada),investimento,capital,,nao_se_aplica,
 RREO-Anexo 06,2015-17,RREO6OutrasDespesasCorrentes,Outras Despesas Correntes,desp_folha,folha,soma,sem_caixa(liquidada),custeio,corrente,,nao_se_aplica,Inclui transferências constitucionais e legais; juros ficam fora do primário

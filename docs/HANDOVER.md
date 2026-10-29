@@ -100,7 +100,7 @@ Cada tarefa do `docs/plano.md` é feita numa branch própria e entra em `main` p
 Ver `docs/STATUS.md` (seção Decisões). Mudanças de conceito exigem aprovação de quem responde pelo projeto.
 
 ## 8. Problemas conhecidos e como tratar
-- RJ, PR e RS: reclassificação de pessoal no RREO desde o 2º sem. 2025. Tratamento: [preencher após E2.8].
+- RJ, PR e RS: reclassificação de pessoal no RREO (RJ desde 2025 b1, PR 2025 b6, RS 2025 b5; persiste em 2026). Tratamento: ver `docs/nota_quebras.md` (degrau na despesa total e no primário; pessoal harmonizado por linha de excedente; harmonização pela proporção do RGF só como sensibilidade).
 - Histórico do BCB é revisado; avaliação histórica usa a série atual. Snapshots próprios desde [data do E2.4].
 - [Acrescentar falhas de API, entes que atrasam, etc.]
 

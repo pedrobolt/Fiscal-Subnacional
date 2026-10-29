@@ -2,10 +2,7 @@
 # bimestre), "TOTAL (ÚLTIMOS 12 MESES)" e "PREVISÃO ATUALIZADA AAAA". Os nomes das contas mudam por layout (prefixo RREO3
 # a partir de 2018); a categoria é atribuída pelo nome sem o prefixo.
 
-CATEGORIAS_A3 <- c(
-  ICMSLiquidoExcetoTransferenciasEFUNDEB = "ICMS", IPVALiquidoExcetoTransferenciasEFUNDEB = "IPVA",
-  ITCDLiquidoExcetoTransferenciasEFUNDEB = "ITCD", IRRFLiquidoExcetoTransferenciasEFUNDEB = "IRRF",
-  CotaParteDoFPE = "FPE", TransferenciasDoFUNDEB = "FUNDEB_receita", DeducaoDeReceitaParaFormacaoDoFUNDEB = "FUNDEB_deducao")
+# CATEGORIAS_A3 está em R/transform/dicionario_contas.R (a mesma lista alimenta o dicionário de contas do Anexo 3).
 
 #' Categoria da conta do Anexo 3 (NA se não for uma das acompanhadas).
 categoria_a3 <- function(cod_conta) unname(CATEGORIAS_A3[sub("^RREO3", "", cod_conta)])

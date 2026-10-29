@@ -26,7 +26,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 ## Quebras conhecidas (a tratar no E2, nota de quebras)
 - 2018: mudança de layout do RREO Anexo 6.
 - 2023: separação das fontes do RPPS.
-- 2º sem. 2025: RJ, PR e RS reclassificaram despesa de pessoal no RREO (+41% a +75%, sem mudança no RGF). Decisão entre harmonizar e excluir depende da análise.
+- RJ, PR e RS reclassificaram despesa de pessoal no RREO sem mudança correspondente no RGF. Início medido (E2.8, `docs/nota_quebras.md`): RJ 2025 b1; PR 2025 b6; RS 2025 b5; persiste em 2026. Regra de uso no E5, em ordem: harmonizar quando possível, dummy de quebra (degrau enquanto a mudança persistir; robustez excluindo a UF), excluir só em último caso.
 
 ## Avaliação
 - Backtest de **evento fixo**: erro do total anual por mês do cutoff (jan…dez), anos-alvo 2016–2025.
@@ -69,3 +69,11 @@ Mudança só por PR com justificativa; resultados que dependam de nova regra sã
 **Sensibilidade "sem 2020–21" do torneio do P1 (declarada em 28/10/2026, antes de executar).** Mesma lista (K = 8) e mesma regra congelada, com a amostra "sem 2020–21" (2022 permanece, em treino e teste) no lugar de "sem 2020–22" como amostra principal e a amostra completa como segunda. É só sensibilidade: a decisão do torneio (SRW em R$ nas três faixas) e o protocolo ficam como estão; nada vai ao registro de experimentos. O resultado fica no STATUS.
 
 **P2 (E5).** A comparação de métodos por UF × categoria é ampla e usa teste para muitos modelos (SPA de Hansen ou Model Confidence Set), no lugar do DM.
+
+**Alertas automáticos da rodada mensal e regra de uso das quebras no E5 (E2.8, decisão de 29/10/2026, declarados antes de executar).** Os alertas não bloqueiam a projeção; vão para a tabela `outputs/alertas_rodada.csv` e para a aba de alertas do Excel do E6. Nenhuma verificação manual recorrente: só a revisão dos alertas.
+- (a) **Conta ou coluna sem correspondência no dicionário** (Anexos 3 e 6 do RREO, Anexo 1 do RGF): qualquer combinação (anexo, layout, conta) ou (anexo, layout, coluna) observada sem entrada gera alerta.
+- (b) **Salto de categoria:** variação de cada categoria contra o **mesmo bimestre do ano anterior** (não contra o bimestre anterior, para não confundir sazonalidade com quebra), em R$ e por UF. Alerta se |Δ| > 4 × MAD das variações da própria UF nessa categoria (mesmo bimestre, anos anteriores) **e** |Δ| > 1% da receita total da UF no bimestre. Cruzado com o RGF de pessoal quando houver.
+- (c) **Troca de regime e fator instável:** os flags do conceito único e da calibração (`flag_quebra_fator`, `flag_fator_defasado`, `flag_sem_fator`, `flag_quebra_troca`, `flag_custeio_nao_positivo`, `conceito_original`).
+- (d) **Entrega atrasada ou retificação:** atraso de mais de 30 dias após o fim do bimestre (prazo legal) e retificação detectada pelo extrato e pelos snapshots (E2.4).
+- **Esclarecimentos de 29/10/2026, antes de executar:** (i) em (b), "|Δ| > 4 × MAD" é lido como desvio da variação em relação à mediana das variações históricas da UF (|Δ − mediana(Δ_hist)| > 4 × MAD(Δ_hist), MAD sem fator de escala), porque com tendência de crescimento a variação típica já é diferente de zero; exige ao menos 3 variações históricas, senão não há alerta (marca `historico_curto`). (ii) O cruzamento com o RGF em (b) é informativo: para pessoal, a coluna `suspeita_reclassificacao` vale TRUE se a variação anual do RREO supera a do RGF (Executivo, mesmo período) em mais de 20 pontos percentuais. (iii) Em (d), "retificação" é status `RE` no extrato (a data é a da retificação; a entrega original não é preservada) ou snapshot posterior do mesmo demonstrativo; entrega ausente após o prazo (fim do bimestre + 30 dias) também gera alerta.
+- **Regra de uso das quebras no E5, em ordem:** (1) harmonizar quando possível (RPPS separável desde 2023; RJ, PR e RS pela proporção do RGF); (2) dummy de quebra, com robustez excluindo a UF; (3) excluir só em último caso. Reclassificação que persiste (RJ, PR e RS no 2º semestre de 2025) mantém a dummy daí em diante, inclusive na projeção de 2026.

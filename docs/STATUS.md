@@ -259,13 +259,18 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Resultado da sensibilidade "sem 2020–21" (executada após o commit da declaração; `outputs/torneio_sens_2020_21_*.csv`): 21 de 21 decisões iguais às do torneio congelado (todos os desafiantes rejeitados; menor p-valor de Holm 0,972); SRW em R$ segue escolhido nas três faixas. Decisão inalterada.
 - P2: variante de robustez definida no plano antes de qualquer resultado: "sem 2020–21", com 2022 mantido e marcado pela LC 194/2022.
 
+### Nota de quebras e alertas automáticos (29/10/2026, branch `e2-8-quebras`, E2.8)
+- `docs/nota_quebras.md`, `outputs/quebras_e28.csv`, `R/quality/alertas.R` (alertas a–d, testes sintéticos em `tests/test-alertas.R`), `R/download/siconfi_rgf.R` e `scripts/baixar_rgf.R` (RGF Anexo 1 de todos os estados, 945 arquivos), `scripts/quebras_e28.R`.
+- Reclassificação de pessoal medida nos dados: RJ desde 2025 b1, PR 2025 b6, RS 2025 b5 (contrato e HANDOVER corrigidos). Proposta: não harmonizar o primário pela proporção do RGF; degrau + excedente de pessoal, RGF só em sensibilidade.
+- RS 2018 b1–b5: causa não esclarecida; tratamento: fluxo NA e rótulo parcial.
+- Pendente: ligar os alertas à rodada mensal e à aba do Excel (E6.1/E6).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
 - E2.2: verificar contas do Simplificado por UF (MS, MG, RS, PR, MA, ES têm 34–48% da receita no grupo); validar extração do primário municipal (layout 2019 × 2025; 22 e 135 municípios sem primário).
 - E2.7: medir a fração de retificações e a defasagem de entrega com o extrato completo (~5,6 mil chamadas por ano).
 - Carga histórica do censo municipal (ordem aprovada em 24/10/2026): definir onde rodar (~6 dias de API) e escrever `scripts/carga_historica.R`.
-- E2.8: investigar a causa do RS, Anexo 6, 2018 b1–b5 vazio e decidir o tratamento (o agregado estadual desses bimestres fica rotulado como parcial; o 6º bimestre existe e cobre o total anual).
 - E3.3: definir com o Pedro a tolerância de erro útil para o informe (ex.: acertar o sinal, ±0,1% do PIB).
 - E3.4: incluir o passeio aleatório sazonal (acumulado do ano + realizado do restante do ano anterior = `prever_acumulado` com `janela = 1`) como benchmark.
 - E3 (janela do acumulado): vira parâmetro, conjunto fixo {1, 3, 5} × {com, sem 2020–22}, definido antes de ver resultados. Escolha por seleção aninhada (só anos < ano-alvo), não pelo menor erro do backtest completo.
@@ -274,7 +279,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - E2.5: confirmar se o lançamento do FPE/FPM bruto com dedutora do Fundeb vale em todo o período 2015–2025 ou se mudou com o layout de 2018.
 - E3.3: discutir o poder estatístico da regra de aceitação. Com 10 anos-alvo, "≥70% dos anos" e Diebold-Mariano são fracos; avaliar agrupar cutoffs por horizonte e reportar com e sem 2020–22.
 - E3.6: na ponte RREO × BCB, verificar como o BCB trata os ativos do RPPS, já que o P2 exclui o RPPS.
-- E2.8: decisão sobre RJ/PR/RS (harmonizar ou excluir).
+- E2.8: Pedro decidir a recomendação para RJ/PR/RS (ver `docs/nota_quebras.md`, 3.3).
 - E2.10: feito (ver acima; RGF/DCA/MSC não verificados).
 - E3.3: regra de aceitação a congelar.
 
