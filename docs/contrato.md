@@ -21,6 +21,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 - **Valores**: base em R$ correntes. Variação real deflacionada pelo **IPCA mensal, período a período** (cada mês ou bimestre pelo IPCA do próprio período, depois somado). Não usar IPCA dez/dez para fluxos.
 - **Unidades de saída**: R$ bilhões e % do PIB. O denominador do % do PIB é o PIB nominal anual do ano t, tratado como premissa (`premissas.yml`). Não usar o PIB acumulado em 12 meses do BCB.
 - **Agregado**: "total das 27 UFs" só quando a cobertura estiver explícita; senão, rotular como parcial.
+  - **Conceito original (29/10/2026):** o bimestre-UF que não pode ser levado ao conceito único (algum imposto fora de qualquer conceito do Anexo 6) não sai do agregado: entra com o Anexo 6 sem ajuste e a marca `conceito_original` (o primário é o mesmo). O agregado é rotulado "parcial" quando a receita desses bimestres-UF passa de 5% da receita total do agregado (`rotular_agregado()`), e "completo" caso contrário; a lista de UFs em conceito original acompanha o agregado. Violações do ajuste (custeio reconstruído não positivo, quebra na troca de conceito) são flags automáticos, sem correção manual.
 
 ## Quebras conhecidas (a tratar no E2, nota de quebras)
 - 2018: mudança de layout do RREO Anexo 6.

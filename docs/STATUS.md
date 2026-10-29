@@ -239,7 +239,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ### Conceito único do Anexo 6 e docs do E5.1 (28/10/2026, branch `anexo3-conceito-unico`, PR (b))
 - `R/transform/conceito_unico.R`, `scripts/conceito_unico.R`, `tests/test-conceito_unico.R`: o Anexo 6 passa ao conceito único (líquido de FUNDEB e cota-parte; despesa sem os repasses); detalhes e números em `docs/dicionario_contas_estados.md`, seção 10.
-- Validação do ajuste: custeio reconstruído positivo (6 violações), sem quebra na troca de conceito (9 de 11 trocas passam e melhoram em relação ao Anexo 6; falham RR 2019 e PA 2022 no limite). 186 bimestres UF não reconstruíveis, nenhum de 2022 em diante.
+- Validação do ajuste: custeio reconstruído positivo (6 violações), sem quebra na troca de conceito (9 de 11 trocas passam e melhoram em relação ao Anexo 6; falham RR 2019 e PA 2022 no limite). 186 bimestres UF em conceito original (nenhum de 2022 em diante; 78 em 2018–2021), mantidos no agregado com flag `conceito_original` e rótulo "parcial" quando passam de 5% da receita (2018 e 2019). Continuidade de SP 2022→2023 sem quebra; 22 quebras em 163 trocas de conceito, para a nota do E2.8. Flags automáticos, sem correção manual. HANDOVER 3a: comandos para o Prompt de Comando (cmd) no PC da CNI.
 - Docs: E5.1 corrigido no plano (base do P2 = Anexo 6 em conceito único; bruto do Anexo 3 como complementar) e regra de consolidação estados + municípios registrada.
 
 ### Anexo 3 (RCL) e DCA dos estados: receita mensal bruta e líquida (28/10/2026, branch `anexo3-rcl`, PR da linha 1–2 do plano)

@@ -53,14 +53,34 @@ ajuste_total <- function(aj) {
 }
 
 #' Aplica o ajuste aos fluxos do Anexo 6. `fluxos`: cod_ibge, exercicio, periodo, rec_total, desp_total, desp_custeio (R$, bimestre).
+#' Bimestre que não pode ser reconstruído (algum imposto fora de qualquer conceito) não é excluído: fica com o Anexo 6 sem ajuste e
+#' `conceito_original = TRUE` (o primário é o mesmo). Flags automáticos, sem correção manual: `flag_custeio_nao_positivo`.
 aplicar_conceito_unico <- function(fluxos, ajt) {
   x <- merge(fluxos, ajt, by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE)
-  x$rec_unica <- x$rec_total - x$ajuste_total
-  x$desp_unica <- x$desp_total - x$ajuste_total
-  x$custeio_unico <- x$desp_custeio - x$ajuste_total
+  x$conceito_original <- is.na(x$ajuste_total) | x$nao_reconstruivel
+  x$ajuste_aplicado <- ifelse(x$conceito_original, 0, x$ajuste_total)
+  x$rec_unica <- x$rec_total - x$ajuste_aplicado
+  x$desp_unica <- x$desp_total - x$ajuste_aplicado
+  x$custeio_unico <- x$desp_custeio - x$ajuste_aplicado
   x$primario_a6 <- x$rec_total - x$desp_total
   x$primario_unico <- x$rec_unica - x$desp_unica
+  x$flag_custeio_nao_positivo <- !x$conceito_original & !is.na(x$custeio_unico) & x$custeio_unico <= 0
   x
+}
+
+# Limite definido em 29/10/2026: o agregado é rotulado "parcial" se os bimestres UF em conceito original (sem ajuste) somam mais de
+# 5% da receita total do agregado; abaixo disso, "completo" (com a lista de UFs em conceito original ao lado).
+LIMITE_PARCIAL <- 0.05
+
+#' Rótulo do agregado de um ano x bimestre: parcela da receita em conceito original e rótulo "completo"/"parcial".
+rotular_agregado <- function(x, limite = LIMITE_PARCIAL) {
+  out <- lapply(split(x, paste(x$exercicio, x$periodo)), function(z) {
+    tot <- sum(z$rec_total, na.rm = TRUE)
+    sh <- if (tot > 0) sum(z$rec_total[z$conceito_original], na.rm = TRUE) / tot else NA_real_
+    data.frame(exercicio = z$exercicio[1], periodo = z$periodo[1], ufs = nrow(z), ufs_conceito_original = sum(z$conceito_original),
+               parcela_receita_original = sh, rotulo = ifelse(is.na(sh) || sh > limite, "parcial", "completo"), stringsAsFactors = FALSE)
+  })
+  out <- do.call(rbind, out); out[order(out$exercicio, out$periodo), ]
 }
 
 #' Testes que validam o ajuste (a identidade da receita menos despesa é tautológica):
@@ -68,8 +88,8 @@ aplicar_conceito_unico <- function(fluxos, ajt) {
 #' (2) não pode haver quebra na troca de regime: razão anual custeio/receita no 6º bimestre; na troca (conceito do ano muda) a variação
 #'     da razão reconstruída não pode superar o percentil `p` das variações nos anos sem troca. Lista as trocas que violam.
 validar_conceito_unico <- function(x, conceito, p = 0.9) {
-  viol_pos <- x[!is.na(x$custeio_unico) & x$custeio_unico <= 0 & !x$nao_reconstruivel, c("cod_ibge", "exercicio", "periodo", "desp_custeio", "ajuste_total", "custeio_unico")]
-  a <- x[x$periodo == 6 & !x$nao_reconstruivel & is.finite(x$custeio_unico) & x$rec_unica > 0, ]
+  viol_pos <- x[!is.na(x$custeio_unico) & x$custeio_unico <= 0 & !x$conceito_original, c("cod_ibge", "exercicio", "periodo", "desp_custeio", "ajuste_total", "custeio_unico")]
+  a <- x[x$periodo == 6 & !x$conceito_original & is.finite(x$custeio_unico) & x$rec_unica > 0, ]
   a$r_unica <- a$custeio_unico / a$rec_unica; a$r_a6 <- a$desp_custeio / a$rec_total
   cc <- unique(conceito[, c("cod_ibge", "exercicio", "categoria", "conceito")])
   chave <- tapply(cc$conceito, paste(cc$cod_ibge, cc$exercicio), function(v) paste(sort(v), collapse = "+"))
@@ -110,5 +130,35 @@ fluxos_a6_conceito <- function(rreo, dic_contas, dic_colunas) {
   imp$categoria <- unname(CAT_A6_IMPOSTO[imp$cod_conta])
   imp <- imp[!duplicated(imp[, c("cod_ibge", "exercicio", "categoria")]), c("cod_ibge", "exercicio", "categoria", "valor")]
   names(imp)[4] <- "a6_acum"
-  list(fluxos = fl, a6_anual = imp)
+  # fluxo bimestral por imposto (acumulado -> fluxo), para a continuidade do imposto líquido reconstruído
+  ri <- d[d$papel_coluna %in% "receita_p2" & corrente & d$cod_conta %in% names(CAT_A6_IMPOSTO), ]
+  ri$categoria <- unname(CAT_A6_IMPOSTO[ri$cod_conta])
+  ri <- ri[!duplicated(ri[, c("cod_ibge", "exercicio", "periodo", "categoria")]), c("cod_ibge", "exercicio", "periodo", "categoria", "valor")]
+  ri <- acumulado_para_fluxo(ri, serie = c("cod_ibge", "categoria"), valor = "valor")
+  ri$fluxo[ri$acum_anterior_ausente] <- NA_real_
+  fi <- ri[, c("cod_ibge", "exercicio", "periodo", "categoria", "fluxo")]; names(fi)[5] <- "a6_fluxo"
+  list(fluxos = fl, a6_anual = imp, fluxo_imposto = fi)
+}
+
+# Limite definido em 29/10/2026: a razão (receita líquida reconstruída do imposto) / (bruto do Anexo 3 calibrado) é constante se o
+# ajuste está certo; variação anual acima de 2 pontos percentuais da razão é quebra (alerta, não bloqueia).
+LIMITE_CONTINUIDADE <- 0.02
+
+#' Continuidade do imposto líquido reconstruído por UF x imposto x ano: razão anual líquida/bruto, variação anual e se o conceito
+#' do Anexo 6 mudou na virada. `fluxo_imposto`: cod_ibge, exercicio, periodo, categoria, a6_fluxo; `aj`: saída de ajuste_conceito_unico().
+continuidade_imposto <- function(fluxo_imposto, aj, limite = LIMITE_CONTINUIDADE) {
+  m <- merge(fluxo_imposto, aj[, c("cod_ibge", "exercicio", "periodo", "categoria", "bruto", "ajuste", "conceito")],
+             by = c("cod_ibge", "exercicio", "periodo", "categoria"))
+  m <- m[is.finite(m$ajuste) & is.finite(m$a6_fluxo) & m$bruto > 0, ]
+  m$liq <- m$a6_fluxo - m$ajuste
+  a <- aggregate(cbind(liq, bruto) ~ cod_ibge + categoria + exercicio, m, sum)
+  cc <- unique(m[, c("cod_ibge", "categoria", "exercicio", "conceito")]); a <- merge(a, cc[!duplicated(cc[, 1:3]), ], by = c("cod_ibge", "categoria", "exercicio"))
+  a$razao <- a$liq / a$bruto
+  a <- a[order(a$cod_ibge, a$categoria, a$exercicio), ]
+  ch <- paste(a$cod_ibge, a$categoria); ant <- c(NA, seq_len(nrow(a) - 1L)); ant[c(TRUE, ch[-1] != ch[-nrow(a)])] <- NA
+  a$ano_anterior_consecutivo <- !is.na(ant) & a$exercicio - a$exercicio[ant] == 1L
+  a$delta <- ifelse(a$ano_anterior_consecutivo, a$razao - a$razao[ant], NA_real_)
+  a$troca_conceito <- a$ano_anterior_consecutivo & a$conceito != a$conceito[ant]
+  a$quebra <- !is.na(a$delta) & abs(a$delta) > limite
+  a
 }

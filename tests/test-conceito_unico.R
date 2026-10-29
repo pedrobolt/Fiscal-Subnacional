@@ -32,9 +32,35 @@ test_that("conceito unico nao muda o primario e custeio reconstruido nao quebra 
 
 test_that("validacao: custeio nao positivo e quebra na troca sao listados", {
   x <- data.frame(cod_ibge = 35, exercicio = 2018:2021, periodo = 6, rec_total = 1000, rec_unica = 1000, desp_custeio = 400, custeio_unico = c(400, 400, -5, 700),
-                  ajuste_total = 0, nao_reconstruivel = FALSE)
+                  ajuste_total = 0, nao_reconstruivel = FALSE, conceito_original = FALSE)
   con <- data.frame(cod_ibge = 35, exercicio = 2018:2021, categoria = "ICMS", conceito = c("a", "a", "a", "b"))
   v <- validar_conceito_unico(x, con)
   expect_equal(v$positividade$exercicio, 2020)
   expect_true(nrow(v$trocas) == 1 && v$trocas$exercicio == 2021)
+})
+
+test_that("bimestre nao reconstruivel fica com o A6 sem ajuste e flag de conceito original", {
+  fluxos <- data.frame(cod_ibge = c(35, 31), exercicio = 2019, periodo = 1, rec_total = c(1000, 500), desp_total = c(900, 480), desp_custeio = c(300, 200))
+  ajt <- data.frame(cod_ibge = c(35, 31), exercicio = 2019, periodo = 1, ajuste_total = c(100, 80), nao_reconstruivel = c(FALSE, TRUE))
+  x <- aplicar_conceito_unico(fluxos, ajt); x <- x[match(c(35, 31), x$cod_ibge), ]
+  expect_equal(x$conceito_original, c(FALSE, TRUE))
+  expect_equal(x$rec_unica, c(900, 500)); expect_equal(x$custeio_unico, c(200, 200)); expect_equal(x$primario_unico, x$primario_a6)
+  expect_equal(x$flag_custeio_nao_positivo, c(FALSE, FALSE))
+  x2 <- aplicar_conceito_unico(fluxos, transform(ajt, ajuste_total = c(400, 80))); x2 <- x2[match(c(35, 31), x2$cod_ibge), ]
+  expect_equal(x2$flag_custeio_nao_positivo, c(TRUE, FALSE))
+})
+
+test_that("rotulo do agregado: parcial acima de 5% da receita em conceito original", {
+  x <- data.frame(exercicio = 2019, periodo = 1, rec_total = c(940, 60), conceito_original = c(FALSE, TRUE))
+  expect_equal(rotular_agregado(x)$rotulo, "parcial")
+  x$rec_total <- c(970, 30); expect_equal(rotular_agregado(x)$rotulo, "completo")
+})
+
+test_that("continuidade do imposto liquido: razao liquida/bruto constante na troca de conceito nao e quebra", {
+  fi <- data.frame(cod_ibge = 35, exercicio = rep(2022:2023, each = 2), periodo = rep(5:6, 2), categoria = "ICMS", a6_fluxo = c(100, 100, 85, 85))
+  aj <- data.frame(cod_ibge = 35, exercicio = rep(2022:2023, each = 2), periodo = rep(5:6, 2), categoria = "ICMS", bruto = 100,
+                   ajuste = c(40, 40, 25, 25), conceito = rep(c("nenhuma", "fundeb"), each = 2))
+  r <- continuidade_imposto(fi, aj)
+  expect_equal(r$razao, c(.6, .6)); expect_equal(r$troca_conceito, c(FALSE, TRUE)); expect_false(any(r$quebra))
+  aj$ajuste <- c(40, 40, 10, 10); expect_true(continuidade_imposto(fi, aj)$quebra[2])
 })
