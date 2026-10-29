@@ -54,3 +54,41 @@ gravar_csv(yy, "outputs/quebras_pessoal_rgf.csv")
 cat("\nPessoal RREO x RGF: UF-bimestres comparáveis:", nrow(yy[!is.na(yy$dif), ]), "| suspeita de reclassificação (> 20 p.p.):", sum(yy$suspeita_reclassificacao), "\n")
 print(table(yy$exercicio[yy$suspeita_reclassificacao], yy$cod_ibge[yy$suspeita_reclassificacao]))
 print(yy[yy$exercicio == 2025 & yy$cod_ibge %in% c(33, 41, 43), c("cod_ibge", "periodo", "rreo_yoy", "rgf_yoy", "dif", "suspeita_reclassificacao")], digits = 3, row.names = FALSE)
+
+# Harmonização de pessoal (sensibilidade) para RJ/PR/RS: início detectado nos dados (primeiro bimestre de 2025 com salto e suspeita)
+ini <- data.frame(cod_ibge = c(33, 41, 43), exercicio = 2025, periodo = c(1, 6, 5))
+ph <- pessoal_harmonizado(fl[fl$serie == "desp:pessoal", c("cod_ibge", "exercicio", "periodo", "valor")], yy, ini)
+ph <- ph[ph$cod_ibge %in% ini$cod_ibge & ph$exercicio >= 2024, ]
+desp <- aggregate(valor ~ cod_ibge + exercicio + periodo, fl[grepl("^desp:", fl$serie), ], sum); names(desp)[4] <- "desp_total"
+ph <- merge(ph, desp, by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE); ph$excedente_sobre_despesa <- ph$excedente / ph$desp_total
+gravar_csv(ph, "outputs/quebras_pessoal_harmonizado.csv")
+cat("\nExcedente de pessoal (reclassificação) 2025, R$ bi e % da despesa total do bimestre:\n")
+print(transform(ph[ph$excedente > 0, ], excedente_bi = round(excedente / 1e9, 2), pct = round(100 * excedente_sobre_despesa, 1))[, c("cod_ibge", "exercicio", "periodo", "excedente_bi", "pct")], row.names = FALSE)
+
+# Inventário consolidado das quebras (outputs/quebras_e28.csv): números lidos das saídas acima, nunca digitados.
+inv <- list()
+add <- function(quebra, ufs, periodo, n, magnitude, tratamento, alerta) inv[[length(inv) + 1]] <<-
+  data.frame(quebra, ufs, periodo, n, magnitude, tratamento, alerta, stringsAsFactors = FALSE)
+rs <- fl[fl$cod_ibge == 43 & fl$exercicio == 2018, ]
+add("A6 vazio na API", "RS", "2018 b1-b5", 5 - length(setdiff(unique(rs$periodo), 6)),
+    "fluxos NA; total anual vem do b6", "fluxo NA; agregado 'parcial'; conceito_original", "d (extrato) / c")
+est <- ler_csv("outputs/a3_fatores_estabilidade.csv")
+tr <- ler_csv("outputs/conceito_unico_trocas.csv")
+add("fator bruto/liquido do A3 (mudanca anual > 2%)", "UF x imposto", "anual", sum(est$n_quebras),
+    paste0("UF-imposto com ao menos 1: ", sum(est$n_quebras > 0), " de ", nrow(est)),
+    "flag_quebra_fator; ano corrente menos confiavel; nao bloqueia", "c (fator_instavel)")
+rp <- ler_csv("outputs/quebras_rpps_2023.csv"); rp <- rp[rp$exercicio >= 2023 & !is.na(rp$parcela_rpps_rec), ]
+add("RPPS separado no A6 (layout 2023+)", "27", "2023 em diante", length(unique(rp$cod_ibge)),
+    paste0("RPPS/receita: mediana ", round(median(rp$parcela_rpps_rec), 3), "; max ", round(max(rp$parcela_rpps_rec), 3)),
+    "usar totais 'sem RPPS' do layout 2023+; categorias demais receitas e pessoal nao separaveis", "b (227 alertas em 2023)")
+hm <- ler_csv("outputs/quebras_pessoal_harmonizado.csv")
+for (u in c(33, 41, 43)) { h <- hm[hm$cod_ibge == u & hm$excedente > 0, ]
+  add("reclassificacao de pessoal no RREO", c("33" = "RJ", "41" = "PR", "43" = "RS")[as.character(u)],
+      paste0(min(h$exercicio), " b", h$periodo[which.min(h$exercicio * 10 + h$periodo)], " em diante (persiste em 2026)"), nrow(h),
+      paste0("excedente de pessoal ate ", round(max(h$excedente) / 1e9, 2), " bi/bimestre (", round(100 * max(h$excedente_sobre_despesa), 1), "% da despesa)"),
+      "degrau na despesa total/primario; categoria pessoal harmonizada por linha de excedente; RGF so em sensibilidade", "b + RGF>20pp")
+}
+for (s in c("conceito_original", "custeio_nao_positivo", "quebra_na_troca_de_conceito"))
+  add(paste0("flag ", s), "varias", "varios", sum(al$subtipo == s), "", "flag automatico, sem correcao manual", "c")
+gravar_csv(do.call(rbind, inv), "outputs/quebras_e28.csv")
+print(do.call(rbind, inv)[, c("quebra", "ufs", "n", "magnitude")])

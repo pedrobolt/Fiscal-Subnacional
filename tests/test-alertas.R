@@ -63,3 +63,18 @@ test_that("yoy do pessoal RREO x RGF e suspeita de reclassificacao", {
   expect_equal(y$suspeita_reclassificacao[y$cod_ibge == 1], TRUE); expect_equal(y$suspeita_reclassificacao[y$cod_ibge == 2], FALSE)
   expect_equal(round(y$rgf_yoy[y$cod_ibge == 1], 3), 0.04)
 })
+
+test_that("suspeita de reclassificacao so alerta quando o salto (b) tambem dispara", {
+  ab <- mk_alerta("b", "salto_vs_ano_anterior", c(1, 2), "desp:pessoal", 2025, 1, 10, 5, "x")
+  yoy <- data.frame(cod_ibge = c(1, 2, 3), exercicio = 2025, periodo = 1, rreo_yoy = c(.8, .1, .9), rgf_yoy = c(.05, .05, .02), dif = c(.75, .05, .88),
+                    suspeita_reclassificacao = c(TRUE, FALSE, TRUE))
+  a <- alerta_reclassificacao_pessoal(ab, yoy)
+  expect_equal(a$cod_ibge, 1L); expect_equal(a$subtipo, "pessoal_suspeita_reclassificacao")
+})
+
+test_that("pessoal harmonizado: a partir do inicio usa o ano anterior x variacao do RGF; antes nao mexe", {
+  p <- data.frame(cod_ibge = 1, exercicio = c(2024, 2025, 2026), periodo = 1, valor = c(100, 300, 330))
+  y <- data.frame(cod_ibge = 1, exercicio = c(2025, 2026), periodo = 1, rgf_yoy = c(.05, .10))
+  h <- pessoal_harmonizado(p, y, data.frame(cod_ibge = 1, exercicio = 2025, periodo = 1))
+  expect_equal(h$harmonizado, c(100, 105, 115.5)); expect_equal(h$excedente, c(0, 195, 330 - 115.5))
+})

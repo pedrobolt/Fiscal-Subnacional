@@ -198,3 +198,33 @@ yoy_pessoal_rreo_rgf <- function(fluxos_cat, rgf_mensal, pp = ALERTA_RGF_PP) {
   names(m)[4:5] <- c("rreo_yoy", "rgf_yoy"); m$dif <- m$rreo_yoy - m$rgf_yoy
   marcar_reclassificacao(m, pp)
 }
+
+#' Alerta de suspeita de reclassificação de pessoal: salto de pessoal pelo alerta (b) E variação anual do RREO acima da do RGF em mais
+#' de `pp` (a coluna `suspeita_reclassificacao` sozinha é informativa e dispararia em ~10% dos UF-bimestres). `ab`: saída de alerta_salto().
+alerta_reclassificacao_pessoal <- function(ab, yoy) {
+  b <- ab[ab$serie == "desp:pessoal", c("cod_ibge", "exercicio", "periodo")]
+  m <- merge(b, yoy[yoy$suspeita_reclassificacao, ], by = c("cod_ibge", "exercicio", "periodo"))
+  if (!nrow(m)) return(alertas_vazio())
+  mk_alerta("b", "pessoal_suspeita_reclassificacao", m$cod_ibge, "desp:pessoal", m$exercicio, m$periodo, m$dif, ALERTA_RGF_PP,
+            sprintf("RREO %+.0f%% vs RGF %+.0f%% (variação anual)", 100 * m$rreo_yoy, 100 * m$rgf_yoy))
+}
+
+#' Pessoal harmonizado (sensibilidade) para UFs que reclassificaram despesa no RREO sem mudança no RGF. Do primeiro bimestre afetado
+#' (`inicio`: cod_ibge, exercicio, periodo) em diante, o pessoal esperado é o do mesmo bimestre do ano anterior (já harmonizado) vezes a
+#' variação anual do RGF; o excedente (RREO − esperado) é o efeito da reclassificação. Não mexe no total da despesa nem no primário:
+#' o excedente fica numa linha própria. `pessoal`: cod_ibge, exercicio, periodo, valor (fluxo do bimestre); `yoy`: yoy_pessoal_rreo_rgf().
+pessoal_harmonizado <- function(pessoal, yoy, inicio) {
+  p <- merge(pessoal, yoy[, c("cod_ibge", "exercicio", "periodo", "rgf_yoy")], by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE)
+  p <- p[order(p$cod_ibge, p$exercicio, p$periodo), ]
+  p$bruto <- p$valor; p$harmonizado <- p$valor; p$excedente <- 0
+  for (u in unique(inicio$cod_ibge)) {
+    ini <- inicio[inicio$cod_ibge == u, ]; t0 <- min(ini$exercicio * 10L + ini$periodo)
+    for (i in which(p$cod_ibge == u & p$exercicio * 10L + p$periodo >= t0)) {
+      ant <- which(p$cod_ibge == u & p$exercicio == p$exercicio[i] - 1L & p$periodo == p$periodo[i])
+      if (length(ant) != 1 || is.na(p$rgf_yoy[i])) next
+      esperado <- p$harmonizado[ant] * (1 + p$rgf_yoy[i])
+      p$harmonizado[i] <- esperado; p$excedente[i] <- p$bruto[i] - esperado
+    }
+  }
+  p[, c("cod_ibge", "exercicio", "periodo", "bruto", "harmonizado", "excedente")]
+}

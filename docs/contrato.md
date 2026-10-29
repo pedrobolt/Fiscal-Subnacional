@@ -26,7 +26,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 ## Quebras conhecidas (a tratar no E2, nota de quebras)
 - 2018: mudança de layout do RREO Anexo 6.
 - 2023: separação das fontes do RPPS.
-- 2º sem. 2025: RJ, PR e RS reclassificaram despesa de pessoal no RREO (+41% a +75%, sem mudança no RGF). Decisão entre harmonizar e excluir depende da análise.
+- RJ, PR e RS reclassificaram despesa de pessoal no RREO sem mudança correspondente no RGF. Início medido (E2.8, `docs/nota_quebras.md`): RJ 2025 b1; PR 2025 b6; RS 2025 b5; persiste em 2026. Regra de uso no E5, em ordem: harmonizar quando possível, dummy de quebra (degrau enquanto a mudança persistir; robustez excluindo a UF), excluir só em último caso.
 
 ## Avaliação
 - Backtest de **evento fixo**: erro do total anual por mês do cutoff (jan…dez), anos-alvo 2016–2025.
