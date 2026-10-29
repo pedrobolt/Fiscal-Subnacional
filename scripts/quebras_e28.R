@@ -46,3 +46,11 @@ tr$parcela_rpps_desp <- (tr$desp_com - tr$desp_sem) / tr$desp_com
 gravar_csv(tr, "outputs/quebras_rpps_2023.csv")
 cat("\nParcela do RPPS na receita primária total (2023-25): mediana", round(median(tr$parcela_rpps_rec[tr$exercicio >= 2023], na.rm = TRUE), 3),
     "| UFs com valor:", length(unique(tr$cod_ibge[tr$exercicio >= 2023 & !is.na(tr$rec_sem)])), "\n")
+
+# Pessoal: RREO x RGF (Executivo), variação anual por UF x bimestre
+rg <- pessoal_rgf_mensal()
+yy <- yoy_pessoal_rreo_rgf(fl, rg)
+gravar_csv(yy, "outputs/quebras_pessoal_rgf.csv")
+cat("\nPessoal RREO x RGF: UF-bimestres comparáveis:", nrow(yy[!is.na(yy$dif), ]), "| suspeita de reclassificação (> 20 p.p.):", sum(yy$suspeita_reclassificacao), "\n")
+print(table(yy$exercicio[yy$suspeita_reclassificacao], yy$cod_ibge[yy$suspeita_reclassificacao]))
+print(yy[yy$exercicio == 2025 & yy$cod_ibge %in% c(33, 41, 43), c("cod_ibge", "periodo", "rreo_yoy", "rgf_yoy", "dif", "suspeita_reclassificacao")], digits = 3, row.names = FALSE)
