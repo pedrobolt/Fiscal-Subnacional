@@ -147,10 +147,9 @@ totais_rpps <- function(rreo, dic_contas, dic_colunas) {
   rec <- d[d$papel_coluna %in% "receita_p2" & d$papel_conta == "rec_total", ]
   dsp <- d[d$papel_coluna %in% "despesa_caixa_p2" & d$papel_conta == "desp_total", ]
   agr <- function(x, nome) {
-    x <- x[!duplicated(x[, c("cod_cod", "cod_conta", "estagio", "coluna")]), ]
+    x <- x[!duplicated(x[, c("cod_ibge", "exercicio", "cod_conta", "estagio", "coluna")]), ]
     s <- aggregate(valor ~ cod_ibge + exercicio + rpps, x, sum); names(s)[4] <- nome; s
   }
-  rec$cod_cod <- rec$cod_ibge; dsp$cod_cod <- dsp$cod_ibge
   r <- agr(rec, "rec"); dp <- agr(dsp, "desp")
   m <- merge(r, dp, by = c("cod_ibge", "exercicio", "rpps"), all = TRUE)
   com <- m[m$rpps %in% c("inclui_rpps", "incluido_nao_separavel"), ]; sem <- m[m$rpps %in% c("ja_excluido"), ]
