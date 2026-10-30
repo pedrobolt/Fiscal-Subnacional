@@ -26,5 +26,7 @@ Abrir o RREO do 4º bimestre de 2026 no site da SEFAZ do estado (não o PDF do S
 ## Regra de aceitação (definida antes da leitura)
 Diferença relativa ≤ 0,1% em cada linha e mesmo sinal do resultado primário. Divergência: classificar como erro de leitura, de dicionário (corrigir com teste) ou de definição (registrar em `docs/nota_quebras.md`).
 
-## Resultado
-A preencher após a leitura.
+## Resultado (30/10/2026)
+**3/3 UFs conferidas, 4º bim. 2026, Anexo 6, sem RPPS.** Leitura do Pedro nos RREO publicados pelos próprios estados: receita primária, despesa (paga + RP processados pagos + RP não processados pagos) e resultado primário batem com o pipeline nas três UFs, dentro de 0,1% e com o mesmo sinal (R$ bi, PDF = pipeline; receita / despesa / resultado): SP 243,585 / 238,265 / 5,321; RJ 76,430 / 68,380 / 8,050; MG 83,582 / 81,602 / 1,979.
+
+**Limite do teste:** cobre só os totais. Não valida a quebra de pessoal por categoria (RJ, PR e RS) nem a classificação por categoria do dicionário; isso segue apoiado nos testes automáticos e na nota de quebras.
