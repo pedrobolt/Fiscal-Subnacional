@@ -38,3 +38,12 @@ Gap g = P2 − P1 (estados, bimestre, R$ bi). Há gap em 46 bimestres (2019 b1 a
 - Municípios: fora do escopo até a carga e o dicionário municipais estarem prontos.
 
 Fontes: Banco Central do Brasil, [Manual de Estatísticas Fiscais (2018)](https://www.bcb.gov.br/ftp/infecon/estatisticasfiscais.pdf); [Portal de Dados Abertos do BCB, governos estaduais (4643)](https://dadosabertos.bcb.gov.br/dataset?q=governos+estaduais+resultado+primario).
+
+## 5. Teste da hipótese do RPPS (30/10/2026; critério fixado antes de calcular)
+**Hipótese (Pedro):** o BCB (SGS 4643) cobre a administração direta e indireta dos estados e não exclui o RPPS; a exclusão do RPPS no Anexo 6 de 2023 em diante (MDF 13ª ed.) é escolha do demonstrativo para a meta da LDO. Logo o P2 "sem RPPS" tem uma quebra própria em 2023 em relação ao BCB. Pendência externa: pergunta enviada ao BCB em 30/10/2026; a resposta não é esperada para este teste.
+
+**Versões do P2.** A (série oficial, não muda): Anexo 6 até 2022 (inclui RPPS) e resultado primário sem RPPS (linha XXXV) de 2023 em diante. B: Anexo 6 até 2022 e resultado primário com RPPS (linha XXXIV) de 2023 em diante, com receita primária total (linha XVI) como denominador. r = gap ÷ receita primária agregada da própria versão.
+
+**Medidas.** (i) Para cada bimestre b1–b6, a mediana de r antes (2019–22) e depois (2023–24) da fronteira, e a diferença; (ii) o gap anual (soma dos 6 bimestres ÷ receita anual) por ano, 2019–25, e a variação 2022→2023 comparada com as variações 2019→20, 2020→21 e 2021→22; 2026 (b1–b4) só como acumulado parcial. "Depois" fica em 2023–24 para não misturar a reclassificação de pessoal de 2025; como robustez, 2023–26 usando o gap sem reclassificação nas duas versões.
+
+**Critério de "contínua na fronteira" (sem limiar formal; n pequeno).** Contínua é a versão com menor soma de |diferença| da mediana por bimestre (b1–b6) **e** menor |variação do gap anual 2022→2023|. Se as duas medidas discordarem, a conclusão é "inconclusivo". Confundidores que não são separáveis aqui: LC 194/2022 (corte de ICMS em 2022, com efeito em 2023), recuperação pós-pandemia, ciclo eleitoral de 2022 (investimento) e a amostra de 2 anos "depois".
