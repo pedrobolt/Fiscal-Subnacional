@@ -289,6 +289,13 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Plano E5.4: a ponte é avaliada no gap anual.
 - **Pendência externa:** pergunta ao BCB sobre o tratamento do RPPS na SGS 4643, enviada pelo Pedro em 30/10/2026; resposta não esperada; não bloqueia nada.
 
+### E3.6 (cont.): correção do teste do RPPS, Anexo 4 e proposta (30/10/2026, branch `e3-6c-rpps-anexo4`)
+- Correção de desenho (do Pedro): o teste de continuidade não identifica o tratamento do RPPS pelo BCB; só verifica se a linha com RPPS de 2023+ reproduz o conceito anterior. Retirada a leitura "compatível com a hipótese" (16,2 / −10,0 bi somam 26,2 por construção). Registrado em `docs/nota_gap.md`.
+- Anexo 4 (RPPS) baixado: 27 UFs × 2019–2024 (6º bimestre), `scripts/baixar_anexo4.R`; `R/transform/rpps_anexo4.R`, `scripts/rpps_anexo4.R`, `tests/test-rpps_anexo4.R`. Resultado: o "com − sem" do Anexo 6 (−26,2 e −26,9 bi) não reproduz o líquido do Anexo 4, nem sem aportes (−76,4 e −83,7 bi) nem com aportes (+39,0 e +32,3 bi); no corte por UF a inclinação contra o líquido com aportes é −1,00 (2023) e −0,74 (2024). Não foi possível verificar que a linha XXXIV reproduz o conceito pré-2023.
+- Proposta por escrito (sem implementar, aguarda aprovação): `docs/proposta_p2_com_rpps.md` (P2 com RPPS em todo o período; impacto no dicionário, conceito único e testes; checagem de continuidade por UF antes).
+- NFSP por estado do BCB: relato em `docs/nota_gap.md` (seção 7): o manual diz que existe (trimestral, desde 2009), não localizei onde é publicado hoje; teste de corte transversal e reabertura do gap por UF propostos, sem cálculo.
+- **Pendência externa:** pergunta ao BCB sobre o RPPS na SGS 4643 (30/10/2026).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
