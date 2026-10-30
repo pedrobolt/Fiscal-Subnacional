@@ -87,7 +87,7 @@ test_that("quebras inventariadas viram conhecida e as demais saem por materialid
     mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2023L, 2L, valor = 1e9),         # ICMS 2023: nova
     mk_alerta("b", "salto_vs_ano_anterior", 31L, "rec:ICMS", 2026L, 4L, valor = 9e9),         # nova, mais material
     mk_alerta("b", "salto_vs_ano_anterior", 41L, "desp:pessoal", 2025L, 5L, valor = 9e9),     # PR antes do início (b6): nova
-    mk_alerta("c", "fator_defasado", 31L, "ICMS", 2026L, 4L),                                 # nova, sem R$
+    mk_alerta("c", "fator_instavel", 31L, "ICMS", 2026L, 4L),                                  # nova, sem R$
     mk_alerta("c", "conceito_original", 14L, "A6", 2020L, 1L))                                # conhecida
   rt <- unique(data.frame(cod_ibge = al$cod_ibge, exercicio = al$exercicio, periodo = al$periodo, rec_total = 10e9))
   p <- priorizar_alertas(al, rt)
@@ -99,4 +99,25 @@ test_that("quebras inventariadas viram conhecida e as demais saem por materialid
   expect_equal(sum(p$resumo$n), nrow(al))
   expect_equal(nrow(alertas_novos_por_rodada(a, 2022L)), 5L)
   expect_equal(nrow(marcar_conhecidas(alertas_vazio())), 0L)
+})
+
+test_that("ajustes de uso: piso proprio em demais receitas, fator_defasado como status e aba por corte", {
+  # série com Δ histórico estável (MAD 0) e salto final de 7% da receita: dispara em ICMS, não em demais receitas (piso 10%)
+  mk <- function(serie) data.frame(cod_ibge = 35L, serie = serie, exercicio = 2018:2023, periodo = 1L, valor = c(100, 110, 120, 130, 140, 140 + 70))
+  fl <- rbind(mk("rec:ICMS"), mk("rec:demais receitas"))
+  rt <- data.frame(cod_ibge = 35L, exercicio = 2018:2023, periodo = 1L, rec_total = 1000)
+  b <- alerta_salto(fl, rt, k = 4, piso = 0.01, min_hist = 3L)
+  expect_equal(b$serie, "rec:ICMS")
+  expect_equal(nrow(alerta_salto(fl, rt, piso_serie = c("rec:demais receitas" = 0.05))), 2L)   # piso 5% < salto 6% (Δ−mediana): dispara
+  rb <- data.frame(cod_ibge = 35L, categoria = "ICMS", mes = as.Date(c("2026-01-01", "2026-02-01")), flag_quebra_fator = FALSE,
+                   flag_fator_defasado = TRUE, flag_sem_fator = FALSE)
+  expect_equal(nrow(alerta_flags(NULL, rb)), 0L)                                   # não vira alerta
+  s <- status_fatores(rb); expect_equal(nrow(s), 1L); expect_true(s$fator_defasado)
+  al <- rbind(mk_alerta("b", "salto_vs_ano_anterior", 31L, "rec:ICMS", 2026L, 4L, valor = 9e8),
+              mk_alerta("b", "salto_vs_ano_anterior", 31L, "desp:custeio", 2026L, 4L, valor = 2e7),
+              mk_alerta("c", "fator_instavel", 31L, "ICMS", 2026L, 4L))
+  p <- priorizar_alertas(al, data.frame(cod_ibge = 31L, exercicio = 2026L, periodo = 4L, rec_total = 10e8))
+  ab <- aba_alertas(p, 0.05)
+  expect_equal(nrow(ab$lista), 1L); expect_equal(ab$lista$serie, "rec:ICMS")
+  expect_equal(sum(ab$contagem$n), 2L)
 })

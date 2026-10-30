@@ -24,6 +24,7 @@ al <- rbind(al, ab)
 x <- if (file.exists("outputs/conceito_unico_bimestral.csv")) ler_csv("outputs/conceito_unico_bimestral.csv") else NULL
 rb <- if (file.exists("outputs/receita_mensal_bruta_liquida.csv")) { r <- ler_csv("outputs/receita_mensal_bruta_liquida.csv"); r$mes <- as.Date(r$mes); r } else NULL
 ac <- alerta_flags(x, rb); cat("(c) flags:", nrow(ac), "\n"); al <- rbind(al, ac)
+if (!is.null(rb)) gravar_csv(status_fatores(rb), "outputs/status_fatores.csv")   # fator_defasado como coluna de status, nao alerta
 
 # (d) entrega (extrato dos estados)
 ext <- do.call(rbind, lapply(estados, function(id) do.call(rbind, lapply(2015:as.integer(format(Sys.Date(), "%Y")), function(a) {
