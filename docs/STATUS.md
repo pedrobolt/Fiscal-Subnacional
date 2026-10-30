@@ -265,6 +265,11 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - RS 2018 b1–b5: causa não esclarecida; tratamento: fluxo NA e rótulo parcial.
 - Pendente: ligar os alertas à rodada mensal e à aba do Excel (E6.1/E6).
 
+### Alertas: status "conhecida" e prioridade por materialidade (29/10/2026, branch `e2-8b-alertas-status`, após o #43)
+- `R/quality/alertas.R` (`marcar_conhecidas`, `priorizar_alertas`, `alertas_novos_por_rodada`), `scripts/alertas_priorizados.R`, teste sintético em `tests/test-alertas.R`. Docs: decisão do 3.3 aplicada na nota e no contrato; degrau do gap RREO × BCB de RJ/PR/RS registrado no plano (E3.6 e E5.4).
+- Sobre o histórico (`outputs/alertas_resumo.csv`): 5.481 alertas, 1.005 conhecidos e 4.476 novos (fator_defasado e sem_fator são estado estrutural). Rodada típica (bimestres de 2022 b1 a 2026 b4), alertas novos: mediana 38, p90 152; sem fator_defasado: mediana 35, p90 76. Só o alerta (b): mediana 28,5; acima de 5% da receita da UF, 15 (p90 44,5); acima de 10%, 7 (p90 25,9). Limites de (b) não alterados.
+- Pendente: ligar à rodada mensal e à aba do Excel (E6.1/E6).
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

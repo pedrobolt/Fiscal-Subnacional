@@ -228,3 +228,51 @@ pessoal_harmonizado <- function(pessoal, yoy, inicio) {
   }
   p[, c("cod_ibge", "exercicio", "periodo", "bruto", "harmonizado", "excedente")]
 }
+
+# ---- Priorização: quebras inventariadas (E2.8) viram "conhecida"; os demais ordenados por materialidade ------------------------
+
+#' Início das reclassificações de pessoal inventariadas (docs/nota_quebras.md): cod_ibge, exercicio, periodo.
+INICIO_RECLASSIFICACAO <- data.frame(cod_ibge = c(33L, 41L, 43L), exercicio = 2025L, periodo = c(1L, 6L, 5L))
+#' Último bimestre coberto pelo inventário da E2.8 (exercicio, periodo); alertas posteriores nunca são "conhecidos".
+INVENTARIO_ATE <- c(2026L, 4L)
+
+#' Marca cada alerta com `status` ("conhecida" ou "nova") e `quebra` (rótulo do inventário). Regras:
+#' RPPS 2023 (b em pessoal e demais receitas); reclassificação RJ/PR/RS (b em pessoal, Δ > 0, a partir do início de cada UF: reversão
+#' não é conhecida); RS 2018 b1-b5 (qualquer tipo); flags inventariados do conceito único; quebras anuais do fator até 2025.
+marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTARIO_ATE) {
+  if (!nrow(al)) { al$status <- character(0); al$quebra <- character(0); return(al) }
+  quebra <- rep(NA_character_, nrow(al))
+  dentro <- !is.na(al$exercicio) & (al$exercicio < ate[1] | (al$exercicio == ate[1] & (is.na(al$periodo) | al$periodo <= ate[2])))
+  b <- al$tipo == "b"
+  quebra[dentro & b & al$exercicio %in% 2023L & al$serie %in% c("desp:pessoal", "rec:demais receitas")] <- "RPPS 2023"
+  ini <- inicio[match(al$cod_ibge, inicio$cod_ibge), ]
+  apos <- !is.na(ini$exercicio) & (al$exercicio > ini$exercicio | (al$exercicio == ini$exercicio & al$periodo >= ini$periodo))
+  quebra[dentro & b & al$serie %in% "desp:pessoal" & apos & !is.na(al$valor) & al$valor > 0] <- "reclassificacao de pessoal RJ/PR/RS"
+  quebra[dentro & al$cod_ibge %in% 43L & al$exercicio %in% 2018L & al$periodo %in% 1:5 & al$tipo != "b"] <- "RS 2018 A6 vazio"
+  quebra[dentro & al$tipo == "c" & al$subtipo %in% c("conceito_original", "custeio_nao_positivo", "quebra_na_troca_de_conceito")] <- "flag do conceito unico"
+  quebra[dentro & al$tipo == "c" & al$subtipo == "fator_instavel" & al$exercicio <= 2025L] <- "quebra anual do fator"
+  al$quebra <- quebra
+  al$status <- ifelse(is.na(quebra), "nova", "conhecida")
+  al
+}
+
+#' Materialidade = |Δ| / receita total da UF no bimestre (só para o alerta (b)); `receita_total`: cod_ibge, exercicio, periodo, rec_total.
+#' Ordena: novas primeiro, por materialidade decrescente (alertas sem valor em R$ depois), e devolve também o resumo (total ao lado).
+priorizar_alertas <- function(al, receita_total) {
+  al <- marcar_conhecidas(al)
+  k <- match(paste(al$cod_ibge, al$exercicio, al$periodo), paste(receita_total$cod_ibge, receita_total$exercicio, receita_total$periodo))
+  al$materialidade <- ifelse(al$tipo == "b", abs(al$valor) / receita_total$rec_total[k], NA_real_)
+  al <- al[order(al$status != "nova", -ifelse(is.na(al$materialidade), -1, al$materialidade), al$tipo, al$cod_ibge, al$exercicio, al$periodo), ]
+  rownames(al) <- NULL
+  resumo <- as.data.frame(table(tipo = al$tipo, subtipo = al$subtipo, status = al$status), stringsAsFactors = FALSE)
+  resumo <- resumo[resumo$Freq > 0, ]; names(resumo)[4] <- "n"
+  list(alertas = al, resumo = resumo)
+}
+
+#' Alertas novos por rodada (exercicio, periodo), para dimensionar a revisão; `desde` = primeiro exercicio considerado.
+alertas_novos_por_rodada <- function(al_prior, desde = 2022L) {
+  n <- al_prior[al_prior$status == "nova" & !is.na(al_prior$exercicio) & al_prior$exercicio >= desde, ]
+  if (!nrow(n)) return(data.frame(exercicio = integer(0), periodo = integer(0), subtipo = character(0), n = integer(0)))
+  t <- as.data.frame(table(exercicio = n$exercicio, periodo = n$periodo, subtipo = n$subtipo), stringsAsFactors = FALSE)
+  t <- t[t$Freq > 0, ]; names(t)[4] <- "n"; t$exercicio <- as.integer(t$exercicio); t$periodo <- as.integer(t$periodo); t
+}

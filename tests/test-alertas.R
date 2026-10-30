@@ -78,3 +78,25 @@ test_that("pessoal harmonizado: a partir do inicio usa o ano anterior x variacao
   h <- pessoal_harmonizado(p, y, data.frame(cod_ibge = 1, exercicio = 2025, periodo = 1))
   expect_equal(h$harmonizado, c(100, 105, 115.5)); expect_equal(h$excedente, c(0, 195, 330 - 115.5))
 })
+
+test_that("quebras inventariadas viram conhecida e as demais saem por materialidade", {
+  al <- rbind(
+    mk_alerta("b", "salto_vs_ano_anterior", 33L, "desp:pessoal", 2025L, 3L, valor = 5e9),     # reclassificação RJ: conhecida
+    mk_alerta("b", "salto_vs_ano_anterior", 33L, "desp:pessoal", 2026L, 2L, valor = -5e9),    # reversão: nova
+    mk_alerta("b", "salto_vs_ano_anterior", 35L, "desp:pessoal", 2023L, 2L, valor = 1e9),     # RPPS 2023: conhecida
+    mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2023L, 2L, valor = 1e9),         # ICMS 2023: nova
+    mk_alerta("b", "salto_vs_ano_anterior", 31L, "rec:ICMS", 2026L, 4L, valor = 9e9),         # nova, mais material
+    mk_alerta("b", "salto_vs_ano_anterior", 41L, "desp:pessoal", 2025L, 5L, valor = 9e9),     # PR antes do início (b6): nova
+    mk_alerta("c", "fator_defasado", 31L, "ICMS", 2026L, 4L),                                 # nova, sem R$
+    mk_alerta("c", "conceito_original", 14L, "A6", 2020L, 1L))                                # conhecida
+  rt <- unique(data.frame(cod_ibge = al$cod_ibge, exercicio = al$exercicio, periodo = al$periodo, rec_total = 10e9))
+  p <- priorizar_alertas(al, rt)
+  a <- p$alertas
+  expect_equal(sum(a$status == "conhecida"), 3L)
+  expect_true(all(a$status[1:5] == "nova") && all(a$status[6:8] == "conhecida"))
+  expect_equal(a$cod_ibge[1], 31L)                                  # maior |Δ|/receita primeiro
+  expect_true(is.na(a$materialidade[5]))                            # sem R$ por último entre as novas
+  expect_equal(sum(p$resumo$n), nrow(al))
+  expect_equal(nrow(alertas_novos_por_rodada(a, 2022L)), 5L)
+  expect_equal(nrow(marcar_conhecidas(alertas_vazio())), 0L)
+})

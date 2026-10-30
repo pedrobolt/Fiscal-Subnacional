@@ -33,7 +33,7 @@ Aceite: base reconstruída do zero com um comando; nota de quebras validada.
 - E3.3 Regra de aceitação escrita e congelada (27/10/2026, em `docs/contrato.md`, seção "Protocolo do P1"): lista fechada K = 9, aceitação por faixa de corte (jan–abr, mai–ago, set–nov) com RMSE −10% vs SRW em R$, melhor em >50% dos anos, DM com Holm, sinal e viés não piores, duas amostras (com/sem 2020–22); intervalo paramétrico a 80% (pior caso). Sem tolerância de erro externa
 - E3.4 Base do P1: SRW em R$ (e SRW em % do PIB, acumulado j=5, m2, m3 como desafiantes). ETS, SARIMA, participação sazonal e variantes do m3 (tendência, janela móvel, eleição municipal) ficam só como diagnóstico; ARDL e modelos mais ricos foram considerados e excluídos do P1 por falta de poder (16–19 anos-alvo). A previsão atualizada do RREO (Anexo 1) fica para o P2 (E5)
 - E3.5 Viés das metas da LDO, rolante (encerrado em 27/10/2026: "LDO não viável no P1"; ver STATUS)
-- E3.6 Conciliação P1 × P2: série histórica do gap RREO × BCB e regra de narrativa do gap no informe (inclui o tratamento do RPPS). É pré-requisito do E5.4
+- E3.6 Conciliação P1 × P2: série histórica do gap RREO × BCB e regra de narrativa do gap no informe (inclui o tratamento do RPPS). Na ponte, o gap RREO × BCB de RJ, PR e RS tem degrau a partir do início de cada reclassificação de pessoal (RJ 2025 b1, PR 2025 b6, RS 2025 b5), pois o BCB não é afetado por reclassificação contábil; a série histórica do gap e a regra de narrativa tratam o degrau explicitamente. É pré-requisito do E5.4
 - E3.7 Teste automático de vazamento e registro de experimentos
 Aceite: teste de vazamento passa; protocolo aprovado.
 
@@ -52,7 +52,7 @@ Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 - E5 (protocolo, decisão de 28/10/2026): a despesa em caixa só existe desde 2018 (no máximo 8 anos-alvo até 2025), abaixo do piso de 10 anos por série; por isso o P2 é avaliado em painel de 27 UFs, não série a série.
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
 - E5.3 Resultado RREO (estados, municípios, total), variação real e contribuição de cada item
-- E5.4 (novo) Mistura P2 → ponte (gap RREO × BCB) → P1, calculada em cada rodada como **modelo-sombra** ao lado do SRW e arquivada para avaliação prospectiva. Não é candidato oficial do P1: o RREO em base caixa existe só desde 2018, abaixo do piso de 10 anos-alvo. Depende do E3.6
+- E5.4 (novo) Mistura P2 → ponte (gap RREO × BCB) → P1, calculada em cada rodada como **modelo-sombra** ao lado do SRW e arquivada para avaliação prospectiva. Não é candidato oficial do P1: o RREO em base caixa existe só desde 2018, abaixo do piso de 10 anos-alvo. O modelo-sombra inclui o degrau do gap de RJ, PR e RS (ver E3.6) e a dummy de quebra do primário RREO. Depende do E3.6
 Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benchmark.
 
 ## E6. Rodar o modelo e entregar a planilha final (S6)
