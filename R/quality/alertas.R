@@ -163,7 +163,7 @@ totais_rpps <- function(rreo, dic_contas, dic_colunas) {
   }
   r <- agr(rec, "rec"); dp <- agr(dsp, "desp")
   m <- merge(r, dp, by = c("cod_ibge", "exercicio", "rpps"), all = TRUE)
-  com <- m[m$rpps %in% c("inclui_rpps", "incluido_nao_separavel"), ]; sem <- m[m$rpps %in% c("ja_excluido"), ]
+  com <- m[m$rpps %in% c("inclui_rpps", "incluido_nao_separavel"), ]; sem <- m[m$rpps %in% c("referencia_ldo"), ]
   out <- merge(com, sem, by = c("cod_ibge", "exercicio"), all.x = TRUE, suffixes = c("_com", "_sem"))
   out[, !names(out) %in% c("rpps_com", "rpps_sem")]
 }

@@ -745,17 +745,19 @@ RREO-Anexo 06,2018-22,RREO6ResultadoPrimarioEstadosMunicipios,RESULTADO PRIMÁRI
 RREO-Anexo 06,2018-22,ResultadoPrimarioAbaixoDaLinha,RESULTADO PRIMÁRIO - Abaixo da Linha (XXXVII) =  XXXVI - (XXV - XXVI),resultado_abaixo_da_linha,memo,nao,,,,,nao_se_aplica,
 RREO-Anexo 06,2018-22,AjustesRelativosAoRPPS,AJUSTES RELATIVOS AO RPPS (XXXVII),so_rpps,memo,nao,,,,,excluido,
 RREO-Anexo 06,2018-22,ReservaOrcamentariaDoRPPSPrevidenciario,Reserva Orçamentária do RPPS,so_rpps,memo,nao,,,,,excluido,
+RREO-Anexo 06,2023+,DespesasPrimariasCorrentesComFontesRPPS,DESPESAS PRIMÁRIAS CORRENTES (COM FONTES RPPS) (XXI),desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,pessoal,corrente,,incluido,Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em pessoal; inclui o custeio administrativo do RPPS
+RREO-Anexo 06,2023+,DespesasPrimariasDeCapitalComFontesRPPS,DESPESAS PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XXX),desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,pessoal,capital,,incluido,Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em pessoal; inclui o custeio administrativo do RPPS
 RREO-Anexo 06,2023+,RREO6DemaisInversoesFinanceiras,Demais Inversões Financeiras,desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,demais despesas de capital,capital,,nao_se_aplica,Inversões financeiras primárias (sem concessão de empréstimos e títulos); fora de investimento
 RREO-Anexo 06,2023+,RREO6Investimentos,Investimentos,desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,investimento,capital,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6OutrasDespesasCorrentes,Outras Despesas Correntes,desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,custeio,corrente,,nao_se_aplica,Inclui transferências constitucionais e legais; juros ficam fora do primário
 RREO-Anexo 06,2023+,RREO6PessoalEEncargosSociais,Pessoal e Encargos Sociais,desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,pessoal,corrente,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6ReservaDeContingencia,RESERVA DE CONTINGÊNCIA (XXIX),desp_folha,folha,soma,paga+rp_processado_pago+rpnp_pago,demais despesas,corrente,,nao_se_aplica,A reserva só tem dotação no bruto observado (nenhum valor pago); `sinalizar_reserva_paga()` avisa se aparecer pago
-RREO-Anexo 06,2023+,DespesasCorrentesExcetoFontesRPPS,DESPESAS CORRENTES (EXCETO FONTES RPPS) (XVIII),desp_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,DespesasDeCapitalExcetoFontesRPPS,DESPESAS DE CAPITAL (EXCETO FONTES RPPS) (XXIII),desp_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,DespesasPrimariasCorrentesExcetoFontesRPPS,DESPESAS PRIMÁRIAS CORRENTES (EXCETO FONTES RPPS) (XX) = (XVIII - XIX),desp_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,DespesasPrimariasDeCapitalExcetoFontesRPPS,DESPESAS PRIMÁRIAS DE CAPITAL (EXCETO FONTES RPPS) (XXVIII) = (XXIII - (XXIV + XXV + XXVI + XXVII)),desp_subtotal,subtotal,nao,,,,,ja_excluido,
+RREO-Anexo 06,2023+,DespesasCorrentesExcetoFontesRPPS,DESPESAS CORRENTES (EXCETO FONTES RPPS) (XVIII),desp_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,DespesasDeCapitalExcetoFontesRPPS,DESPESAS DE CAPITAL (EXCETO FONTES RPPS) (XXIII),desp_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,DespesasPrimariasCorrentesExcetoFontesRPPS,DESPESAS PRIMÁRIAS CORRENTES (EXCETO FONTES RPPS) (XX) = (XVIII - XIX),desp_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,DespesasPrimariasDeCapitalExcetoFontesRPPS,DESPESAS PRIMÁRIAS DE CAPITAL (EXCETO FONTES RPPS) (XXVIII) = (XXIII - (XXIV + XXV + XXVI + XXVII)),desp_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
 RREO-Anexo 06,2023+,RREO6InversoesFinanceiras,Inversões Financeiras,desp_subtotal,subtotal,nao,,,,,nao_se_aplica,
-RREO-Anexo 06,2023+,DespesaPrimariaTotalExcetoFontesRPPS,DESPESA PRIMÁRIA TOTAL (EXCETO FONTES RPPS) (XXXIII) = (XX + XXVIII + XXIX),desp_total,total,conferencia,,,,,ja_excluido,Total de conferência do P2 em 2023+
+RREO-Anexo 06,2023+,DespesaPrimariaTotalExcetoFontesRPPS,DESPESA PRIMÁRIA TOTAL (EXCETO FONTES RPPS) (XXXIII) = (XX + XXVIII + XXIX),desp_total,total,referencia_ldo,,,,,referencia_ldo,Total de conferência do P2 em 2023+
 RREO-Anexo 06,2023+,RREO6TotalDespesaPrimaria,DESPESA PRIMÁRIA TOTAL (XXXII) = (XX + XXI + XXVIII + XXIX + XXX),desp_total,total,conferencia,,,,,inclui_rpps,
 RREO-Anexo 06,2023+,RREO6DemaisDespesasCorrentes,Demais Despesas Correntes,filho_de_folha,detalhe,nao,,,,RREO6OutrasDespesasCorrentes,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6ReceitaPatrimonial,Receita Patrimonial,filho_de_folha,detalhe,nao,,,,,nao_se_aplica,
@@ -800,6 +802,8 @@ RREO-Anexo 06,2023+,CotaParteDoITR,Cota-Parte do ITR,rec_folha,folha,soma,receit
 RREO-Anexo 06,2023+,OutrasAlienacoesDeBens,Outras Alienações de Bens,rec_folha,folha,soma,receita_realizada,demais receitas,capital,RREO6AlienacaoDeBens,nao_se_aplica,Alienação de bens que não é de investimentos; entra no primário (verificado contra o total)
 RREO-Anexo 06,2023+,OutrasReceitasDeCapitalPrimarias,Outras Receitas de Capital Primárias,rec_folha,folha,soma,receita_realizada,demais receitas,capital,RREO6OutrasReceitasDeCapital,nao_se_aplica,
 RREO-Anexo 06,2023+,OutrasReceitasPatrimoniais,Outras Receitas Patrimoniais,rec_folha,folha,soma,receita_realizada,demais receitas,corrente,RREO6ReceitaPatrimonial,nao_se_aplica,Patrimonial sem aplicações financeiras
+RREO-Anexo 06,2023+,ReceitasPrimariasCorrentesComFontesRPPS,RECEITAS PRIMÁRIAS CORRENTES (COM FONTES RPPS) (V),rec_folha,folha,soma,receita_realizada,demais receitas,corrente,,incluido,"Fontes RPPS: entra no P2 (decisão de 30/10/2026, série com RPPS); mapeada em demais receitas"
+RREO-Anexo 06,2023+,ReceitasPrimariasDeCapitalComFontesRPPS,RECEITAS PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XIV),rec_folha,folha,soma,receita_realizada,demais receitas,capital,,incluido,Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em demais receitas
 RREO-Anexo 06,2023+,RREO6ConveniosCapital,Convênios,rec_folha,folha,soma,receita_realizada,demais receitas,capital,RREO6TransferenciasDeCapital,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6CotaParteDoFPE,Cota-Parte do FPE,rec_folha,folha,soma,receita_realizada,FPE/FPM,corrente,RREO6TransferenciasCorrentes,nao_se_aplica,Mesmo conteúdo de RREO6FPE sob outro cod_conta: 26 estados usam este código e o DF (53) usa RREO6FPE; verificado no bruto de 28/10/2026
 RREO-Anexo 06,2023+,RREO6DiversasReceitasCorrentes,Receitas Correntes Restantes,rec_folha,folha,soma,receita_realizada,demais receitas,corrente,RREO6DemaisReceitasCorrentes,nao_se_aplica,
@@ -818,27 +822,23 @@ RREO-Anexo 06,2023+,RREO6OutrasTransferenciasDeCapital,Outras Transferências de
 RREO-Anexo 06,2023+,RREO6ReceitasDeContribuicoes,Contribuições,rec_folha,folha,soma,receita_realizada,demais receitas,corrente,RREO6ReceitasPrimariasCorrentes,incluido_nao_separavel,
 RREO-Anexo 06,2023+,TransferenciasDaLCn611989,Transferências da LC nº 61/1989,rec_folha,folha,soma,receita_realizada,demais receitas,corrente,RREO6TransferenciasCorrentes,nao_se_aplica,
 RREO-Anexo 06,2023+,TransferenciasDoFUNDEB,Transferências do FUNDEB,rec_folha,folha,soma,receita_realizada,receita FUNDEB,corrente,RREO6TransferenciasCorrentes,nao_se_aplica,"Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto − dedução + receita FUNDEB"
-RREO-Anexo 06,2023+,ReceitasCorrentesExcetoFontesRPPS,RECEITAS CORRENTES (EXCETO FONTES RPPS) (I),rec_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,ReceitasDeCapitalExcetoFontesRPPS,RECEITAS DE CAPITAL (EXCETO FONTES RPPS) (VII),rec_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,ReceitasPrimariasCorrentesExcetoFontesRPPS,RECEITAS PRIMÁRIAS CORRENTES (EXCETO FONTES RPPS) (IV) = (I - (II + III)),rec_subtotal,subtotal,nao,,,,,ja_excluido,
-RREO-Anexo 06,2023+,ReceitasPrimariasDeCapitalExcetoFontesRPPS,RECEITAS PRIMÁRIAS DE CAPITAL (EXCETO FONTES RPPS) (XIII) = (VII - (VIII + IX + X + XI + XII)),rec_subtotal,subtotal,nao,,,,,ja_excluido,
+RREO-Anexo 06,2023+,ReceitasCorrentesExcetoFontesRPPS,RECEITAS CORRENTES (EXCETO FONTES RPPS) (I),rec_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,ReceitasDeCapitalExcetoFontesRPPS,RECEITAS DE CAPITAL (EXCETO FONTES RPPS) (VII),rec_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,ReceitasPrimariasCorrentesExcetoFontesRPPS,RECEITAS PRIMÁRIAS CORRENTES (EXCETO FONTES RPPS) (IV) = (I - (II + III)),rec_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
+RREO-Anexo 06,2023+,ReceitasPrimariasDeCapitalExcetoFontesRPPS,RECEITAS PRIMÁRIAS DE CAPITAL (EXCETO FONTES RPPS) (XIII) = (VII - (VIII + IX + X + XI + XII)),rec_subtotal,subtotal,referencia_ldo,,,,,referencia_ldo,
 RREO-Anexo 06,2023+,RREO6AlienacaoDeBens,Alienação de Bens,rec_subtotal,subtotal,nao,,,,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6DemaisReceitasCorrentes,Demais Receitas Correntes,rec_subtotal,subtotal,nao,,,,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6OutrasReceitasDeCapital,Outras Receitas de Capital,rec_subtotal,subtotal,nao,,,,,nao_se_aplica,Pai de OutrasReceitasDeCapitalPrimarias
 RREO-Anexo 06,2023+,RREO6ReceitasTributarias,"Impostos, Taxas e Contribuições de Melhoria",rec_subtotal,subtotal,nao,,,,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6TransferenciasCorrentes,Transferências Correntes,rec_subtotal,subtotal,nao,,,,,nao_se_aplica,
 RREO-Anexo 06,2023+,RREO6TransferenciasDeCapital,Transferências de Capital,rec_subtotal,subtotal,nao,,,,,nao_se_aplica,
-RREO-Anexo 06,2023+,ReceitaPrimariaTotalExcetoFontesRPPS,RECEITA PRIMÁRIA TOTAL (EXCETO FONTES RPPS) (XVII) = (IV + XIII),rec_total,total,conferencia,,,,,ja_excluido,Total de conferência do P2 em 2023+
+RREO-Anexo 06,2023+,ReceitaPrimariaTotalExcetoFontesRPPS,RECEITA PRIMÁRIA TOTAL (EXCETO FONTES RPPS) (XVII) = (IV + XIII),rec_total,total,referencia_ldo,,,,,referencia_ldo,Total de conferência do P2 em 2023+
 RREO-Anexo 06,2023+,RREO6TotalReceitaPrimaria,RECEITA PRIMÁRIA TOTAL (XVI) = (IV + V + XIII + XIV),rec_total,total,conferencia,,,,,inclui_rpps,Receita primária total; em 2023+ inclui fontes RPPS
 RREO-Anexo 06,2023+,ResultadoPrimarioComRPPSAcimaDaLinha,RESULTADO PRIMÁRIO (COM RPPS) - Acima da Linha (XXXIV) = (XVIa - (XXXIIa +XXXIIb + XXXIIc)),resultado,total,conferencia,,,,,inclui_rpps,
-RREO-Anexo 06,2023+,ResultadoPrimarioSemRPPSAcimaDaLinha,RESULTADO PRIMÁRIO (SEM RPPS) - Acima da Linha (XXXV) = (XVIIa - (XXXIIIa +XXXIIIb + XXXIIIc)),resultado,total,conferencia,,,,,ja_excluido,Resultado de conferência do P2 em 2023+
-RREO-Anexo 06,2023+,ResultadoPrimarioAbaixoDaLinhaSemRPPS,RESULTADO PRIMÁRIO (SEM RPPS) - Abaixo da Linha (LI) = (L) - (XXXVI - XXXVII),resultado_abaixo_da_linha,memo,nao,,,,,ja_excluido,
+RREO-Anexo 06,2023+,ResultadoPrimarioSemRPPSAcimaDaLinha,RESULTADO PRIMÁRIO (SEM RPPS) - Acima da Linha (XXXV) = (XVIIa - (XXXIIIa +XXXIIIb + XXXIIIc)),resultado,total,referencia_ldo,,,,,referencia_ldo,Resultado de conferência do P2 em 2023+
+RREO-Anexo 06,2023+,ResultadoPrimarioAbaixoDaLinhaSemRPPS,RESULTADO PRIMÁRIO (SEM RPPS) - Abaixo da Linha (LI) = (L) - (XXXVI - XXXVII),resultado_abaixo_da_linha,memo,referencia_ldo,,,,,referencia_ldo,
 RREO-Anexo 06,2023+,DespesasNaoPrimariasCorrentesComFontesRPPS,DESPESAS NÃO PRIMÁRIAS CORRENTES (COM FONTES RPPS) (XXII),so_rpps,memo,nao,,,,,excluido,
 RREO-Anexo 06,2023+,DespesasNaoPrimariasDeCapitalComFontesRPPS,DESPESAS NÃO PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XXXI),so_rpps,memo,nao,,,,,excluido,
-RREO-Anexo 06,2023+,DespesasPrimariasCorrentesComFontesRPPS,DESPESAS PRIMÁRIAS CORRENTES (COM FONTES RPPS) (XXI),so_rpps,memo,nao,,,,,excluido,
-RREO-Anexo 06,2023+,DespesasPrimariasDeCapitalComFontesRPPS,DESPESAS PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XXX),so_rpps,memo,nao,,,,,excluido,
 RREO-Anexo 06,2023+,ReceitasNaoPrimariasCorrentesComFontesRPPS,RECEITAS NÃO PRIMÁRIAS CORRENTES (COM FONTES RPPS) (VI),so_rpps,memo,nao,,,,,excluido,
 RREO-Anexo 06,2023+,ReceitasNaoPrimariasDeCapitalComFontesRPPS,RECEITAS NÃO PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XV),so_rpps,memo,nao,,,,,excluido,
-RREO-Anexo 06,2023+,ReceitasPrimariasCorrentesComFontesRPPS,RECEITAS PRIMÁRIAS CORRENTES (COM FONTES RPPS) (V),so_rpps,memo,nao,,,,,excluido,Fontes RPPS: fora do P2 (contrato)
-RREO-Anexo 06,2023+,ReceitasPrimariasDeCapitalComFontesRPPS,RECEITAS PRIMÁRIAS DE CAPITAL (COM FONTES RPPS) (XIV),so_rpps,memo,nao,,,,,excluido,
 RREO-Anexo 06,2023+,ReservaOrcamentariaDoRPPSPrevidenciario,RESERVA ORÇAMENTÁRIA DO RPPS,so_rpps,memo,nao,,,,,excluido,

@@ -20,7 +20,7 @@ O layout muda por arquivo, e a mudança coincide com o exercício: 2015–17 (s�
 - 2015–17: o Anexo 6 não traz despesa paga. O caixa não é reconstruível; a despesa fica na liquidação (`sem_caixa(liquidada)`) e o P2 em caixa começa em 2018.
 
 ## 5. RPPS
-- 2023+: contas "com fontes RPPS" ficam fora (`rpps = excluido`), e os totais de conferência são os "exceto fontes RPPS" (`ja_excluido`).
+- 2023+ (decisão de 30/10/2026, série oficial com RPPS): as 4 contas primárias "com fontes RPPS" (V, XIV, XXI, XXX) entram na soma (`rpps = incluido`; receitas → demais receitas, despesas → pessoal, que passa a incluir o custeio administrativo do RPPS). Os totais de conferência são XVI, a despesa total com RPPS e XXXIV. As linhas "exceto fontes RPPS" (XVII, XXXIII, XXXV e subtotais) ficam só como referência da meta da LDO (`rpps = referencia_ldo`). As 5 contas não primárias só-RPPS seguem fora (`excluido`).
 - 2015–22: o RPPS está dentro das contas (contribuições previdenciárias, pessoal) e não dá para separar (`incluido_nao_separavel`). É a quebra de 2023 da nota do E2.8.
 
 ## 6. Fechamento contra o publicado
