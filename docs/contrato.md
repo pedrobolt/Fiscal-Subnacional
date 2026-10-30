@@ -15,7 +15,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 ## Conceitos
 - **Sinal**: superávit positivo, déficit negativo.
 - **Estágio da despesa**: caixa = despesa paga + restos a pagar pagos (processados e não processados; confirmado em 28/10/2026 contra o resultado publicado do Anexo 6). Empenho e liquidação são preservados, mas não são alvo.
-- **RPPS**: receitas e despesas primárias **exceto fontes do RPPS** (como no Anexo 6).
+- **RPPS (revisto em 30/10/2026, mudança de série):** o P2 oficial (E5, gap e ponte) é o Anexo 6 **com** RPPS, em todo o período (até 2022, o que o Anexo 6 já traz; de 2023, linhas XVI, despesa total com fontes RPPS e XXXIV). O P2 **sem** RPPS (XVII, XXXIII, XXXV) fica só como referência da meta da LDO. Ver "Decisão da série do P2 (30/10/2026)".
 - **Primário**: juros, amortizações e operações de crédito ficam fora.
 - **FPE/FPM**: projetado a partir da série da STN (valor bruto transferido), convertido ao conceito RREO por fator de ponte (RREO declarado / STN), estimado no histórico por UF e esfera; avaliado contra o RREO declarado. A ponte cobre bruto vs. líquido do Fundeb, timing de decêndios e cobertura de entes. Se o fator for instável em alguma UF, sinalizar como achado de qualidade no E2.
 - **Valores**: base em R$ correntes. Variação real deflacionada pelo **IPCA mensal, período a período** (cada mês ou bimestre pelo IPCA do próprio período, depois somado). Não usar IPCA dez/dez para fluxos.
@@ -25,7 +25,7 @@ Versão: 23/10/2026 (seção Avaliação ampliada no mesmo dia). Alterações s�
 
 ## Quebras conhecidas (a tratar no E2, nota de quebras)
 - 2018: mudança de layout do RREO Anexo 6.
-- 2023: separação das fontes do RPPS.
+- 2023: separação das fontes do RPPS (no P2 oficial com RPPS, desde 30/10/2026, deixa de ser quebra da série; mantida como fronteira conservadora da referência do gap).
 - RJ, PR e RS reclassificaram despesa de pessoal no RREO sem mudança correspondente no RGF. Início medido (E2.8, `docs/nota_quebras.md`): RJ 2025 b1; PR 2025 b6; RS 2025 b5; persiste em 2026. Regra de uso no E5, em ordem: harmonizar quando possível, dummy de quebra (degrau enquanto a mudança persistir; robustez excluindo a UF), excluir só em último caso.
 
 ## Avaliação
@@ -85,7 +85,7 @@ Mudança só por PR com justificativa; resultados que dependam de nova regra sã
 
 **Definição.** g(t) = P2(t) − P1(t), fluxo do bimestre, R$ bi, superávit positivo. P2 = soma das 27 UFs do resultado primário do Anexo 6 (receita − despesa em caixa, `primario_a6` de `conceito_unico_bimestral`); P1 = SGS 4643 com sinal invertido, somada nos dois meses. Só entram bimestres com as 27 UFs disponíveis. r(t) = g(t) ÷ receita primária agregada dos estados no bimestre (soma de `rec_total`, Anexo 6 original).
 
-**Segmentos de comparabilidade.** Até 2022 b6 o Anexo 6 inclui o RPPS (não separável); de 2023 b1 em diante exclui. A referência nunca atravessa 2023 b1.
+**Segmentos de comparabilidade.** Até 2022 b6 o Anexo 6 inclui o RPPS (não separável); de 2023 b1 em diante a série oficial passa a ser a linha com RPPS (decisão de 30/10/2026; antes, a sem RPPS). A referência não atravessa 2023 b1, por cautela, pois a continuidade não foi confirmada.
 
 **Referência sazonal (opção escolhida: mesmo bimestre dos 3 anos anteriores, mínimo de 2 observações, no mesmo segmento).** Justificativa: o gap tem componente de calendário (o RREO é acima da linha, em caixa; o BCB mede pelo financiamento), e comparar com o mesmo bimestre remove isso sem usar janelas de 12 meses sobrepostas, cujas observações são autocorrelacionadas e esvaziam o sentido de um limiar em múltiplos de MAD. Custo declarado: sem referência (classe "sem referência") enquanto não houver 2 observações; com a fronteira de 2023, a classificação pós-RPPS só começa em 2025 b1, e 2023–24 ficam sem referência.
 
@@ -102,3 +102,16 @@ Mudança só por PR com justificativa; resultados que dependam de nova regra sã
 **Declarações.** (i) Limiar e piso são convenções, sem calibração nem taxa de falso alarme conhecida. (ii) Qualquer ajuste depois de ver os dados é registrado como mudança pós-resultado. (iii) Gap sem reclassificação "consistente" é evidência compatível com a reclassificação, não prova: o excedente vem da proporção do RGF e os três inícios são escalonados. (iv) O tratamento do RPPS pelo BCB não foi confirmado (ver `docs/nota_gap.md`); a fronteira de 2023 vale para o P2, não afirma nada sobre o BCB.
 - **Esclarecimento feito após o resultado do E3.6 (30/10/2026):** o rótulo "quebra conhecida" do gap bruto termina quando a referência (mín. 2 observações do mesmo bimestre, janela de 3 anos) estiver toda após o início das três quebras de reclassificação (RJ 2025 b1, RS 2025 b5, PR 2025 b6), como na fronteira do RPPS de 2023: pelos dados atuais isso vale a partir de 2028 nos bimestres 1–5 e de 2027 no bimestre 6. Nenhuma classe dos resultados já publicados muda.
 - **Leitura operacional (esclarecimento de 30/10/2026, antes de calcular):** (i) "6 últimos bimestres classificáveis" = seis bimestres consecutivos, todos com referência; se algum dos seis não tem referência, a regra de instabilidade não é avaliada naquele bimestre. (ii) Bimestres de 2020–22 na variante "sem 2020–22" têm classe "excluído" e não contam nem como referência nem na janela. (iii) Bimestres sem as 27 UFs ficam sem gap (NA) e quebram a sequência de seis. (iv) Percentuais por classe têm como denominador os bimestres classificáveis; os "sem referência" e "excluído" são reportados à parte.
+
+
+## Decisão da série do P2 (30/10/2026): P2 com RPPS em todo o período
+**Decisão (Pedro, 30/10/2026):** o P2 oficial, para o E5, o gap e a ponte, é o Anexo 6 com RPPS (linhas XVI/XXXIV de 2023 em diante). O P2 sem RPPS fica só como referência da meta da LDO. **Registrado como mudança de série** (o contrato anterior fixava "exceto fontes do RPPS"); o gap do E3.6 calculado antes dessa data usava a série sem RPPS de 2023 em diante.
+
+**Base da escolha.** O teste de continuidade por UF (`docs/nota_gap.md`, 5.4) foi **inconclusivo por falta de poder** (n = 27, R² de 5–6%, IC 95% da inclinação de −0,7 a 1,2 em 2023), não por evidência contra a continuidade. A escolha se apoia na construção do MDF (13ª ed.): XVI = IV + V + XIII + XIV, isto é, todas as fontes, intraorçamentárias excluídas, o mesmo perímetro do Anexo 6 anterior a 2023. **Risco declarado: a equivalência entre a linha XXXIV e o conceito pré-2023 não foi verificada empiricamente.** O Anexo 4 não serve de verificação (mede a entidade RPPS, não a fonte).
+
+**Implementação.**
+- Dicionário (`data/dicionario_contas_estados.csv`, layout 2023+): as 4 contas primárias "com fontes RPPS" (V, XIV, XXI, XXX) passam a `usar_no_p2 = soma`, `rpps = incluido`. Receitas → "demais receitas"; despesas → "pessoal", **que passa a incluir o custeio administrativo do RPPS** (nota na conta). As linhas "exceto fontes RPPS" ficam com `rpps = referencia_ldo`. As 5 contas só-RPPS não primárias seguem fora.
+- Fechamento do Anexo 6 de 2023+ contra XVI, despesa total com RPPS e XXXIV: 594/594 UF-bimestres fecham (tolerância de R$ 1.000), igual ao antes.
+- Conceito único (FUNDEB e cota-parte): o ajuste não muda; o custeio ("outras despesas correntes") não muda, pois as despesas RPPS vão para pessoal.
+- Gap (E3.6): a regra congelada se aplica à série com RPPS, **mantendo a fronteira de 2023 b1 na referência** (conservador, pois a continuidade não foi confirmada). Os valores do gap mudam de 2023 em diante; ver `docs/nota_gap.md`.
+- Quebras: a quebra de 2023 (separação do RPPS) deixa de ser quebra do P2 oficial; permanece como fronteira conservadora da referência do gap.
