@@ -13,15 +13,11 @@ p <- priorizar_alertas(al, rt)
 gravar_csv(p$alertas, "outputs/alertas_priorizados.csv"); gravar_csv(p$resumo, "outputs/alertas_resumo.csv")
 cat("Total:", nrow(p$alertas), "| conhecidas:", sum(p$alertas$status == "conhecida"), "| novas:", sum(p$alertas$status == "nova"), "\n")
 print(p$resumo, row.names = FALSE)
-nr <- alertas_novos_por_rodada(p$alertas, 2022L); gravar_csv(nr, "outputs/alertas_novos_por_rodada.csv")
-# Rodada típica = um bimestre (exercicio, periodo) entre 2022 b1 e 2026 b4
+ab <- aba_alertas(p); gravar_csv(ab$lista, "outputs/alertas_aba_lista.csv"); gravar_csv(ab$contagem, "outputs/alertas_aba_contagem.csv")
+cat("\nAba do Excel: lista", nrow(ab$lista), "| contagem (demais novos):", sum(ab$contagem$n), "\n")
+# Rodada tipica = um bimestre (exercicio, periodo) entre 2022 b1 e 2026 b4; por bimestre: itens na lista da aba e total de novos
 rod <- expand.grid(exercicio = 2022:2026, periodo = 1:6); rod <- rod[!(rod$exercicio == 2026 & rod$periodo > 4), ]
-cnt <- function(sub) { n <- merge(rod, aggregate(n ~ exercicio + periodo, nr[sub(nr), ], sum), all.x = TRUE); n$n[is.na(n$n)] <- 0; n$n }
-q <- function(x) c(mediana = median(x), p90 = unname(quantile(x, 0.9)), max = max(x))
-cat("\nAlertas novos por rodada (2022 b1 a 2026 b4):\n")
-print(rbind(todos = q(cnt(function(d) rep(TRUE, nrow(d)))),
-            sem_fator_defasado = q(cnt(function(d) d$subtipo != "fator_defasado")),
-            so_b_c_instavel_d = q(cnt(function(d) d$subtipo %in% c("salto_vs_ano_anterior", "fator_instavel", "entrega_atrasada", "retificacao")))))
-b <- p$alertas[p$alertas$status == "nova" & p$alertas$tipo == "b" & p$alertas$exercicio >= 2022, ]
-cat("\n(b) novos desde 2022:", nrow(b), "| materialidade mediana:", round(median(b$materialidade, na.rm = TRUE), 3), "| acima de 5% da receita:", sum(b$materialidade > 0.05, na.rm = TRUE), "\n")
-print(head(p$alertas[p$alertas$status == "nova", c("tipo", "subtipo", "cod_ibge", "serie", "exercicio", "periodo", "materialidade")], 8), row.names = FALSE)
+por <- function(d) { k <- table(factor(paste(d$exercicio, d$periodo), levels = paste(rod$exercicio, rod$periodo))); c(mediana = median(k), p90 = unname(quantile(k, 0.9)), max = max(k)) }
+novas <- p$alertas[p$alertas$status == "nova" & p$alertas$exercicio >= 2022, ]
+res <- rbind(novas_total = por(novas), novas_b = por(novas[novas$tipo == "b", ]), lista_da_aba = por(ab$lista[ab$lista$exercicio >= 2022, ]))
+print(res); gravar_csv(data.frame(medida = rownames(res), res), "outputs/alertas_novos_por_rodada.csv")

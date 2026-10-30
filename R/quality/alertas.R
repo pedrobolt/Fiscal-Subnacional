@@ -4,6 +4,7 @@
 
 ALERTA_K_MAD <- 4            # (b) múltiplos do MAD
 ALERTA_PISO_RECEITA <- 0.01  # (b) piso: 1% da receita total da UF no bimestre
+ALERTA_PISO_SERIE <- c("rec:demais receitas" = 0.10)  # (b) piso maior para séries muito voláteis (ajuste de uso, 30/10/2026)
 ALERTA_MIN_HIST <- 3L        # (b) mínimo de variações históricas para calcular o MAD
 ALERTA_PRAZO_DIAS <- 30L     # (d) prazo legal após o fim do bimestre
 ALERTA_RGF_PP <- 0.20        # (b) RREO acima do RGF em mais de 20 p.p. = suspeita de reclassificação
@@ -47,7 +48,8 @@ alerta_contas_conhecidas <- function(observadas, conhecidas, anexo) {
 #' `fluxos`: cod_ibge, serie (categoria), exercicio, periodo, valor (fluxo do bimestre); `receita_total`: cod_ibge, exercicio, periodo, rec_total.
 #' Alerta se |Δ − mediana(Δ_hist)| > k × MAD(Δ_hist) e > piso × receita total da UF no bimestre; Δ = valor − valor do mesmo bimestre
 #' do ano anterior; histórico = Δ da própria UF x série x bimestre em anos anteriores (mínimo `min_hist`).
-alerta_salto <- function(fluxos, receita_total, k = ALERTA_K_MAD, piso = ALERTA_PISO_RECEITA, min_hist = ALERTA_MIN_HIST) {
+alerta_salto <- function(fluxos, receita_total, k = ALERTA_K_MAD, piso = ALERTA_PISO_RECEITA, min_hist = ALERTA_MIN_HIST,
+                         piso_serie = ALERTA_PISO_SERIE) {
   f <- merge(fluxos, receita_total, by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE)
   f <- f[order(f$cod_ibge, f$serie, f$periodo, f$exercicio), ]
   ch <- paste(f$cod_ibge, f$serie, f$periodo)
@@ -63,12 +65,13 @@ alerta_salto <- function(fluxos, receita_total, k = ALERTA_K_MAD, piso = ALERTA_
     }
   }
   desvio <- abs(f$delta - f$mediana_h)
-  alerta <- !is.na(desvio) & !is.na(f$rec_total) & desvio > k * f$mad_h & desvio > piso * f$rec_total
+  piso_i <- ifelse(f$serie %in% names(piso_serie), piso_serie[f$serie], piso)     # piso próprio por série (ex.: demais receitas)
+  alerta <- !is.na(desvio) & !is.na(f$rec_total) & desvio > k * f$mad_h & desvio > piso_i * f$rec_total
   f$historico_curto <- is.na(f$delta) | f$n_hist < min_hist
   out <- f[alerta, ]
   if (!nrow(out)) return(alertas_vazio())
   mk_alerta("b", "salto_vs_ano_anterior", out$cod_ibge, out$serie, out$exercicio, out$periodo, out$delta,
-            pmax(k * out$mad_h, piso * out$rec_total), sprintf("desvio %.0f; mediana hist. %.0f; MAD %.0f; n hist %d", desvio[alerta], out$mediana_h, out$mad_h, out$n_hist))
+            pmax(k * out$mad_h, piso_i[alerta] * out$rec_total), sprintf("desvio %.0f; mediana hist. %.0f; MAD %.0f; n hist %d", desvio[alerta], out$mediana_h, out$mad_h, out$n_hist))
 }
 
 #' Marca, nos alertas (b) de pessoal, se a variação anual do RREO supera a do RGF em mais de `pp`. `yoy`: cod_ibge, exercicio, periodo,
@@ -94,9 +97,17 @@ alerta_flags <- function(x = NULL, rb = NULL) {
   if (!is.null(rb)) {
     rb$exercicio <- as.integer(format(rb$mes, "%Y")); rb$periodo <- (as.integer(format(rb$mes, "%m")) + 1L) %/% 2L
     rb <- unique(rb[, c("cod_ibge", "categoria", "exercicio", "periodo", "flag_quebra_fator", "flag_fator_defasado", "flag_sem_fator")])
-    out <- rbind(out, um(rb, "flag_quebra_fator", "fator_instavel"), um(rb, "flag_fator_defasado", "fator_defasado"), um(rb, "flag_sem_fator", "sem_fator"))
+    out <- rbind(out, um(rb, "flag_quebra_fator", "fator_instavel"), um(rb, "flag_sem_fator", "sem_fator"))
   }
   out
+}
+
+#' `fator_defasado` deixou de ser alerta (29/10/2026, ajuste de uso): é estado estrutural até a DCA sair. Vira coluna de status por
+#' UF x categoria x bimestre. `rb`: receita mensal bruta/líquida (cod_ibge, categoria, mes, flag_fator_defasado).
+status_fatores <- function(rb) {
+  rb$exercicio <- as.integer(format(rb$mes, "%Y")); rb$periodo <- (as.integer(format(rb$mes, "%m")) + 1L) %/% 2L
+  s <- unique(rb[, c("cod_ibge", "categoria", "exercicio", "periodo", "flag_fator_defasado")])
+  names(s)[5] <- "fator_defasado"; s
 }
 
 # ---- (d) entrega atrasada, ausente ou retificada ----------------------------------------------------------------------------
@@ -275,4 +286,18 @@ alertas_novos_por_rodada <- function(al_prior, desde = 2022L) {
   if (!nrow(n)) return(data.frame(exercicio = integer(0), periodo = integer(0), subtipo = character(0), n = integer(0)))
   t <- as.data.frame(table(exercicio = n$exercicio, periodo = n$periodo, subtipo = n$subtipo), stringsAsFactors = FALSE)
   t <- t[t$Freq > 0, ]; names(t)[4] <- "n"; t$exercicio <- as.integer(t$exercicio); t$periodo <- as.integer(t$periodo); t
+}
+
+ALERTA_CORTE_ABA <- 0.05     # aba do Excel: só alertas (b) acima de 5% da receita da UF; o resto vira contagem por tipo
+
+#' Aba de alertas do Excel do E6: `lista` = alertas novos (b) com materialidade > `corte`; `contagem` = demais novos por tipo/subtipo
+#' (inclui os alertas sem valor em R$, (c) e (d), que não têm materialidade). `p`: saída de `priorizar_alertas()`.
+aba_alertas <- function(p, corte = ALERTA_CORTE_ABA) {
+  n <- p$alertas[p$alertas$status == "nova", ]
+  na_lista <- n$tipo == "b" & !is.na(n$materialidade) & n$materialidade > corte
+  cont <- n[!na_lista, ]
+  contagem <- if (nrow(cont)) { t <- as.data.frame(table(tipo = cont$tipo, subtipo = cont$subtipo), stringsAsFactors = FALSE); t[t$Freq > 0, ] } else
+    data.frame(tipo = character(0), subtipo = character(0), Freq = integer(0))
+  names(contagem)[3] <- "n"
+  list(lista = n[na_lista, ], contagem = contagem)
 }
