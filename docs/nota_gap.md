@@ -97,7 +97,8 @@ Fluxo líquido do RPPS pelo RREO Anexo 4 (6º bimestre, acumulado do ano), 27 UF
 | 2023 | 27 | 105,4 | 181,9 | -76,4 | 115,4 | 39,0 | -26,2 |
 | 2024 | 27 | 108,2 | 191,9 | -83,7 | 116,0 | 32,3 | -26,9 |
 
-- **A linha "com RPPS" do Anexo 6 não reproduz o fluxo do Anexo 4, em nível nem em sinal.** O "com − sem" do Anexo 6 é −26,2 e −26,9 bi; o líquido do Anexo 4 sem aportes é de cerca de −76 e −84 bi (três vezes maior) e, com os aportes do Tesouro, é positivo (+39,0 e +32,3 bi). O Anexo 6 fica entre as duas medidas e não coincide com nenhuma.
+- **Correção de especificação (30/10/2026, Pedro; o erro foi da especificação): o Anexo 4 não serve de referência para o "com − sem" do Anexo 6.** O MDF divide por **fonte de recursos** (despesas "custeadas com fontes RPPS"); o Anexo 4 mede a **entidade RPPS**, incluindo fluxos intraorçamentários (contribuição patronal, aportes). Logo o não-batimento abaixo era esperado e **não refuta** a premissa da linha XXXIV. A inclinação contra o A4 com aportes fica como hipótese não explicada, **sem peso**.
+- **A linha "com RPPS" do Anexo 6 não bate com o fluxo do Anexo 4, em nível nem em sinal (esperado, ver acima).** O "com − sem" do Anexo 6 é −26,2 e −26,9 bi; o líquido do Anexo 4 sem aportes é de cerca de −76 e −84 bi (três vezes maior) e, com os aportes do Tesouro, é positivo (+39,0 e +32,3 bi). O Anexo 6 fica entre as duas medidas e não coincide com nenhuma.
 - **Corte transversal por UF (2023 e 2024).**
 
 | Ano | Regressão (27 UFs) | Inclinação | R² |
@@ -109,7 +110,7 @@ Fluxo líquido do RPPS pelo RREO Anexo 4 (6º bimestre, acumulado do ano), 27 UF
 
   A inclinação contra o líquido sem aportes é baixa e sem poder explicativo; contra o líquido com aportes é negativa (−1,00 em 2023, R² 0,47; −0,74 em 2024, R² 0,20), ou seja, o sinal é o oposto do esperado se o "com − sem" fosse o fluxo do RPPS. Não tenho explicação verificada (o tratamento dos aportes e das receitas e despesas intraorçamentárias no cálculo "fontes RPPS" do MDF é a hipótese a investigar); fica como achado, não como conclusão.
 - **Sobre a "queda de 10 bi" do gap com RPPS em 2023:** o líquido do Anexo 4 muda −8,0 bi de 2022 para 2023 (sem aportes) e +5,8 bi (com aportes). Não há quebra do fluxo do RPPS em 2023 que explique sozinha a variação, e 2022 já é atípico no gap. O Anexo 4 não permite atribuir a variação.
-- **Conclusão:** não foi possível verificar que a linha XXXIV reproduz o conceito pré-2023. Não refuta e não confirma. A premissa da série contínua com RPPS (`docs/proposta_p2_com_rpps.md`) fica condicionada a esse ponto.
+- **Conclusão:** o Anexo 4 não verifica nem refuta que a linha XXXIV reproduz o conceito pré-2023. A premissa da série contínua com RPPS (`docs/proposta_p2_com_rpps.md`) é testada em 5.4.
 
 ## 6. Fim do rótulo "quebra conhecida" (esclarecimento de 30/10/2026, após o resultado do E3.6)
 O gap bruto volta a ser classificado quando a referência (mín. 2 observações do mesmo bimestre, janela de 3 anos) estiver toda após o início das três quebras (RJ 2025 b1, RS 2025 b5, PR 2025 b6), isto é, depois do início da última (2025 b6). Implementado em `classificar_gap(quebras = )` (cada início abre um segmento novo; a referência só vale dentro do mesmo segmento) e calculado com o mesmo código (`primeiro_classificavel()`):
@@ -132,3 +133,14 @@ Nenhum bimestre dos dados atuais (até 2026 b4) muda de classe com isso: 2025–
 - **(b) Reabertura do gap por UF no E3.6:** só se a série existir, for pública e de acesso reproduzível, e a soma das UFs reconciliar com a SGS 4643 em tolerância declarada. A periodicidade é trimestral, então o gap por UF seria anual (ou trimestral), não bimestral, e a regra de classificação do E3.6 não se aplica direto (referência sazonal de mesmo bimestre); exigiria nova regra, fixada antes dos dados.
 
 Fontes: Banco Central do Brasil, [Manual de Estatísticas Fiscais (maio de 2019)](https://www.bcb.gov.br/content/estatisticas/Documents/notas_metodologicas/estatisticas-fiscais/estatisticasfiscais.pdf); [Portal de Dados Abertos do BCB, governos estaduais (4643)](https://dadosabertos.bcb.gov.br/dataset?q=governos+estaduais+resultado+primario); [Texto de estatísticas fiscais, julho de 2026](https://www.bcb.gov.br/content/estatisticas/hist_estatisticasfiscais/202607_Texto_de_estatisticas_fiscais.pdf).
+
+## 5.4 Continuidade da série com RPPS por UF (critério fixado em 30/10/2026, em commit anterior ao cálculo)
+**Pergunta:** a linha "com RPPS" de 2023 em diante (resultado primário XXXIV ÷ receita primária total XVI) reproduz o conceito do Anexo 6 de até 2022 (que inclui o RPPS)? Pré-requisito da proposta de P2 com RPPS.
+
+**Definição.** Para cada UF i: Δ_i = (resultado ÷ receita)_2023 − (resultado ÷ receita)_2022, na versão com RPPS (2023: XXXIV ÷ XVI, 6º bimestre acumulado; 2022: resultado primário ÷ receita primária total do Anexo 6, 6º bimestre acumulado). R_i = (XXXIV − XXXV)_2023 do Anexo 6 (a diferença "com − sem"), em % da receita da UF: x_i = R_i ÷ receita_2023,i. Regressão MQO de Δ_i em x_i, 27 UFs (RS 2022 completo; DF incluído).
+
+**Leitura.** Se a linha com RPPS reproduz o conceito pré-2023, a inclinação é 0 (a variação de 2022 para 2023 não depende de quanto RPPS há na UF); se o conceito pré-2023 fosse "sem RPPS", a inclinação seria 1.
+
+**Decisão (IC de 95% da inclinação, erros-padrão robustos HC3, t com n − 2 graus de liberdade).** 0 dentro e 1 fora = **contínua**; 1 dentro e 0 fora = **não contínua**; qualquer outro caso = **inconclusivo**. **Robustez:** repetir com 2024 contra 2022 (Δ_i = razão 2024 − razão 2022; x_i = R_i,2024 ÷ receita_2024,i).
+
+**Confundidores declarados, sem correção:** LC 194/2022 (ICMS) e o ciclo eleitoral de 2022 mexem em Δ_i, mas são em geral não correlacionados com a participação do RPPS; a razão resultado ÷ receita usa o Anexo 6 original, cujo conceito de FUNDEB e cota-parte varia por UF-ano (ver conceito único) e pode introduzir ruído em Δ_i; n = 27 dá poder baixo e um IC largo tende ao resultado "inconclusivo". Limiar e IC são convenções, sem calibração; qualquer ajuste depois de ver os dados será registrado como mudança pós-resultado.
