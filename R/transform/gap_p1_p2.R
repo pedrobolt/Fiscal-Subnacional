@@ -99,21 +99,26 @@ primeiro_classificavel <- function(quebras = QUEBRAS_RECLASS, ate = 2035L, de = 
 
 #' P2 "com RPPS" dos estados a partir de 2023 (Anexo 6, layout 2023+): resultado primario com RPPS (linha XXXIV) e receita primaria total (XVI),
 #' acumulado no ano -> fluxo do bimestre; soma das `n_ufs` UFs (NA se faltar alguma). `rreo`: saida de `ler_rreo_pasta()`.
-p2_com_rpps_bim <- function(rreo, n_ufs = 27L) {
+p2_com_rpps_bim <- function(rreo, n_ufs = 27L, conta_res = "ResultadoPrimarioComRPPSAcimaDaLinha", conta_rec = "RREO6TotalReceitaPrimaria") {
   a <- rreo[rreo$anexo == "RREO-Anexo 06" & rreo$exercicio >= 2023 &
-              ((rreo$cod_conta == "ResultadoPrimarioComRPPSAcimaDaLinha" & rreo$coluna == "VALOR") |
-               (rreo$cod_conta == "RREO6TotalReceitaPrimaria" & rreo$coluna == "RECEITAS REALIZADAS (a)")), ]
+              ((rreo$cod_conta == conta_res & rreo$coluna == "VALOR") |
+               (rreo$cod_conta == conta_rec & rreo$coluna == "RECEITAS REALIZADAS (a)")), ]
+  if (!nrow(a)) return(data.frame(exercicio = integer(0), periodo = integer(0), n_ufs = integer(0), p2_com = numeric(0), rec_com = numeric(0)))
   a <- a[order(a$cod_ibge, a$exercicio, a$periodo, a$cod_conta, a$baixado_em), ]
   a <- a[!duplicated(a[, c("cod_ibge", "exercicio", "periodo", "cod_conta")], fromLast = TRUE), ]
   w <- stats::reshape(a[, c("cod_ibge", "exercicio", "periodo", "cod_conta", "valor")], idvar = c("cod_ibge", "exercicio", "periodo"), timevar = "cod_conta", direction = "wide")
   names(w) <- sub("valor\\.", "", names(w))
   chave <- paste(w$cod_ibge, w$exercicio, w$periodo)
   anterior <- function(v) { m <- match(paste(w$cod_ibge, w$exercicio, w$periodo - 1L), chave); ifelse(w$periodo == 1L, 0, v[m]) }   # b1: o proprio acumulado
-  w$res <- w$ResultadoPrimarioComRPPSAcimaDaLinha - anterior(w$ResultadoPrimarioComRPPSAcimaDaLinha)
-  w$rec <- w$RREO6TotalReceitaPrimaria - anterior(w$RREO6TotalReceitaPrimaria)
+  w$res <- w[[conta_res]] - anterior(w[[conta_res]])
+  w$rec <- w[[conta_rec]] - anterior(w[[conta_rec]])
   k <- paste(w$exercicio, w$periodo)
   d <- do.call(rbind, lapply(split(seq_len(nrow(w)), k), function(i) { ok <- !is.na(w$res[i]) & !is.na(w$rec[i])
     data.frame(exercicio = w$exercicio[i[1]], periodo = w$periodo[i[1]], n_ufs = sum(ok), p2_com = if (sum(ok) == n_ufs) sum(w$res[i]) / 1e9 else NA_real_,
                rec_com = if (sum(ok) == n_ufs) sum(w$rec[i]) / 1e9 else NA_real_) }))
   d[order(d$exercicio, d$periodo), ]
 }
+
+#' P2 "sem RPPS" (referencia da meta da LDO): linhas XXXV e XVII do Anexo 6, de 2023 em diante. Mesmo formato de `p2_com_rpps_bim`.
+p2_sem_rpps_ldo_bim <- function(rreo, n_ufs = 27L)
+  p2_com_rpps_bim(rreo, n_ufs, conta_res = "ResultadoPrimarioSemRPPSAcimaDaLinha", conta_rec = "ReceitaPrimariaTotalExcetoFontesRPPS")
