@@ -56,7 +56,7 @@ Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benchmark.
 
 ## E6. Rodar o modelo e entregar a planilha final (S6)
-- E6.1 Comando único (baixar → validar → projetar → exportar). Rodada mensal (`scripts/rodada_mensal.R`): verifica no Siconfi só os exercícios t e t−1; a revisão completa do histórico é trimestral
+- E6.1 **Implementado em 30/10/2026 (PR `e6-1-rodada-mensal`; escopo aprovado antes do E5):** rodada mensal com o já validado: P1 (SRW por esfera, faixa pela cobertura empírica, m3 sombra), P2 realizado por categoria dos estados (com RPPS oficial; sem RPPS como referência da LDO), gap, alertas e arquivo de previsões; falha isolada com status OK/DEGRADADA e código de saída. E5 entra depois como módulo. Descrição: `docs/HANDOVER.md`, seção 3h. Texto original: Comando único (baixar → validar → projetar → exportar). Rodada mensal (`scripts/rodada_mensal.R`): verifica no Siconfi só os exercícios t e t−1; a revisão completa do histórico é trimestral
 - E6.2 Excel final: P1, P2, gap, linha "Regionais", candidato de origem de cada número. Sem ajuste de julgamento no número nesta fase: divergências com o mercado vão no texto do informe
 - E6.3 Arquivo de previsões emitidas, com o m3 como modelo-sombra (calculado e arquivado em cada rodada ao lado do SRW, não publicado; avaliação prospectiva; decisão de 28/10/2026)
 - E6.4 Primeira rodada oficial — validar com o Pedro
