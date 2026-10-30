@@ -296,6 +296,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - NFSP por estado do BCB: relato em `docs/nota_gap.md` (seção 7): o manual diz que existe (trimestral, desde 2009), não localizei onde é publicado hoje; teste de corte transversal e reabertura do gap por UF propostos, sem cálculo.
 - **Pendência externa:** pergunta ao BCB sobre o RPPS na SGS 4643 (30/10/2026).
 
+### E3.6 (cont.): continuidade da série com RPPS por UF (30/10/2026, branch `e3-6d-continuidade-rpps`)
+- Critério fixado em commit antes do cálculo (`docs/nota_gap.md`, 5.4). Código: `R/transform/continuidade_rpps.R`, `scripts/continuidade_rpps.R`, `tests/test-continuidade_rpps.R`. Resultado: **inconclusivo** em 2023 (inclinação 0,234; IC −0,699 a 1,168) e em 2024 (0,282; IC −0,889 a 1,453), n = 27. A proposta de P2 com RPPS segue condicionada.
+- Correção de especificação registrada na nota: o Anexo 4 não é referência para "com − sem" do Anexo 6 (fonte x entidade); o não-batimento era esperado e não refuta a premissa. A inclinação contra o A4 com aportes é hipótese não explicada, sem peso.
+- Registros: (a) a tabela do BCB por UF (Fisregp.xlsx, Tabelas Especiais, trimestral, defasagem de ~6 meses) existe, mas não será usada (não muda decisão de projeção); (b) a pergunta ao BCB sobre o RPPS na SGS 4643 segue como pendência externa, sem bloqueio; (c) a MSC (Matriz de Saldos Contábeis, Siconfi) fica como fonte candidata da Fase 2, sem trabalho agora.
+- Próximo: escopo do E6.1 por escrito (antes do E5), sem código até aprovação.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
