@@ -275,6 +275,9 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Histórico: 4.340 alertas, 993 conhecidos e 3.347 novos; aba: 863 na lista e 2.484 na contagem. Por bimestre (2022 b1 a 2026 b4): novos no total, mediana 34 e p90 74,8; novos em (b), mediana 27,5 e p90 73,2; **lista da aba, mediana 14 e p90 44,5** (antes dos ajustes, 15 acima de 5%, p90 44,5): o corte de 5% já excluía quase tudo o que o piso de 10% de "demais receitas" tira, então o ganho vem do corte de 5% sobre o total anterior (mediana 38 → 14), não do piso.
 - Os 163 alertas novos de 2023 (ICMS, FUNDEB, custeio, investimento etc.) não se concentram em 2023 b1 (40 em b1, 20 a 28 nos demais bimestres; no b1, 5 a 11 das 27 UFs por série): não há indício de mudança de layout, ficam como novos.
 
+### E2.9: conferência mínima (30/10/2026, branch `e2-9-conferencia-minima`)
+- Escopo reduzido pelo Pedro: 3 itens (SP, RJ, MG, 4º bimestre de 2026), totais do Anexo 6 contra o RREO do site da SEFAZ de cada estado; o restante é coberto pelos testes automáticos. `scripts/e29_planilha.R`, `outputs/e29_planilha.csv`, `docs/e29_conferencia.md` (regra de aceitação ≤ 0,1% e sinal, definida antes da leitura). Leitura dos PDFs: Pedro; resultado pendente.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
