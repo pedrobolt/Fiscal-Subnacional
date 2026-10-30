@@ -47,3 +47,56 @@ Fontes: Banco Central do Brasil, [Manual de Estatísticas Fiscais (2018)](https:
 **Medidas.** (i) Para cada bimestre b1–b6, a mediana de r antes (2019–22) e depois (2023–24) da fronteira, e a diferença; (ii) o gap anual (soma dos 6 bimestres ÷ receita anual) por ano, 2019–25, e a variação 2022→2023 comparada com as variações 2019→20, 2020→21 e 2021→22; 2026 (b1–b4) só como acumulado parcial. "Depois" fica em 2023–24 para não misturar a reclassificação de pessoal de 2025; como robustez, 2023–26 usando o gap sem reclassificação nas duas versões.
 
 **Critério de "contínua na fronteira" (sem limiar formal; n pequeno).** Contínua é a versão com menor soma de |diferença| da mediana por bimestre (b1–b6) **e** menor |variação do gap anual 2022→2023|. Se as duas medidas discordarem, a conclusão é "inconclusivo". Confundidores que não são separáveis aqui: LC 194/2022 (corte de ICMS em 2022, com efeito em 2023), recuperação pós-pandemia, ciclo eleitoral de 2022 (investimento) e a amostra de 2 anos "depois".
+
+### 5.1 Resultado do teste
+**(i) Mediana de r por bimestre (% da receita primária agregada).** O "antes" é igual nas duas versões (ambas incluem o RPPS até 2022).
+
+| Bimestre | Antes (2019–22) | A depois (2023–24) | Dif. A | B depois (2023–24) | Dif. B |
+|---|---|---|---|---|---|
+| b1 | 12,01 | 9,44 | -2,58 | 6,81 | -5,21 |
+| b2 | 4,08 | 4,87 | 0,80 | 2,10 | -1,98 |
+| b3 | 3,19 | 5,31 | 2,12 | 2,79 | -0,40 |
+| b4 | 3,66 | 2,44 | -1,22 | 0,35 | -3,31 |
+| b5 | 2,99 | -0,01 | -3,01 | -2,61 | -5,61 |
+| b6 | -3,76 | -8,30 | -4,54 | -8,80 | -5,04 |
+| Soma de abs(dif), p.p. | | | 14,25 | | 21,55 |
+
+**(ii) Gap anual.** Versão A = série oficial; B = com RPPS a partir de 2023. 2026 só tem b1–b4.
+
+| Ano | Bimestres | Gap A (R$ bi) | Gap B (R$ bi) | B − A (R$ bi) | r A (% receita) | r B (% receita) |
+|---|---|---|---|---|---|---|
+| 2019  | 6 | 32,7 | 32,7 | 0,0 | 3,94 | 3,94 |
+| 2020  | 6 | 26,6 | 26,6 | 0,0 | 3,07 | 3,07 |
+| 2021  | 6 | 45,6 | 45,6 | 0,0 | 4,43 | 4,43 |
+| 2022  | 6 | 4,7 | 4,7 | 0,0 | 0,42 | 0,42 |
+| 2023  | 6 | 20,9 | -5,3 | -26,2 | 1,84 | -0,42 |
+| 2024  | 6 | 27,2 | 0,4 | -26,9 | 2,19 | 0,03 |
+| 2025  | 6 | -9,7 | -5,5 | 4,1 | -0,72 | -0,38 |
+| 2026 (parcial) | 4 | 6,5 | 9,2 | 2,7 | 0,68 | 0,90 |
+
+Variação anual do gap em p.p. da receita: 2019→20 −0,87; 2020→21 +1,36; 2021→22 −4,01 (iguais nas duas versões); **2022→23: A +1,42; B −0,84**. Números de `outputs/gap_rpps_anual.csv`.
+
+### 5.2 Veredito pelo critério fixado antes: **inconclusivo**
+- Pela mediana por bimestre, a versão A (sem RPPS) é a mais contínua: soma de |dif| menor (b1, b2, b4, b5 e b6 mais próximos em A; só b3 favorece B). Com 2023–26 e o gap sem reclassificação, o resultado se mantém (soma de |dif|: A 11,80 p.p.; B 20,94 p.p.).
+- Pelo gap anual, a versão B é a mais contínua: |−0,84| < |+1,42| p.p. em 2022→23.
+- As duas medidas discordam, então a conclusão é "inconclusivo". **Não há proposta de troca da série**: a versão B não é a contínua pelo critério.
+
+**Por que não dá para separar.** A variação do gap anual em 2021→22 (−4,01 p.p.) é maior do que qualquer variação de 2022→23 em qualquer versão: o ano de 2022 é o ponto fora do padrão (gap de 0,42% da receita, contra 3,1% a 4,4% em 2019–21), com a LC 194/2022 (corte de ICMS) e o ciclo eleitoral, e é justamente o ano-base da comparação com 2023. Além disso, "depois" tem só 2 anos.
+
+**Leitura adicional (posterior ao critério; não faz parte dele).** A diferença B − A é o fluxo primário líquido do RPPS: −26,2 bi em 2023 e −26,9 bi em 2024. Se o BCB incluir o RPPS e o P2 sem RPPS o excluir, o gap A deveria subir cerca de 26 bi (≈2,3 p.p. da receita) em 2023 em relação ao que seria sem a quebra. O gap A subiu 16,2 bi (2022→23, de 4,7 para 20,9 bi), no sentido da hipótese e em magnitude parcial; o gap B caiu 10,0 bi, no sentido contrário. É compatível com a hipótese, sem provar: o salto de 2022 para 2023 também tem os confundidores acima. A resposta do BCB (pergunta enviada em 30/10/2026) é o que decide.
+
+**Se o BCB confirmar a inclusão do RPPS (proposta condicional, para aprovação).** Gap e ponte usariam o P2 com RPPS; o P2 sem RPPS ficaria só como referência da meta da LDO. Impacto no dicionário: as 9 contas "com fontes RPPS" de 2023+ hoje são `rpps = excluido` (papel `so_rpps`, sem categoria) e passariam a compor uma categoria própria "RPPS (líquido)" de 2023 em diante; antes de 2023 o RPPS está misturado nas categorias (`incluido_nao_separavel`), então as categorias do E5 continuariam sem RPPS separável. Impacto no conceito único: nenhum no ajuste de FUNDEB e cota-parte (o ajuste não mexe no primário); mudaria o total de referência de 2023+ (linhas XVI e XXXIV em vez de XVII e XXXV). Nada disso é implementado agora.
+
+## 6. Fim do rótulo "quebra conhecida" (esclarecimento de 30/10/2026, após o resultado do E3.6)
+O gap bruto volta a ser classificado quando a referência (mín. 2 observações do mesmo bimestre, janela de 3 anos) estiver toda após o início das três quebras (RJ 2025 b1, RS 2025 b5, PR 2025 b6), isto é, depois do início da última (2025 b6). Implementado em `classificar_gap(quebras = )` (cada início abre um segmento novo; a referência só vale dentro do mesmo segmento) e calculado com o mesmo código (`primeiro_classificavel()`):
+
+| Bimestre | Primeiro ano classificável |
+|---|---|
+| b1 | 2028 |
+| b2 | 2028 |
+| b3 | 2028 |
+| b4 | 2028 |
+| b5 | 2028 |
+| b6 | 2027 |
+
+Nenhum bimestre dos dados atuais (até 2026 b4) muda de classe com isso: 2025–26 continuam "quebra conhecida" no gap bruto.

@@ -283,6 +283,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Escopo: total dos estados contra a SGS 4643 (série por UF não encontrada no catálogo do BCB; gap por UF = limitação). **RPPS no BCB: tratamento não confirmado** (o manual de 2018 não cita RPPS); ação: confirmar com o BCB.
 - Resultado: 46 bimestres de gap (2019 b1 a 2026 b4); classes e percentuais em `docs/nota_gap.md`. Só 22 bimestres são classificáveis (2021–22 e 2025–26); 2025–26 rotulados como quebra conhecida no gap bruto.
 
+### E3.6 (cont.): teste do RPPS e classificação do gap bruto (30/10/2026, branch `e3-6b-rpps-gap`)
+- Critério de continuidade fixado antes de calcular (`docs/nota_gap.md`, seção 5). Resultado: **inconclusivo** (mediana por bimestre favorece o P2 sem RPPS, soma de |dif| 14,25 contra 21,55 p.p.; gap anual 2022→23 favorece o com RPPS, −0,84 contra +1,42 p.p.); 2022 é o ponto fora do padrão. Sem proposta de troca da série. Proposta condicional (se o BCB confirmar a inclusão do RPPS) registrada na nota, para aprovação.
+- Rótulo "quebra conhecida" do gap bruto termina quando a referência estiver toda após a última quebra: a partir de 2028 (b1–b5) e 2027 (b6). Esclarecimento no contrato, datado.
+- Plano E5.4: a ponte é avaliada no gap anual.
+- **Pendência externa:** pergunta ao BCB sobre o tratamento do RPPS na SGS 4643, enviada pelo Pedro em 30/10/2026; resposta não esperada; não bloqueia nada.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
