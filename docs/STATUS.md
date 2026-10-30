@@ -278,6 +278,11 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 ### E2.9: conferência mínima (30/10/2026, branch `e2-9-conferencia-minima`)
 - Escopo reduzido pelo Pedro: 3 itens (SP, RJ, MG, 4º bimestre de 2026), totais do Anexo 6 contra o RREO do site da SEFAZ de cada estado; o restante é coberto pelos testes automáticos. `scripts/e29_planilha.R`, `outputs/e29_planilha.csv`, `docs/e29_conferencia.md` (regra de aceitação ≤ 0,1% e sinal, definida antes da leitura). Leitura dos PDFs: Pedro; resultado pendente.
 
+### E3.6: gap P1 × P2 dos estados (30/10/2026, branch `e3-6-gap`)
+- Regra de narrativa congelada em `docs/contrato.md` antes de calcular (referência: mesmo bimestre dos 3 anos anteriores, mín. 2; 4 × MAD bruto e piso de 1%; classe só governa a narrativa, não exclui o P2 do E5.4; sempre com e sem 2020–22). `R/transform/gap_p1_p2.R`, `scripts/gap_p1_p2.R`, `tests/test-gap_p1_p2.R`, `docs/nota_gap.md`.
+- Escopo: total dos estados contra a SGS 4643 (série por UF não encontrada no catálogo do BCB; gap por UF = limitação). **RPPS no BCB: tratamento não confirmado** (o manual de 2018 não cita RPPS); ação: confirmar com o BCB.
+- Resultado: 46 bimestres de gap (2019 b1 a 2026 b4); classes e percentuais em `docs/nota_gap.md`. Só 22 bimestres são classificáveis (2021–22 e 2025–26); 2025–26 rotulados como quebra conhecida no gap bruto.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
@@ -291,7 +296,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Contrato, seção Avaliação (aguarda aprovação do Pedro; texto proposto no PR da E1.6): backtest dos candidatos só-BCB em amostra longa (anos-alvo desde o primeiro ano com janela completa, ~2008), com erro por subperíodo; o torneio formal (Diebold-Mariano e regra de aceitação) continua na amostra comum 2016–2025, por causa do RREO.
 - E2.5: confirmar se o lançamento do FPE/FPM bruto com dedutora do Fundeb vale em todo o período 2015–2025 ou se mudou com o layout de 2018.
 - E3.3: discutir o poder estatístico da regra de aceitação. Com 10 anos-alvo, "≥70% dos anos" e Diebold-Mariano são fracos; avaliar agrupar cutoffs por horizonte e reportar com e sem 2020–22.
-- E3.6: na ponte RREO × BCB, verificar como o BCB trata os ativos do RPPS, já que o P2 exclui o RPPS.
+- E3.6: confirmar com o BCB (Depec) como o resultado primário dos governos estaduais trata o RPPS (o manual de 2018 não cita); registrar a resposta em `docs/nota_gap.md`.
 - E2.8: Pedro decidir a recomendação para RJ/PR/RS (ver `docs/nota_quebras.md`, 3.3).
 - E2.10: feito (ver acima; RGF/DCA/MSC não verificados).
 - E3.3: regra de aceitação a congelar.
