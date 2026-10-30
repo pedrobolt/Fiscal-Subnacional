@@ -144,3 +144,13 @@ Fontes: Banco Central do Brasil, [Manual de Estatísticas Fiscais (maio de 2019)
 **Decisão (IC de 95% da inclinação, erros-padrão robustos HC3, t com n − 2 graus de liberdade).** 0 dentro e 1 fora = **contínua**; 1 dentro e 0 fora = **não contínua**; qualquer outro caso = **inconclusivo**. **Robustez:** repetir com 2024 contra 2022 (Δ_i = razão 2024 − razão 2022; x_i = R_i,2024 ÷ receita_2024,i).
 
 **Confundidores declarados, sem correção:** LC 194/2022 (ICMS) e o ciclo eleitoral de 2022 mexem em Δ_i, mas são em geral não correlacionados com a participação do RPPS; a razão resultado ÷ receita usa o Anexo 6 original, cujo conceito de FUNDEB e cota-parte varia por UF-ano (ver conceito único) e pode introduzir ruído em Δ_i; n = 27 dá poder baixo e um IC largo tende ao resultado "inconclusivo". Limiar e IC são convenções, sem calibração; qualquer ajuste depois de ver os dados será registrado como mudança pós-resultado.
+
+### Resultado (30/10/2026; `outputs/continuidade_rpps_resumo.csv`, `outputs/continuidade_rpps_uf.csv`)
+| Ano | Base | n | Inclinação | EP (HC3) | IC 95% | R² | Decisão |
+|---|---|---|---|---|---|---|---|
+| 2023 | 2022 | 27 | 0,234 | 0,453 | [−0,699; 1,168] | 0,045 | inconclusivo |
+| 2024 (robustez) | 2022 | 27 | 0,282 | 0,569 | [−0,889; 1,453] | 0,063 | inconclusivo |
+
+- Os dois ICs contêm 0 e 1. O teste não confirma nem refuta que a linha XXXIV reproduz o conceito pré-2023. Estimativas pontuais abaixo de 0,5 não têm peso: o IC é largo (poder baixo com n = 27 e R² de 5–6%).
+- Consequência: a proposta de P2 com RPPS (`docs/proposta_p2_com_rpps.md`) segue condicionada; a série oficial não muda. A premissa só será resolvida por fonte externa (resposta do BCB) ou por mais dados.
+- Critério e decisão foram aplicados como fixados no commit anterior ao cálculo; nenhuma mudança pós-resultado.

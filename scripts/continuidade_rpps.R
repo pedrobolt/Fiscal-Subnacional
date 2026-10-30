@@ -6,6 +6,6 @@
 source("R/utils_io.R", encoding = "UTF-8"); source("R/transform/continuidade_rpps.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) source(f, encoding = "UTF-8")
 a6 <- ler_rreo_pasta("data/raw/rreo", "E"); a6 <- a6[a6$anexo == "RREO-Anexo 06" & a6$periodo == 6L, ]
-d <- razao_com_rpps(a6); gravar_csv(d, "outputs/continuidade_rpps_uf.csv")
+cu <- ler_csv("outputs/conceito_unico_bimestral.csv"); d <- razao_com_rpps(a6, cu[cu$exercicio == 2022, ]); gravar_csv(d, "outputs/continuidade_rpps_uf.csv")
 res <- do.call(rbind, lapply(c(2023, 2024), function(ex) { r <- continuidade_regressao(d, ex); r$decisao <- decidir_continuidade(r$ic_inf, r$ic_sup); r }))
 gravar_csv(res, "outputs/continuidade_rpps_resumo.csv"); options(width = 200); print(res, row.names = FALSE)
