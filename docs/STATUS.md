@@ -276,7 +276,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Os 163 alertas novos de 2023 (ICMS, FUNDEB, custeio, investimento etc.) não se concentram em 2023 b1 (40 em b1, 20 a 28 nos demais bimestres; no b1, 5 a 11 das 27 UFs por série): não há indício de mudança de layout, ficam como novos.
 
 ### E2.9: conferência mínima (30/10/2026, branch `e2-9-conferencia-minima`)
-- Escopo reduzido pelo Pedro: 3 itens (SP, RJ, MG, 4º bimestre de 2026), totais do Anexo 6 contra o RREO do site da SEFAZ de cada estado; o restante é coberto pelos testes automáticos. `scripts/e29_planilha.R`, `outputs/e29_planilha.csv`, `docs/e29_conferencia.md` (regra de aceitação ≤ 0,1% e sinal, definida antes da leitura). Leitura dos PDFs: Pedro; resultado pendente.
+- Escopo reduzido pelo Pedro: 3 itens (SP, RJ, MG, 4º bimestre de 2026), totais do Anexo 6 contra o RREO do site da SEFAZ de cada estado; o restante é coberto pelos testes automáticos. `scripts/e29_planilha.R`, `outputs/e29_planilha.csv`, `docs/e29_conferencia.md` (regra de aceitação ≤ 0,1% e sinal, definida antes da leitura). Resultado (30/10/2026): **3/3 UFs conferidas, 4º bim. 2026, Anexo 6, sem RPPS** (totais dentro de 0,1% e mesmo sinal). O teste cobre só os totais, não a quebra de pessoal por categoria.
 
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
