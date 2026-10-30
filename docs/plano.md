@@ -52,7 +52,7 @@ Aceite: cumpre a regra do E3; senão, fica o melhor benchmark.
 - E5 (protocolo, decisão de 28/10/2026): a despesa em caixa só existe desde 2018 (no máximo 8 anos-alvo até 2025), abaixo do piso de 10 anos por série; por isso o P2 é avaliado em painel de 27 UFs, não série a série.
 - E5.2 FPE/FPM: projeção pela STN, convertida ao conceito RREO por fator de ponte; avaliado contra o RREO declarado (contrato 23/10)
 - E5.3 Resultado RREO (estados, municípios, total), variação real e contribuição de cada item
-- E5.4 (novo) Mistura P2 → ponte (gap RREO × BCB) → P1, calculada em cada rodada como **modelo-sombra** ao lado do SRW e arquivada para avaliação prospectiva. Não é candidato oficial do P1: o RREO em base caixa existe só desde 2018, abaixo do piso de 10 anos-alvo. O modelo-sombra inclui o degrau do gap de RJ, PR e RS (ver E3.6) e a dummy de quebra do primário RREO. Depende do E3.6
+- E5.4 (novo) Mistura P2 → ponte (gap RREO × BCB) → P1, calculada em cada rodada como **modelo-sombra** ao lado do SRW e arquivada para avaliação prospectiva. Não é candidato oficial do P1: o RREO em base caixa existe só desde 2018, abaixo do piso de 10 anos-alvo. O modelo-sombra inclui o degrau do gap de RJ, PR e RS (ver E3.6) e a dummy de quebra do primário RREO. **A ponte é avaliada no gap anual** (acumulado até m + restante do ano anterior), não na classe por bimestre do E3.6. Depende do E3.6
 Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benchmark.
 
 ## E6. Rodar o modelo e entregar a planilha final (S6)

@@ -63,3 +63,23 @@ test_that("P1 e P2 por bimestre: sinal, soma de dois meses e UFs completas", {
                      data.frame(exercicio = 2025L, periodo = 1L, excedente = 2e9))
   expect_equal(g$g, -2); expect_equal(g$g_sem, 0); expect_true(g$apos_reclass)
 })
+
+test_that("quebras escalonadas: o gap bruto so e classificavel com a referencia toda apos a ultima quebra", {
+  pc <- primeiro_classificavel(data.frame(exercicio = 2025L, periodo = c(1L, 5L, 6L)), ate = 2032L)
+  expect_equal(pc$primeiro_exercicio[pc$periodo == 6], 2027L)       # refs 2025 b6 e 2026 b6
+  expect_equal(pc$primeiro_exercicio[pc$periodo %in% 1:5], rep(2028L, 5))   # refs 2026 e 2027
+  d <- serie(rep(0.02, 54), 2018L:2026L)
+  c1 <- classificar_gap(d, quebras = data.frame(exercicio = 2025L, periodo = c(1L, 5L, 6L)))
+  expect_true(all(c1$classe[d$exercicio == 2026] == "sem_referencia"))
+  expect_true(all(c1$classe[d$exercicio == 2022] != "sem_referencia"))
+})
+
+test_that("P2 com RPPS: acumulado vira fluxo e UF faltante deixa o bimestre NA", {
+  mk <- function(cod, ex, pe, conta, col, v) data.frame(cod_ibge = cod, exercicio = ex, periodo = pe, anexo = "RREO-Anexo 06", cod_conta = conta, coluna = col, valor = v, baixado_em = Sys.time())
+  res <- "ResultadoPrimarioComRPPSAcimaDaLinha"; rec <- "RREO6TotalReceitaPrimaria"
+  x <- rbind(mk(1, 2024, 1, res, "VALOR", 10e9), mk(1, 2024, 2, res, "VALOR", 25e9), mk(1, 2024, 1, rec, "RECEITAS REALIZADAS (a)", 100e9), mk(1, 2024, 2, rec, "RECEITAS REALIZADAS (a)", 230e9),
+             mk(2, 2024, 1, res, "VALOR", 1e9), mk(2, 2024, 1, rec, "RECEITAS REALIZADAS (a)", 10e9))
+  d <- p2_com_rpps_bim(x, n_ufs = 2L)
+  expect_equal(d$p2_com[d$periodo == 1], 11); expect_equal(d$rec_com[d$periodo == 1], 110)
+  expect_true(is.na(d$p2_com[d$periodo == 2]))                 # UF 2 sem o 2º bimestre
+})
