@@ -74,3 +74,45 @@ test_that("nenhum script usa source() com encoding no lugar do carregador (trunc
     expect_false(any(ruim), info = f)
   }
 })
+
+# (d, geral) dependencias: para CADA script, carrega so os arquivos que ele proprio carrega e segue, a partir das funcoes que o script chama, as
+# funcoes e constantes globais de cada uma (codetools); tudo precisa estar definido nesses arquivos ou nos pacotes anexados. Pega o caso de um
+# script que esquece de carregar um arquivo (ex.: CATEGORIAS_A3 em dicionario_contas.R) sem rodar o script.
+NSE_OK <- c("anexo", "cod_ibge", "motivo", "periodo", "tipo")        # colunas usadas dentro de with() em atualizar_rreo
+
+nao_resolvidos <- function(arq, ids_script) {
+  e <- new.env(parent = parent.env(globalenv()))                       # fora do globalenv: o que outros testes definiram nao vale
+  carregar_r(c("../R/utils_io.R", arq), e)
+  fila <- intersect(ids_script, ls(e)); visto <- character(0); falta <- character(0)
+  while (length(fila)) {
+    n <- fila[1]; fila <- fila[-1]
+    if (n %in% visto) next
+    visto <- c(visto, n); f <- get(n, e); if (!is.function(f)) next
+    g <- codetools::findGlobals(f, merge = FALSE)
+    for (v in setdiff(c(g$functions, g$variables), NSE_OK)) {
+      if (exists(v, envir = e, inherits = FALSE)) fila <- c(fila, v) else if (!exists(v, envir = e, inherits = TRUE)) falta <- c(falta, paste0(v, " (usado em ", n, ")"))
+    }
+  }
+  unique(falta)
+}
+ids_do_script <- function(script) {
+  txt <- readLines(file.path("../scripts", script), encoding = "UTF-8", warn = FALSE); txt <- txt[!grepl("^\\s*#", txt)]
+  unique(unlist(regmatches(txt, gregexpr("[A-Za-z_.][A-Za-z0-9_.]*", txt))))
+}
+
+test_that("o detector de dependencias acusa constante nao carregada (teste do proprio teste)", {
+  tmp <- tempfile(fileext = ".R")
+  writeLines(c("K_SO_NO_OUTRO <- 1", "f_usa <- function() K_SO_NO_OUTRO + 1"), tmp)
+  tmp2 <- tempfile(fileext = ".R"); writeLines("g_sem_k <- function() K_SO_NO_OUTRO", tmp2)
+  expect_length(nao_resolvidos(c(tmp, tmp2), "g_sem_k"), 0)
+  expect_match(nao_resolvidos(tmp2, "g_sem_k"), "K_SO_NO_OUTRO")
+})
+
+test_that("cada script carrega todos os arquivos de que suas funcoes dependem", {
+  for (s in setdiff(list.files("../scripts", pattern = "\\.R$"), "rodada_mensal.R")) {
+    arq <- arquivos_do_script(s)
+    if (!length(arq)) next
+    expect_length(nao_resolvidos(arq, ids_do_script(s)), 0)
+    r <- nao_resolvidos(arq, ids_do_script(s)); if (length(r)) message(s, ": ", paste(head(r, 5), collapse = "; "))
+  }
+})

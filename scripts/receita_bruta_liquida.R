@@ -2,7 +2,7 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/receita_bruta_liquida.R  (precisa de data/raw/rreo/E com Anexo 3 e data/raw/dca)
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/siconfi_dca.R", "R/transform/receita_mensal_a3.R",
-            "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R")) carregar_r(f)
+            "R/transform/dicionario_contas.R", "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R")) carregar_r(f)
 a3 <- ler_a3_estados(); dca <- ler_dca_impostos()
 fat <- fatores_dca(dca, a3)
 gravar_csv(fat, dados("outputs/a3_fatores_dca.csv"))

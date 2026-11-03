@@ -21,6 +21,9 @@ Modelo em R que projeta, para o ano corrente, o resultado primário dos governos
 7. **Nunca afirme uma verificação que não foi executada** ("confere com X", "testado", "validado"): só escreva isso depois de rodar a checagem e, quando for o caso, cite o resultado. Sem a checagem, diga que não foi verificado.
 8. **Antes de pedir merge ao Pedro**, atualize a branch com a `main` mais recente (merge da `main` na branch), resolva conflitos mantendo o conteúdo dos dois lados, rode os testes e confirme que o PR não tem conflito. Só então avise.
 
+9. **Codificação (Windows com code page diferente de 65001).** Nunca carregue código com `source(arquivo, encoding = "UTF-8")`: no Windows ele converte para a codificação nativa e trunca o arquivo no primeiro caractere fora do CP1252. Use `carregar_r()` (em `R/utils_io.R`). Nenhum `.R` em `R/` ou `scripts/` pode ter caractere fora do CP1252 (sigma, delta, sinal de menos Unicode, etc.: escreva em ASCII). `R/utils_io.R`, `_targets.R` e `scripts/rodada_mensal.R` (que o R lê na codificação nativa) são somente ASCII. Testes em `tests/test-codificacao.R`.
+10. **Dados fora do código.** Caminhos de `data/raw`, `data/processed`, `outputs` e `premissas.yml` passam sempre por `dados()` (raiz `FISCAL_DADOS`). Resultado congelado de protocolo ou referência que a rodada lê é versionado em `data/protocolo/`, nunca em `outputs/`.
+
 ## Regras que você não pode mudar sozinho
 - Alvos, conceitos e unidades de `docs/contrato.md`.
 - Cutoffs, métricas e regra de aceitação do protocolo de avaliação (depois de aprovados).
