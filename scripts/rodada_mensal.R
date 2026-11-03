@@ -134,8 +134,8 @@ et_aba <- function(ctx) {
   ano <- as.integer(format(hoje, "%Y"))
   p <- ler_csv(dados("outputs/alertas_priorizados.csv"))
   p <- p[is.na(p$exercicio) | p$exercicio >= ano - 1L, ]       # a rodada confere os exercicios t e t-1 (o historico antigo e saldo, nao a rodada)
+  ult <- bimestre_referencia(hoje)                                                   # prazo legal vencido antes da data da rodada
   x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv")); x <- x[!is.na(x$rec_total), ]
-  x <- x[order(x$exercicio, x$periodo), ]; ult <- unlist(utils::tail(x[, c("exercicio", "periodo")], 1))   # ultimo bimestre disponivel (de qualquer UF)
   nb <- aggregate(periodo ~ cod_ibge + exercicio, x, length); ra <- aggregate(rec_total ~ cod_ibge + exercicio, x, sum)
   ra <- merge(ra, nb[nb$periodo == 6L, c("cod_ibge", "exercicio")])                      # so anos completos da UF
   ok <- names(which(table(ra$exercicio) == 27L)); ra <- ra[ra$exercicio %in% as.integer(ok), ]   # e so exercicios com as 27 UFs

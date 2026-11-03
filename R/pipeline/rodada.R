@@ -157,6 +157,8 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
   }
   if (!is.null(p2_tot) && nrow(p2_tot)) L <- c(L, "", "## P2 realizado, resultado primário (R$ bi, com RPPS; sem RPPS = referência da LDO, 2023+)", "",
            sprintf("- %d b%d: com RPPS %.1f | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, p2_tot$p2_com, ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", p2_tot$p2_sem))))
-  if (!is.null(alertas)) L <- c(L, "", sprintf("## Alertas novos (último bimestre disponível: %d na lista, %d por tipo; revisão de bimestres anteriores de t e t−1: %d na lista, %d por tipo)", alertas$lista_ultimo, alertas$contagem_ultimo, alertas$lista_revisao, alertas$contagem_revisao))
+  if (!is.null(alertas)) L <- c(L, "", sprintf("## Alertas novos. Bimestre de referência: %d b%d (prazo legal vencido antes da rodada)", alertas$ultimo[[1]], alertas$ultimo[[2]]), "",
+    sprintf("- Último (referência e mais recentes): %d na lista, %d por tipo", alertas$lista_ultimo, alertas$contagem_ultimo),
+    sprintf("- Revisão (bimestres anteriores de t e t−1): %d na lista, %d por tipo", alertas$lista_revisao, alertas$contagem_revisao))
   paste0(paste(L, collapse = "\n"), "\n")
 }

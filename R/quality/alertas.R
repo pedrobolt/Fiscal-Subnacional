@@ -318,14 +318,24 @@ peso_receita_uf <- function(rec_anual, cod_ibge, exercicio) {
   }, numeric(1))
 }
 
-#' Aba de alertas da rodada. Alertas novos em dois grupos: "ultimo" (o último bimestre disponível, `ultimo = c(exercicio, periodo)`, mais os
-#' alertas sem bimestre, como os de dicionário) e "revisao" (bimestres anteriores de t e t−1). Entram na lista, em cada grupo: (b) com
+#' Bimestre de referência da rodada: o mais recente cujo prazo legal (fim do bimestre + `prazo` dias) venceu antes de `hoje`. Não depende de
+#' quem já entregou: entrega antecipada de uma UF não muda a referência. Retorna c(exercicio, periodo).
+bimestre_referencia <- function(hoje, prazo = ALERTA_PRAZO_DIAS) {
+  fim <- function(ex, p) { m <- 2L * p; as.Date(sprintf("%04d-%02d-01", ex + (m == 12L), ifelse(m == 12L, 1L, m + 1L))) - 1L }
+  ano <- as.integer(format(hoje, "%Y"))
+  for (ex in c(ano, ano - 1L)) for (p in 6:1) if (fim(ex, p) + prazo < hoje) return(c(exercicio = ex, periodo = p))
+  c(exercicio = NA_integer_, periodo = NA_integer_)
+}
+
+#' Aba de alertas da rodada. Alertas novos em dois grupos: "ultimo" (o bimestre de referência `ultimo = c(exercicio, periodo)`, de
+#' `bimestre_referencia()`, e qualquer bimestre mais recente, isto é, entregas antecipadas; mais os alertas sem bimestre, como os de dicionário)
+#' e "revisao" (bimestres anteriores de t e t−1). Entram na lista, em cada grupo: (b) com
 #' materialidade > `corte` da receita da UF e (d) entrega atrasada ou ausente de UF com peso > `corte_peso` da receita regional (`peso`: vetor
 #' alinhado a `p$alertas`, de `peso_receita_uf()`). O resto vira contagem por grupo, tipo e subtipo. `p`: saída de `priorizar_alertas()`.
 aba_alertas_rodada <- function(p, ultimo, peso, corte = ALERTA_CORTE_ABA, corte_peso = ALERTA_CORTE_PESO_ENTREGA) {
   a <- p$alertas; a$peso_uf <- peso
   n <- a[a$status == "nova", ]
-  n$grupo <- ifelse(is.na(n$exercicio) | (n$exercicio == ultimo[1] & n$periodo == ultimo[2]), "ultimo", "revisao")
+  n$grupo <- ifelse(is.na(n$exercicio) | n$exercicio * 10L + n$periodo >= ultimo[1] * 10L + ultimo[2], "ultimo", "revisao")
   na_lista <- (n$tipo == "b" & !is.na(n$materialidade) & n$materialidade > corte) |
               (n$tipo == "d" & n$subtipo %in% c("entrega_atrasada", "entrega_ausente") & !is.na(n$peso_uf) & n$peso_uf > corte_peso)
   lista <- n[na_lista, ]

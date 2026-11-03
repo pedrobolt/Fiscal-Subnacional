@@ -141,3 +141,18 @@ test_that("aba da rodada: último bimestre vs revisão; entrega atrasada entra n
   expect_equal(ab$lista$grupo[1:3], rep("ultimo", 3))                                                    # último bimestre primeiro
   c1 <- ab$contagem; expect_equal(sum(c1$n), 4L); expect_equal(sum(c1$n[c1$grupo == "revisao"]), 1L)
 })
+
+test_that("bimestre de referência: prazo legal vencido antes da rodada; entrega antecipada não o move e cai em 'último'", {
+  expect_equal(unname(bimestre_referencia(as.Date("2026-11-03"))), c(2026L, 4L))     # b4 acabou em 31/8, prazo 30/9; b5 acaba em 31/10, prazo 30/11
+  expect_equal(unname(bimestre_referencia(as.Date("2026-09-30"))), c(2026L, 3L))     # prazo do b4 vence em 30/9: ainda não "venceu antes"
+  expect_equal(unname(bimestre_referencia(as.Date("2026-10-01"))), c(2026L, 4L))
+  expect_equal(unname(bimestre_referencia(as.Date("2026-02-15"))), c(2025L, 6L))     # b6 de 2025: prazo 30/1/2026
+  al <- rbind(mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2026L, 5L, valor = 9e8),   # b5 entregue antes do prazo por SP
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:IPVA", 2026L, 4L, valor = 9e8),   # referência
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ISS", 2026L, 3L, valor = 9e8))    # revisão
+  p <- priorizar_alertas(al, data.frame(cod_ibge = 35L, exercicio = 2026L, periodo = 3:5, rec_total = 10e8))
+  ref <- bimestre_referencia(as.Date("2026-11-03"))
+  ab <- aba_alertas_rodada(p, ref, rep(NA_real_, nrow(p$alertas)))
+  g <- setNames(ab$lista$grupo, ab$lista$serie)
+  expect_equal(g[["rec:ICMS"]], "ultimo"); expect_equal(g[["rec:IPVA"]], "ultimo"); expect_equal(g[["rec:ISS"]], "revisao")
+})
