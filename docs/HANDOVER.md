@@ -81,7 +81,7 @@ Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na
 1. No cmd, uma vez: `setx FISCAL_DADOS C:\fiscal_dados`. Vale só para janelas do cmd abertas **depois**; feche e abra de novo. Conferir com `echo %FISCAL_DADOS%`.
 2. Criar a estrutura: `mkdir C:\fiscal_dados\data` e `mkdir C:\fiscal_dados\outputs`.
 3. Trazer a carga histórica para lá, **uma vez**: (a) de uma pasta antiga que já tem dados: `xcopy /E /I /Y C:\caminho\antigo\data\raw C:\fiscal_dados\data\raw` (e `outputs`, se quiser manter as saídas); (b) do zero, pelo Release `dados-rreo-20261023`: baixar `rreo_bruto_20261023.tar.gz` e o manifesto, e na raiz do repositório rodar `Rscript scripts\restaurar_dados.R rreo_bruto_20261023.tar.gz rreo_bruto_20261023_manifesto.csv` (extrai direto em `%FISCAL_DADOS%\data\raw`). Depois, a rodada só baixa o que falta.
-4. Copiar o `premissas.yml` do cenário vigente para `C:\fiscal_dados\premissas.yml` (não é versionado). Ao trocar de versão do código nada disso muda.
+4. A cobertura do protocolo (58/60/74%) vem do repositório (`data\\protocolo\\e42b_cobertura.csv`); não precisa copiar nada de `outputs`. Copiar o `premissas.yml` do cenário vigente para `C:\fiscal_dados\premissas.yml` (não é versionado). Ao trocar de versão do código nada disso muda.
 5. **Fazer cópia periódica de `C:\fiscal_dados\outputs\arquivo\previsoes_emitidas.csv` fora do computador** (não vai para o git; é a base da avaliação prospectiva do E6.3).
 
 **Comando:** `"C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts\rodada_mensal.R --oficial` (no cmd, na raiz do repositório; o caminho do R pode ser outro). Demora ~10 min.
