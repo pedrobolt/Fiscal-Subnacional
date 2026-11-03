@@ -2,7 +2,7 @@
 source("_targets.R")
 ANO <- as.integer(commandArgs(TRUE)[1])
 entes <- ler_entes(baixar_entes()); m <- entes[entes$esfera == "M", ]
-simpl <- Filter(function(id) isTRUE(linhas_rreo(caminho_rreo("data/raw/rreo", "M", id, ANO, 6, "RREO-Anexo 01", "RREO Simplificado")) > 0), m$cod_ibge)
+simpl <- Filter(function(id) isTRUE(linhas_rreo(caminho_rreo(dados("data/raw/rreo"), "M", id, ANO, 6, "RREO-Anexo 01", "RREO Simplificado")) > 0), m$cod_ibge)
 cat("Simplificados", ANO, ":", length(simpl), "de", nrow(m), "\n")
 set.seed(7); amostra <- sample(simpl, 120)
 res <- lapply(amostra, function(id) {

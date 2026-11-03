@@ -3,11 +3,11 @@
 # Saidas (git-ignored): outputs/gap_estados_bimestral.csv, outputs/gap_resumo_classes.csv.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/gap_p1_p2.R
 source("R/utils_io.R", encoding = "UTF-8"); source("R/download/bcb_sgs.R", encoding = "UTF-8"); source("R/transform/gap_p1_p2.R", encoding = "UTF-8")
-x <- ler_csv("outputs/conceito_unico_bimestral.csv")
+x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
 p2 <- p2_estados_bim(x[x$exercicio >= 2018, ])
-arq <- sort(list.files("data/raw", "^bcb_sgs_4643_.*\\.json$", full.names = TRUE), decreasing = TRUE)[1]
+arq <- sort(list.files(dados("data/raw"), "^bcb_sgs_4643_.*\\.json$", full.names = TRUE), decreasing = TRUE)[1]
 p1 <- p1_estados_bim(ler_sgs(arq)); cat("SGS 4643:", basename(arq), "\n")
-h <- ler_csv("outputs/quebras_pessoal_harmonizado.csv")
+h <- ler_csv(dados("outputs/quebras_pessoal_harmonizado.csv"))
 exc <- aggregate(excedente ~ exercicio + periodo, h, sum)
 d <- gap_bimestral(p2, p1, exc)
 d <- d[!is.na(d$g), ]
@@ -25,7 +25,7 @@ for (v in c("com_2020_22", "sem_2020_22")) {
                     cbind(variante = v, serie = "sem reclassificacao", resumo_classes(cs$classe)))
 }
 o <- do.call(rbind, out); r <- do.call(rbind, res)
-gravar_csv(o, "outputs/gap_estados_bimestral.csv"); gravar_csv(r, "outputs/gap_resumo_classes.csv")
+gravar_csv(o, dados("outputs/gap_estados_bimestral.csv")); gravar_csv(r, dados("outputs/gap_resumo_classes.csv"))
 print(r, row.names = FALSE)
 o1 <- out$com_2020_22
 cat("\nGap r (% da receita): resumo\n"); print(summary(o1$r)); cat("Degrau medio 2025+ (excedente/receita):", round(mean(o1$exc[o1$apos_reclass] / o1$rec[o1$apos_reclass]), 4), "\n")

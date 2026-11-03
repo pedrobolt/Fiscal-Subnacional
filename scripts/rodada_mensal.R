@@ -1,14 +1,18 @@
 # E6.1: rodada mensal. Um comando: baixar -> validar -> projetar (P1) -> P2 realizado -> gap -> alertas -> arquivar -> resumo.
 # Uso: Rscript scripts/rodada_mensal.R [--data=AAAA-MM-DD] [--sem-download] [--rapida]
+#   --oficial       rodada oficial: grava em outputs/rodada e no arquivo de previsões emitidas. Sem esta opção a rodada é de TESTE e grava em
+#                   outputs/teste/ (arquivo de previsões incluído). Não vale com --sem-download nem --rapida.
 #   --sem-download  pula Siconfi, BCB e IBGE (usa o que está em data/raw); a rodada sai DEGRADADA.
 #   --rapida        pula conceito único e alertas (usa as saídas de outputs/ já calculadas); a rodada sai DEGRADADA.
+# Dados sob a raiz FISCAL_DADOS (padrão: a pasta do repositório); ver docs/HANDOVER.md, 3h.
 # Saída: outputs/rodada/<data>/ (resumo.md, p1.csv, p2_categorias.csv, p2_resultado.csv, gap.csv, alertas_*.csv, etapas.csv, carimbo.txt) e o
 # arquivo de previsões emitidas outputs/arquivo/previsoes_emitidas.csv (uma linha por rodada x modelo x esfera x ano-alvo).
 # Código de saída: 0 = OK; 2 = DEGRADADA (alguma etapa falhou ou foi pulada); 1 = erro fatal. Rodar no Windows da CNI: ver docs/HANDOVER.md.
 # A rodada é sequencial: no máximo 1 conexão por vez ao Siconfi (limite combinado: 2).
 args <- commandArgs(TRUE)
 opt <- function(nome, padrao = NA_character_) { a <- grep(paste0("^--", nome, "="), args, value = TRUE); if (length(a)) sub(paste0("^--", nome, "="), "", a[1]) else padrao }
-sem_download <- "--sem-download" %in% args; rapida <- "--rapida" %in% args
+sem_download <- "--sem-download" %in% args; rapida <- "--rapida" %in% args; oficial <- "--oficial" %in% args
+if (oficial && (sem_download || rapida)) { cat("Erro: --oficial exige a rodada completa (sem --sem-download nem --rapida).\n"); quit(status = 1) }
 hoje <- as.Date(opt("data", format(Sys.Date())))
 dia <- format(hoje)
 invisible(Sys.setlocale("LC_COLLATE", "C"))
@@ -20,9 +24,9 @@ invisible(lapply(arqs, source, encoding = "UTF-8"))
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE, ignore.stderr = TRUE), error = function(e) NA_character_)
 sujo <- tryCatch(length(system("git status --porcelain -- R scripts data/dicionario_contas_estados.csv", intern = TRUE, ignore.stderr = TRUE)) > 0, error = function(e) FALSE)
 commit <- paste0(commit, if (isTRUE(sujo)) "+sujo" else "")
-pasta <- file.path("outputs", "rodada", dia); dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
+cam <- caminhos_rodada(dia, oficial); pasta <- cam$pasta; dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
 ctx <- new.env(); ctx$avisos <- character(0)
-ultimo <- function(prefixo, cod) { f <- sort(list.files("data/raw", sprintf("^%s_%s_.*\\.json$", prefixo, cod), full.names = TRUE)); if (length(f)) f[length(f)] else NA_character_ }
+ultimo <- function(prefixo, cod) { f <- sort(list.files(dados("data/raw"), sprintf("^%s_%s_.*\\.json$", prefixo, cod), full.names = TRUE)); if (length(f)) f[length(f)] else NA_character_ }
 
 # ---- 1. BCB: SGS 4642 (regional), 4643 (estaduais), 4644 (municipais) ------------------------------------------------------
 et_bcb <- function(ctx) {
@@ -52,7 +56,7 @@ et_pib <- function(ctx) {
 
 # ---- 3. Siconfi: RREO dos estados (t e t-1), Anexo 3 e DCA ---------------------------------------------------------------------
 et_siconfi <- function(ctx) {
-  entes <- ler_entes(baixar_entes("data/raw/rreo", hoje)); est <- listar_estados(entes)
+  entes <- ler_entes(baixar_entes(dados("data/raw/rreo"), hoje)); est <- listar_estados(entes)
   ano <- as.integer(format(hoje, "%Y"))
   r <- atualizar_rreo(est$cod_ibge, c(ano - 1L, ano), esfera = "E", hoje = hoje)
   atualizar_a3_dca(hoje = hoje)
@@ -70,7 +74,7 @@ et_p1 <- function(ctx) {
   p1 <- p1_srw_esferas(ctx$series, ano, m)
   reg <- p1[p1$esfera == "regional", ]
   iv <- intervalo_p1_regional(ctx$series$regional, ctx$pib, ano, m, reg$previsao_bi)
-  cob <- ler_csv("outputs/e42b_cobertura.csv"); cob <- cob[cob$amostra == "publicado (σ com 2020-22), alvos 2008-2025", ]
+  cob <- ler_csv(dados("outputs/e42b_cobertura.csv")); cob <- cob[cob$amostra == "publicado (σ com 2020-22), alvos 2008-2025", ]
   txt <- texto_cobertura(cob, m)
   m3 <- NA_real_
   if (m < 12) {
@@ -93,17 +97,17 @@ et_p1 <- function(ctx) {
 et_arquivo <- function(ctx) {
   if (is.null(ctx$linhas_arquivo)) stop("sem previsões desta rodada para arquivar", call. = FALSE)
   l <- ctx$linhas_arquivo; l$status_rodada <- ctx$status_prelim
-  arquivar_previsoes("outputs/arquivo/previsoes_emitidas.csv", l)
+  arquivar_previsoes(cam$arquivo, l)
 }
 
 # ---- 5. P2 realizado: categorias (com RPPS) e resultado com e sem RPPS (referência da LDO) --------------------------------------
 et_p2 <- function(ctx) {
   dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
-  rreo <- ler_rreo_pasta("data/raw/rreo", "E")
+  rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
   ano <- as.integer(format(hoje, "%Y"))
   cat_bim <- p2_categorias_bim(fluxos_a6_categorias(rreo, dic, dc), c(ano - 1L, ano))
   gravar_csv(cat_bim, file.path(pasta, "p2_categorias.csv"))
-  x <- ler_csv("outputs/conceito_unico_bimestral.csv")
+  x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
   com <- p2_estados_bim(x[x$exercicio >= 2018, ])[, c("exercicio", "periodo", "n_ufs", "p2")]; names(com)[4] <- "p2_com"
   sem <- p2_sem_rpps_ldo_bim(rreo)[, c("exercicio", "periodo", "p2_com")]; names(sem)[3] <- "p2_sem"
   tot <- merge(com, sem, by = c("exercicio", "periodo"), all.x = TRUE)
@@ -114,10 +118,10 @@ et_p2 <- function(ctx) {
 
 # ---- 6. Gap P1 x P2 (regra congelada em docs/contrato.md), com e sem 2020-22 --------------------------------------------------
 et_gap <- function(ctx) {
-  x <- ler_csv("outputs/conceito_unico_bimestral.csv")
+  x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
   p2 <- p2_estados_bim(x[x$exercicio >= 2018, ])
   p1 <- p1_estados_bim(ctx$series$estaduais |> (\(s) data.frame(data = s$data, valor = -s$valor_bi * 1000))())
-  h <- ler_csv("outputs/quebras_pessoal_harmonizado.csv"); exc <- aggregate(excedente ~ exercicio + periodo, h, sum)
+  h <- ler_csv(dados("outputs/quebras_pessoal_harmonizado.csv")); exc <- aggregate(excedente ~ exercicio + periodo, h, sum)
   d <- gap_bimestral(p2, p1, exc); d <- d[!is.na(d$g), ]
   rot <- function(ex) { cb <- classificar_gap(d, "r", ex); ifelse(d$apos_reclass & cb$classe != "excluido", "quebra_conhecida", cb$classe) }
   d$classe_informe <- rot(integer(0)); d$classe_sem_2020_22 <- rot(2020:2022)
@@ -127,11 +131,20 @@ et_gap <- function(ctx) {
 
 # ---- 7. Alertas: lista da aba e contagem ----------------------------------------------------------------------------------------
 et_aba <- function(ctx) {
-  p <- ler_csv("outputs/alertas_priorizados.csv"); ano <- as.integer(format(hoje, "%Y"))
-  p <- p[is.na(p$exercicio) | p$exercicio >= ano - 1L, ]       # a rodada confere os exercicios t e t-1 (o historico antigo e o saldo, nao a rodada)
-  ab <- aba_alertas(list(alertas = p))
+  ano <- as.integer(format(hoje, "%Y"))
+  p <- ler_csv(dados("outputs/alertas_priorizados.csv"))
+  p <- p[is.na(p$exercicio) | p$exercicio >= ano - 1L, ]       # a rodada confere os exercicios t e t-1 (o historico antigo e saldo, nao a rodada)
+  x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv")); x <- x[!is.na(x$rec_total), ]
+  x <- x[order(x$exercicio, x$periodo), ]; ult <- unlist(utils::tail(x[, c("exercicio", "periodo")], 1))   # ultimo bimestre disponivel (de qualquer UF)
+  nb <- aggregate(periodo ~ cod_ibge + exercicio, x, length); ra <- aggregate(rec_total ~ cod_ibge + exercicio, x, sum)
+  ra <- merge(ra, nb[nb$periodo == 6L, c("cod_ibge", "exercicio")])                      # so anos completos da UF
+  ok <- names(which(table(ra$exercicio) == 27L)); ra <- ra[ra$exercicio %in% as.integer(ok), ]   # e so exercicios com as 27 UFs
+  peso <- peso_receita_uf(ra, p$cod_ibge, p$exercicio)
+  ab <- aba_alertas_rodada(list(alertas = p), ult, peso)
   gravar_csv(ab$lista, file.path(pasta, "alertas_aba_lista.csv")); gravar_csv(ab$contagem, file.path(pasta, "alertas_aba_contagem.csv"))
-  ctx$alertas <- list(lista = nrow(ab$lista), contagem = sum(ab$contagem$n))
+  n <- function(g) c(lista = sum(ab$lista$grupo == g), contagem = sum(ab$contagem$n[ab$contagem$grupo == g]))
+  ctx$alertas <- list(lista_ultimo = n("ultimo")[["lista"]], contagem_ultimo = n("ultimo")[["contagem"]],
+                      lista_revisao = n("revisao")[["lista"]], contagem_revisao = n("revisao")[["contagem"]], ultimo = ult)
 }
 
 # ---- Execução ----------------------------------------------------------------------------------------------------------------------
@@ -153,7 +166,7 @@ etapas <- rbind(etapas, rodar_etapa("arquivo", et_arquivo, ctx))
 st <- status_rodada(etapas, ctx$avisos)
 gravar_csv(etapas[, c("etapa", "estado", "msg")], file.path(pasta, "etapas.csv"))
 writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
-txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4))
+txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4), oficial)
 writeLines(txt, file.path(pasta, "resumo.md"), useBytes = TRUE)
 cat(txt)
 quit(status = codigo_saida(st$status))

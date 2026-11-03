@@ -8,7 +8,7 @@ sujo <- system("git status --porcelain -- R scripts docs tests AGENTS.md", inter
 if (length(sujo)) stop("Há alterações sem commit em código/documentos; commite antes de executar:\n", paste(sujo, collapse = "\n"), call. = FALSE)
 cat("Commit:", system("git rev-parse --short HEAD", intern = TRUE), "\n")
 
-ultimo <- function(cod) { f <- sort(list.files("data/raw", sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
+ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
 ser <- function(cod) { s <- ler_sgs(ultimo(cod)); primario_bi(s[s$data >= SGS_INICIO_ANALISE, ]) }
 arq_pib <- baixar_pib_ibge()
 pib <- pib_ibge_anual(arq_pib[["anual"]], arq_pib[["trimestral"]])
@@ -22,18 +22,18 @@ bt_sens <- backtest_p1(LISTA, fontes, anos, excluir = ANOS_SENS)          # trei
 bt_com <- backtest_p1(LISTA, fontes, anos, excluir = integer(0))          # amostra completa (igual à do torneio)
 tab <- torneio_p1(bt_sens, bt_com, DESAFIANTES, base = BASE)
 esc <- escolher_por_faixa(tab, BASE)
-dir.create("outputs", showWarnings = FALSE)
-gravar_csv(tab, "outputs/torneio_sens_2020_21_decisao.csv")
-gravar_csv(esc, "outputs/torneio_sens_2020_21_escolha.csv")
+dir.create(dados("outputs"), showWarnings = FALSE)
+gravar_csv(tab, dados("outputs/torneio_sens_2020_21_decisao.csv"))
+gravar_csv(esc, dados("outputs/torneio_sens_2020_21_escolha.csv"))
 
 # Comparação com a decisão congelada (sem 2020–22)
-cong <- ler_csv("outputs/torneio_decisao.csv")
+cong <- ler_csv(dados("outputs/torneio_decisao.csv"))
 chave <- c("faixa", "desafiante")
 cmp <- merge(cong[, c(chave, "n_anos_sem", "rel_RMSE_sem", "share_melhor_sem", "p_holm_sem", "decisao")],
              tab[, c(chave, "n_anos_sem", "rel_RMSE_sem", "share_melhor_sem", "p_holm_sem", "decisao")],
              by = chave, suffixes = c("_congelado", "_sens"))
 cmp$decisao_igual <- cmp$decisao_congelado == cmp$decisao_sens
-gravar_csv(cmp, "outputs/torneio_sens_2020_21_comparacao.csv")
+gravar_csv(cmp, dados("outputs/torneio_sens_2020_21_comparacao.csv"))
 print(esc, row.names = FALSE)
 cat("\nDecisões iguais às do torneio congelado:", sum(cmp$decisao_igual), "de", nrow(cmp), "\n")
 print(cmp[, c("faixa", "desafiante", "n_anos_sem_sens", "rel_RMSE_sem_congelado", "rel_RMSE_sem_sens", "p_holm_sem_congelado", "p_holm_sem_sens", "decisao_congelado", "decisao_sens")], row.names = FALSE, digits = 3)

@@ -314,6 +314,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Alertas: a rodada reaproveita `quebras_e28.R` e `alertas_priorizados.R` como subprocessos e filtra os exercícios t e t−1 para a aba. Pendência: transformar esses dois scripts em funções.
 - Descrição para o operador: `docs/HANDOVER.md`, 3h.
 
+### E6.1 (ajustes de 3/11/2026): raiz de dados, rodada oficial, aba de alertas
+- **Raiz de dados `FISCAL_DADOS`** (padrão: pasta do repositório): `dados()` e `raiz_dados()` em `R/utils_io.R`; todos os caminhos de `data/raw`, `data/processed`, `outputs` e o `premissas.yml` passam por ela (187 literais em `R/`, `scripts/` e `_targets.R`). `data/dicionario_*.csv` segue no repositório. Configuração e carga histórica no Windows: `docs/HANDOVER.md`, 3h.
+- **Rodada oficial explícita:** o arquivo de previsões emitidas só é escrito com `--oficial` (exige rodada completa). Sem a opção: rodada de teste em `outputs/teste/`, resumo com "RODADA DE TESTE".
+- **Aba de alertas:** último bimestre disponível por padrão; bimestres anteriores de t e t−1 marcados "revisão"; contagem por grupo e tipo. A **entrega atrasada ou ausente (d)** entra na lista quando a UF pesa > 5% da receita dos estados (peso no exercício anterior). Decisão minha, a confirmar: incluí também "entrega ausente", não só "atrasada", por ser o caso mais grave.
+- **Arquivos apagados na rodada de teste anterior (registro; contra a regra do AGENTS.md, não repetir):** (1) `outputs/arquivo/previsoes_emitidas.csv` (linhas da rodada de teste de 30/10); (2–7) seis arquivos de `data/raw` criados por engano com a data 20261031 num teste: `bcb_sgs_4642_20261031.json`, `bcb_sgs_4643_20261031.json`, `bcb_sgs_4644_20261031.json`, `ibge_pib_6784_20261031.json`, `ibge_pib_1846_20261031.json`, `rreo/_entes_20261031.json`. Também removi pastas de saída de teste (`outputs/rodada/2026-10-30` e `2026-10-31`, regeráveis). Daqui em diante: mover para `_to_delete/` (agora no `.gitignore`) e avisar.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

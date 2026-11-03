@@ -13,7 +13,7 @@ if (registrar) {
 cat("Commit:", commit, "\n")
 
 # --- Fontes (mesmas do E4.1 e do FPE/FPM) ---
-ultimo <- function(cod) { f <- sort(list.files("data/raw", sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
+ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
 ser <- function(cod) { s <- ler_sgs(ultimo(cod)); primario_bi(s[s$data >= SGS_INICIO_ANALISE, ]) }
 arq_pib <- baixar_pib_ibge()
 pib <- pib_ibge_anual(arq_pib[["anual"]], arq_pib[["trimestral"]])
@@ -27,8 +27,8 @@ stopifnot(length(LISTA) == 8, setequal(DESAFIANTES, c("srw_pib", "acumulado_j5",
 # --- Previsões (uma vez), duas amostras ---
 amostras <- list("2007-2025" = integer(0), "2007-2025 sem 2020-22" = ANOS_PANDEMIA)
 bts <- lapply(amostras, function(ex) backtest_p1(c(LISTA, CANDIDATOS_DIAGNOSTICO), fontes, anos, excluir = ex))
-dir.create("outputs", showWarnings = FALSE)
-gravar_csv(do.call(rbind, Map(function(a, b) cbind(amostra = a, b), names(bts), bts)), "outputs/torneio_backtest.csv")
+dir.create(dados("outputs"), showWarnings = FALSE)
+gravar_csv(do.call(rbind, Map(function(a, b) cbind(amostra = a, b), names(bts), bts)), dados("outputs/torneio_backtest.csv"))
 
 # --- Conferência de reprodutibilidade contra o PR #25 (regra 7): aborta se algo divergir ---
 PARAM_25 <- "p1;alvo=regionais;cortes=1-11;min_treino=8;fontes=bcb+bcb_est+bcb_mun"
@@ -42,15 +42,15 @@ novo <- do.call(rbind, lapply(names(amostras), function(a) {
 }))
 novo$modelo[novo$modelo == "diag_combinacao_sem_fpe"] <- "combinacao"      # no #25 a combinação ainda não incluía fpe_fpm
 div <- conferir_reproducao(novo, antigo[c("modelo", "amostra", "corte", "n", "ME", "MAE", "RMSE")])
-gravar_csv(div, "outputs/torneio_conferencia_pr25.csv")
+gravar_csv(div, dados("outputs/torneio_conferencia_pr25.csv"))
 cat("Conferência contra o PR #25:", nrow(novo), "linhas regeneradas,", nrow(antigo), "registradas,", nrow(div), "divergências\n")
 if (nrow(div) > 0 || nrow(novo) != nrow(antigo)) { print(utils::head(div, 20)); stop("As previsões regeneradas não reproduzem o PR #25; torneio abortado.", call. = FALSE) }
 
 # --- Torneio ---
 tab <- torneio_p1(bts[["2007-2025 sem 2020-22"]], bts[["2007-2025"]], DESAFIANTES, base = BASE)
 esc <- escolher_por_faixa(tab, BASE)
-gravar_csv(tab, "outputs/torneio_decisao.csv")
-gravar_csv(esc, "outputs/torneio_escolha.csv")
+gravar_csv(tab, dados("outputs/torneio_decisao.csv"))
+gravar_csv(esc, dados("outputs/torneio_escolha.csv"))
 
 # --- Resumo por corte (pareado com a base) e registro ---
 resumo_corte <- function(bt, cand) {

@@ -7,10 +7,10 @@ source("R/utils_io.R", encoding = "UTF-8")
 source("_targets.R")
 args <- commandArgs(TRUE)
 if (length(args) < 2) stop("Uso: Rscript scripts/restaurar_dados.R <arquivo.tar.gz> <manifesto.csv>")
-dir.create("data/raw", showWarnings = FALSE, recursive = TRUE)
-utils::untar(args[1], exdir = "data/raw", tar = "internal")
+dir.create(dados("data/raw"), showWarnings = FALSE, recursive = TRUE)
+utils::untar(args[1], exdir = dados("data/raw"), tar = "internal")
 man <- ler_csv(args[2])
-atual <- manifesto_arquivos("data/raw/rreo")
+atual <- manifesto_arquivos(dados("data/raw/rreo"))
 m <- merge(man, atual, by = "arquivo", all.x = TRUE, suffixes = c("", "_atual"))
 falta <- m$arquivo[is.na(m$md5_atual)]
 difere <- m$arquivo[!is.na(m$md5_atual) & m$md5 != m$md5_atual]

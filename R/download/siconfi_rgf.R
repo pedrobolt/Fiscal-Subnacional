@@ -13,7 +13,7 @@ quadrimestre_disponivel <- function(ano, q, hoje = Sys.Date()) {
   hoje >= fim + 30L
 }
 
-baixar_rgf <- function(id_ente, ano, periodo, pasta = "data/raw/rgf", tentativas = 4, pausa = 0.3) {
+baixar_rgf <- function(id_ente, ano, periodo, pasta = dados("data/raw/rgf"), tentativas = 4, pausa = 0.3) {
   destino <- caminho_rgf(pasta, id_ente, ano, periodo)
   if (file.exists(destino)) return(destino)
   dir.create(dirname(destino), showWarnings = FALSE, recursive = TRUE)
@@ -48,8 +48,8 @@ baixar_rgf <- function(id_ente, ano, periodo, pasta = "data/raw/rgf", tentativas
 
 ler_rgf <- function(arquivo) ler_json_utf8(arquivo)$items
 
-baixar_rgf_estados <- function(anos = 2015:as.integer(format(Sys.Date(), "%Y")), pasta = "data/raw/rgf", hoje = Sys.Date()) {
-  entes <- ler_entes(baixar_entes("data/raw/rreo", hoje))
+baixar_rgf_estados <- function(anos = 2015:as.integer(format(Sys.Date(), "%Y")), pasta = dados("data/raw/rgf"), hoje = Sys.Date()) {
+  entes <- ler_entes(baixar_entes(dados("data/raw/rreo"), hoje))
   est <- listar_estados(entes); stopifnot(nrow(est) == 27)
   for (a in anos) for (q in 1:3) { if (!quadrimestre_disponivel(a, q, hoje)) next; for (id in est$cod_ibge) baixar_rgf(id, a, q, pasta) }
   invisible(TRUE)

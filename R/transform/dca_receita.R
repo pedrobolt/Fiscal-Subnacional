@@ -7,7 +7,7 @@ CODIGOS_DCA <- list(
   FPE  = c("1.7.2.1.01.01.00", "1.7.1.8.01.1.0", "1.7.1.1.50.0.0"))
 
 #' Lê a DCA dos estados (pasta data/raw/dca/E) e devolve, por UF x ano x imposto, bruto e deduções.
-ler_dca_impostos <- function(pasta = "data/raw/dca") {
+ler_dca_impostos <- function(pasta = dados("data/raw/dca")) {
   arqs <- list.files(file.path(pasta, "E"), "_i_c\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
   cod2cat <- unlist(lapply(names(CODIGOS_DCA), function(n) setNames(rep(n, length(CODIGOS_DCA[[n]])), CODIGOS_DCA[[n]])))
   out <- lapply(arqs, function(a) {

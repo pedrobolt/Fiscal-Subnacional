@@ -83,3 +83,14 @@ test_that("resumo abre com o status, lista o que falhou e é idêntico em duas e
   expect_match(linhas[3], "Status: DEGRADADA"); expect_true(any(grepl("bcb falhou: sem rede", linhas)))
   expect_match(resumo_rodada("2026-10-30", status_rodada(et[2, ]), et[2, ]), "Status: OK")
 })
+
+test_that("rodada de teste grava em outputs/teste e diz RODADA DE TESTE; a oficial grava em outputs/", {
+  ant <- Sys.getenv("FISCAL_DADOS", unset = NA); on.exit(if (is.na(ant)) Sys.unsetenv("FISCAL_DADOS") else Sys.setenv(FISCAL_DADOS = ant))
+  Sys.setenv(FISCAL_DADOS = "/tmp/raiz_y")
+  t <- caminhos_rodada("2026-11-03", FALSE); o <- caminhos_rodada("2026-11-03", TRUE)
+  expect_equal(t$arquivo, "/tmp/raiz_y/outputs/teste/arquivo/previsoes_emitidas.csv"); expect_equal(t$pasta, "/tmp/raiz_y/outputs/teste/rodada/2026-11-03")
+  expect_equal(o$arquivo, "/tmp/raiz_y/outputs/arquivo/previsoes_emitidas.csv"); expect_equal(o$pasta, "/tmp/raiz_y/outputs/rodada/2026-11-03")
+  et <- data.frame(etapa = "p1", estado = "ok", msg = "", segundos = 1)
+  r_t <- resumo_rodada("2026-11-03", status_rodada(et), et, oficial = FALSE); r_o <- resumo_rodada("2026-11-03", status_rodada(et), et, oficial = TRUE)
+  expect_match(strsplit(r_t, "\n")[[1]][1], "RODADA DE TESTE"); expect_false(grepl("TESTE", r_o))
+})

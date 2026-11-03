@@ -18,7 +18,7 @@ valor_conta <- function(d, cod_conta, coluna_regex) {
 
 #' Receita e resultado primário de um município no bimestre (lê o RREO e, se não houver, o Simplificado).
 #' Retorna data.frame(cod_ibge, tipo, receita, primario); tipo NA = sem dados.
-extrair_municipio <- function(id, ano, periodo = 6, pasta = "data/raw/rreo", contas = CONTAS_COBERTURA[[as.character(ano)]]) {
+extrair_municipio <- function(id, ano, periodo = 6, pasta = dados("data/raw/rreo"), contas = CONTAS_COBERTURA[[as.character(ano)]]) {
   for (tipo in TIPOS_RREO) {
     a1 <- vigente_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo01"]], tipo)
     a6 <- vigente_rreo(pasta, "M", id, ano, periodo, ANEXOS_RREO[["anexo06"]], tipo)
@@ -32,7 +32,7 @@ extrair_municipio <- function(id, ano, periodo = 6, pasta = "data/raw/rreo", con
 }
 
 #' Junta o cadastro (entes: cod_ibge, uf, populacao) aos valores extraídos.
-montar_base_municipal <- function(entes_m, ano, periodo = 6, pasta = "data/raw/rreo") {
+montar_base_municipal <- function(entes_m, ano, periodo = 6, pasta = dados("data/raw/rreo")) {
   v <- do.call(rbind, lapply(entes_m$cod_ibge, extrair_municipio, ano = ano, periodo = periodo, pasta = pasta))
   merge(entes_m[, c("cod_ibge", "uf", "populacao")], v, by = "cod_ibge")
 }

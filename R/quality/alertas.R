@@ -173,7 +173,7 @@ totais_rpps <- function(rreo, dic_contas, dic_colunas) {
 #' Lê o RGF Anexo 01 dos estados (data/raw/rgf/E) e devolve a despesa bruta com pessoal mensal do Poder Executivo:
 #' cod_ibge, mes (1o dia), valor. O mês vem da coluna "<MR-k>" (MR = último mês do quadrimestre = 4 x q); o mesmo mês aparece em até 3
 #' arquivos (revisões): vale o do arquivo mais recente.
-pessoal_rgf_mensal <- function(pasta = "data/raw/rgf") {
+pessoal_rgf_mensal <- function(pasta = dados("data/raw/rgf")) {
   arqs <- list.files(file.path(pasta, "E"), "^[0-9]+_q[1-3]_a01\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
   out <- lapply(arqs, function(a) {
     x <- ler_json_utf8(a)$items
@@ -300,4 +300,39 @@ aba_alertas <- function(p, corte = ALERTA_CORTE_ABA) {
     data.frame(tipo = character(0), subtipo = character(0), Freq = integer(0))
   names(contagem)[3] <- "n"
   list(lista = n[na_lista, ], contagem = contagem)
+}
+
+# ---- Aba de alertas da rodada (E6.1, ajustes de 3/11/2026) -----------------------------------------------------------------------
+ALERTA_CORTE_PESO_ENTREGA <- 0.05   # (d) entrega atrasada ou ausente entra na lista da aba quando a UF pesa > 5% da receita regional (dos estados)
+
+#' Peso da UF na receita primária total dos 27 estados no exercício anterior ao do alerta (o do próprio bimestre pode não existir, justamente
+#' por a entrega estar atrasada). `rec_anual`: cod_ibge, exercicio, rec_total (soma dos 6 bimestres; só anos com as 27 UFs completas).
+#' Usa o exercício `ex - 1`; se não existir, o último anterior disponível; NA se não houver.
+peso_receita_uf <- function(rec_anual, cod_ibge, exercicio) {
+  tot <- tapply(rec_anual$rec_total, rec_anual$exercicio, sum)
+  vapply(seq_along(cod_ibge), function(i) {
+    anos <- as.integer(names(tot)); a <- anos[anos <= exercicio[i] - 1L]
+    if (is.na(exercicio[i]) || !length(a)) return(NA_real_)
+    a <- max(a); v <- rec_anual$rec_total[rec_anual$cod_ibge == cod_ibge[i] & rec_anual$exercicio == a]
+    if (length(v) == 1) v / tot[[as.character(a)]] else NA_real_
+  }, numeric(1))
+}
+
+#' Aba de alertas da rodada. Alertas novos em dois grupos: "ultimo" (o último bimestre disponível, `ultimo = c(exercicio, periodo)`, mais os
+#' alertas sem bimestre, como os de dicionário) e "revisao" (bimestres anteriores de t e t−1). Entram na lista, em cada grupo: (b) com
+#' materialidade > `corte` da receita da UF e (d) entrega atrasada ou ausente de UF com peso > `corte_peso` da receita regional (`peso`: vetor
+#' alinhado a `p$alertas`, de `peso_receita_uf()`). O resto vira contagem por grupo, tipo e subtipo. `p`: saída de `priorizar_alertas()`.
+aba_alertas_rodada <- function(p, ultimo, peso, corte = ALERTA_CORTE_ABA, corte_peso = ALERTA_CORTE_PESO_ENTREGA) {
+  a <- p$alertas; a$peso_uf <- peso
+  n <- a[a$status == "nova", ]
+  n$grupo <- ifelse(is.na(n$exercicio) | (n$exercicio == ultimo[1] & n$periodo == ultimo[2]), "ultimo", "revisao")
+  na_lista <- (n$tipo == "b" & !is.na(n$materialidade) & n$materialidade > corte) |
+              (n$tipo == "d" & n$subtipo %in% c("entrega_atrasada", "entrega_ausente") & !is.na(n$peso_uf) & n$peso_uf > corte_peso)
+  lista <- n[na_lista, ]
+  lista <- lista[order(lista$grupo != "ultimo", -ifelse(is.na(lista$materialidade), lista$peso_uf, lista$materialidade)), ]
+  cont <- n[!na_lista, ]
+  contagem <- if (nrow(cont)) { t <- as.data.frame(table(grupo = cont$grupo, tipo = cont$tipo, subtipo = cont$subtipo), stringsAsFactors = FALSE); t[t$Freq > 0, ] } else
+    data.frame(grupo = character(0), tipo = character(0), subtipo = character(0), Freq = integer(0))
+  names(contagem)[4] <- "n"
+  list(lista = lista, contagem = contagem)
 }

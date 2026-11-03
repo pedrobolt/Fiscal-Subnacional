@@ -2,7 +2,7 @@
 # Uso: Rscript scripts/testar_available_at.R   (requer scripts/extrato_estados.R já executado)
 source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
-pasta <- "data/raw/rreo"
+pasta <- dados("data/raw/rreo")
 ids <- ids_estados_local(pasta)
 ext <- do.call(rbind, lapply(2015:as.integer(format(Sys.Date(), "%Y")), function(a) do.call(rbind, lapply(ids, function(id) {
   v <- extrato_vigente(pasta, id, a)
@@ -21,4 +21,4 @@ cat("\nAtraso (available_at - prazo legal), dias, por período (todos / só HO):
 print(do.call(rbind, lapply(1:6, function(p) { x <- r$atraso_dias[r$periodo == p]; h <- r$atraso_dias[r$periodo == p & r$status == "HO"]
   data.frame(periodo = p, n = length(x), mediana = median(x), p90 = unname(quantile(x, .9)), n_HO = length(h), mediana_HO = median(h), pct_apos_prazo_HO = round(100 * mean(h > 0), 1)) })))
 cat("\nFração RE por ano:\n"); print(round(tapply(r$status == "RE", r$exercicio, mean), 2))
-gravar_csv(r[, c("uf", "exercicio", "periodo", "status", "data_status", "available_at", "fonte_available_at", "atraso_dias")], "outputs/available_at_rreo_estados.csv")
+gravar_csv(r[, c("uf", "exercicio", "periodo", "status", "data_status", "available_at", "fonte_available_at", "atraso_dias")], dados("outputs/available_at_rreo_estados.csv"))

@@ -2,7 +2,7 @@
 # Uso: Rscript scripts/baixar_anexo3.R
 source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
-entes <- ler_entes(baixar_entes("data/raw/rreo", Sys.Date()))
+entes <- ler_entes(baixar_entes(dados("data/raw/rreo"), Sys.Date()))
 estados <- listar_estados(entes); stopifnot(nrow(estados) == 27)
 # Amostra primeiro: uma UF (SP) por layout
 invisible(baixar_rreo_lote(35, c(2015, 2018, 2019, 2022, 2024), periodos = 6, anexos = c(anexo03 = "RREO-Anexo 03")))

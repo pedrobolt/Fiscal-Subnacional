@@ -17,7 +17,7 @@ url_sgs <- function(codigo, inicio, fim) {
 }
 
 #' Baixa uma série do SGS e guarda o JSON bruto em data/raw/. Retorna o caminho do arquivo.
-baixar_sgs <- function(codigo, inicio, fim, pasta = "data/raw", hoje = Sys.Date(), tentativas = 4) {
+baixar_sgs <- function(codigo, inicio, fim, pasta = dados("data/raw"), hoje = Sys.Date(), tentativas = 4) {
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
   destino <- file.path(pasta, sprintf("bcb_sgs_%d_%s.json", as.integer(codigo), format(hoje, "%Y%m%d")))
   if (file.exists(destino)) return(destino)

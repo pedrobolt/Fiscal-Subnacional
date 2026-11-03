@@ -4,7 +4,7 @@ source("R/utils_io.R", encoding = "UTF-8")
 invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
-ultimo <- function(cod) { f <- sort(list.files("data/raw", sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
+ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }
 ser <- function(cod) { s <- ler_sgs(ultimo(cod)); primario_bi(s[s$data >= SGS_INICIO_ANALISE, ]) }
 arq_pib <- baixar_pib_ibge()
 pib <- pib_ibge_anual(arq_pib[["anual"]], arq_pib[["trimestral"]])
@@ -15,7 +15,7 @@ fontes <- c(base, list(stn = stn)); fontes_lag <- c(base, list(stn = stn_lag))
 anos <- 2007:2025
 amostras <- list("2007-2025" = integer(0), "2007-2025 sem 2020-22" = ANOS_PANDEMIA)
 cands <- CANDIDATOS_P1[c("srw_brl", "m3", "fpe_fpm")]
-dir.create("outputs", showWarnings = FALSE)
+dir.create(dados("outputs"), showWarnings = FALSE)
 bts <- list(); res <- list(); res_m3 <- list(); res_lag <- list(); elig <- list(); diag <- list()
 for (a in names(amostras)) {
   ex <- amostras[[a]]
@@ -43,12 +43,12 @@ for (a in names(amostras)) {
   }
 }
 res <- do.call(rbind, res); res_m3 <- do.call(rbind, res_m3); res_lag <- do.call(rbind, res_lag); elig <- do.call(rbind, elig); diag <- do.call(rbind, diag)
-gravar_csv(do.call(rbind, bts), "outputs/fpe_fpm_backtest.csv")
-gravar_csv(res, "outputs/fpe_fpm_resumo.csv")
-gravar_csv(res_m3, "outputs/fpe_fpm_vs_m3.csv")
-gravar_csv(res_lag, "outputs/fpe_fpm_sensibilidade_lag1.csv")
-gravar_csv(elig, "outputs/fpe_fpm_elegibilidade.csv")
-gravar_csv(diag, "outputs/fpe_fpm_diag_g.csv")
+gravar_csv(do.call(rbind, bts), dados("outputs/fpe_fpm_backtest.csv"))
+gravar_csv(res, dados("outputs/fpe_fpm_resumo.csv"))
+gravar_csv(res_m3, dados("outputs/fpe_fpm_vs_m3.csv"))
+gravar_csv(res_lag, dados("outputs/fpe_fpm_sensibilidade_lag1.csv"))
+gravar_csv(elig, dados("outputs/fpe_fpm_elegibilidade.csv"))
+gravar_csv(diag, dados("outputs/fpe_fpm_diag_g.csv"))
 if (registrar) {
   if (!nrow(res_lag) || !all(c("srw_brl", "m3", "fpe_fpm_lag1") %in% res_lag$modelo)) stop("Sensibilidade vazia: nada foi registrado.", call. = FALSE)
   for (a in names(amostras)) {

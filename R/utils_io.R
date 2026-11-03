@@ -13,3 +13,21 @@ gravar_csv <- function(x, arquivo, append = FALSE) {
   data.table::fwrite(x, arquivo, append = anexar, col.names = !anexar, quote = TRUE, na = "NA", row.names = FALSE, bom = FALSE,
                      dateTimeAs = "write.csv", qmethod = "double")
 }
+
+# ---- Raiz de dados (FISCAL_DADOS) ---------------------------------------------------------------------------------------------------
+# Tudo o que persiste entre versões do código (data/raw, snapshots, quarentena, data/processed, outputs, arquivo de previsões, premissas.yml)
+# fica sob a raiz de dados. Padrão: a pasta do repositório (desenvolvimento). No Windows, uma vez: setx FISCAL_DADOS C:\fiscal_dados
+# (cmd; vale para as janelas abertas depois). O código versionado (R/, scripts/, data/dicionario_*.csv) continua relativo ao repositório.
+
+#' Raiz de dados: a variável de ambiente FISCAL_DADOS, ou "." (pasta de trabalho) se não definida. Barras invertidas viram barras.
+raiz_dados <- function() {
+  r <- Sys.getenv("FISCAL_DADOS", unset = "")
+  if (!nzchar(r)) "." else sub("/+$", "", gsub("\\\\", "/", r))
+}
+
+#' Caminho sob a raiz de dados. Com a raiz padrão devolve o caminho relativo como está (comportamento antigo, sem "./").
+dados <- function(...) {
+  rel <- file.path(...)
+  r <- raiz_dados()
+  if (identical(r, ".")) rel else file.path(r, rel)
+}
