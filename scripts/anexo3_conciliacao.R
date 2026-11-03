@@ -4,7 +4,7 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/anexo3_conciliacao.R   (precisa de data/raw/rreo/E com Anexos 3 e 6)
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R", "R/transform/receita_mensal_a3.R"))
-  source(f, encoding = "UTF-8")
+  carregar_r(f)
 dir.create(dados("outputs"), showWarnings = FALSE)
 ESPERADO <- c(ICMS = 0.15, IPVA = 0.10, ITCD = 0.20, FPE = 0.20, IRRF = 0)
 TOL <- 0.005   # 0,5 ponto percentual

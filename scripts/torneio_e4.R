@@ -3,7 +3,7 @@
 # Uso: Rscript scripts/torneio_e4.R [--registrar]. Com --registrar, aborta se houver código/documentos sem commit.
 # Sem chamadas ao Siconfi. Saídas em outputs/torneio_*.csv.
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- system("git rev-parse --short HEAD", intern = TRUE)
 if (registrar) {

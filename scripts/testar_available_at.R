@@ -1,7 +1,7 @@
 # Aplica available_at_rreo() ao extrato real dos estados e resume a defasagem (E3.7 / insumo da E2.7).
 # Uso: Rscript scripts/testar_available_at.R   (requer scripts/extrato_estados.R já executado)
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 pasta <- dados("data/raw/rreo")
 ids <- ids_estados_local(pasta)
 ext <- do.call(rbind, lapply(2015:as.integer(format(Sys.Date(), "%Y")), function(a) do.call(rbind, lapply(ids, function(id) {

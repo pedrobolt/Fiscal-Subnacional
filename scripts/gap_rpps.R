@@ -1,8 +1,8 @@
 # E3.6 (cont.): teste da hipotese do RPPS. Criterio fixado em docs/nota_gap.md (secao 5) antes de calcular. Nao troca a serie oficial.
 # Saidas (git-ignored): outputs/gap_rpps_bimestral.csv, gap_rpps_mediana_bimestre.csv, gap_rpps_anual.csv, gap_primeiro_classificavel.csv.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/gap_rpps.R
-source("R/utils_io.R", encoding = "UTF-8"); source("R/download/bcb_sgs.R", encoding = "UTF-8"); source("R/transform/gap_p1_p2.R", encoding = "UTF-8")
-for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) source(f, encoding = "UTF-8")
+source("R/utils_io.R", encoding = "UTF-8"); carregar_r("R/download/bcb_sgs.R"); carregar_r("R/transform/gap_p1_p2.R")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) carregar_r(f)
 x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv")); p2 <- p2_estados_bim(x[x$exercicio >= 2018, ])
 arq <- sort(list.files(dados("data/raw"), "^bcb_sgs_4643_.*\\.json$", full.names = TRUE), decreasing = TRUE)[1]
 p1 <- p1_estados_bim(ler_sgs(arq))

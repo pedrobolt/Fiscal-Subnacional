@@ -2,7 +2,7 @@
 # O valor oficial e lido por humano no RREO publicado no site da SEFAZ do proprio estado. Saida: outputs/e29_planilha.csv (git-ignored).
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/e29_planilha.R
 source("R/utils_io.R", encoding = "UTF-8")
-for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) source(f, encoding = "UTF-8")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) carregar_r(f)
 r <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
 a6 <- r[r$anexo == "RREO-Anexo 06" & r$cod_ibge %in% c(31, 33, 35), ]
 ex <- max(a6$exercicio); pe <- min(tapply(a6$periodo[a6$exercicio == ex], a6$cod_ibge[a6$exercicio == ex], max))

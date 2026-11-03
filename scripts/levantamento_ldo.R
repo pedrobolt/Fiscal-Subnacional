@@ -1,7 +1,7 @@
 # E2.10/E3.5: meta de resultado primário da LDO nos RREO dos estados (Anexo 06) já baixados. Não chama a API.
 # Saída: outputs/ldo_meta_estados.csv (UF x ano x bimestre) e outputs/ldo_meta_resumo.csv (agregado por ano).
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 arqs <- list.files(dados("data/raw/rreo/E"), pattern = "_b[1-6]_a06\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
 linhas <- lapply(arqs, function(f) {
   d <- ler_rreo(f); d <- d[grepl("^RREO6MetaDeResultadoPrimario", d$cod_conta), ]

@@ -1,7 +1,7 @@
 # E4.1b: previsões fora da amostra do candidato fpe_fpm (m3 + g) e diagnósticos. Uso: Rscript scripts/fpe_fpm_previsoes.R [--registrar]
 # Sem chamadas ao Siconfi. Não aplica a regra de aceitação (isso é o torneio do E4).
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
 ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }

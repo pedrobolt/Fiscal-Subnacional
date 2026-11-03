@@ -60,7 +60,7 @@ classificar_coluna <- function(coluna, exercicio) {
 # ---- Tabela de colunas -------------------------------------------------------------------------------------------------
 
 #' Estágios que compõem o caixa da despesa (contrato): despesa paga + restos a pagar pagos (processados e não processados).
-#' Confirmado em 28/10/2026: receita realizada − (a + b + c) reproduz o resultado primário publicado em 486 de 486 linhas
+#' Confirmado em 28/10/2026: receita realizada - (a + b + c) reproduz o resultado primário publicado em 486 de 486 linhas
 #' (2018–22) e 594 de 594 (2023+); (a) sozinha ou (a + b) não fecham.
 ESTAGIOS_CAIXA_DESPESA <- c("paga", "rp_processado_pago", "rpnp_pago")
 ESTAGIO_RECEITA <- "receita_realizada"
@@ -130,7 +130,7 @@ contas_a6 <- function() {
     rec("TransferenciasDaLC871996", B, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes", nota = "Lei Kandir; só em 2018–22"),
     rec("TransferenciasDaLCn611989", BC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("TransferenciasDoFUNDEB", BC, "receita FUNDEB", "corrente", pai = "RREO6TransferenciasCorrentes",
-        nota = "Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto − dedução + receita FUNDEB"),
+        nota = "Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto - dedução + receita FUNDEB"),
     rec("RREO6ConveniosCorrentes", A, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6OutrasTransferenciasCorrentes", ABC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6DividaAtiva", A, "demais receitas", "corrente", pai = "RREO6DemaisReceitasCorrentes"),
@@ -372,7 +372,7 @@ cobertura_dicionario <- function(rreo, dic_contas, dic_colunas) {
 
 # ---- Acumulado -> fluxo do bimestre (E2.6) ----------------------------------------------------------------------------
 
-#' Converte valores acumulados no ano (RREO é "até o bimestre") em fluxo do bimestre: fluxo_b = acum_b − acum_{b−1}; no
+#' Converte valores acumulados no ano (RREO é "até o bimestre") em fluxo do bimestre: fluxo_b = acum_b - acum_{b-1}; no
 #' bimestre 1, fluxo = acum. Se o bimestre anterior não existe para a mesma série, o fluxo é NA (nunca se supõe zero).
 #' `x` precisa de: chave de série (colunas em `serie`), `ano`, `periodo`, `valor`. Retorna x com `fluxo` e `acum_anterior_ausente`.
 acumulado_para_fluxo <- function(x, serie = c("cod_ibge", "cod_conta", "estagio"), ano = "exercicio", periodo = "periodo", valor = "valor") {
@@ -387,7 +387,7 @@ acumulado_para_fluxo <- function(x, serie = c("cod_ibge", "cod_conta", "estagio"
 # ---- Fechamento contra o publicado ----------------------------------------------------------------------------------------
 
 #' Fechamento do Anexo 6 por ente x exercício x bimestre. Para cada arquivo: soma das folhas de receita e de despesa (pelo
-#' dicionário) contra o total publicado, e receita − despesa contra o resultado publicado. Em 2015–17 não há caixa: o
+#' dicionário) contra o total publicado, e receita - despesa contra o resultado publicado. Em 2015–17 não há caixa: o
 #' resultado fecha na liquidação. `tol` em reais. Retorna uma linha por ente x ano x bimestre.
 fechar_anexo6 <- function(rreo, dic_contas, dic_colunas, tol = 1000) {
   d <- aplicar_dicionario(rreo[rreo$anexo == "RREO-Anexo 06", ], dic_contas, dic_colunas)

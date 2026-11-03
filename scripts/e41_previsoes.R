@@ -3,7 +3,7 @@
 source("R/utils_io.R", encoding = "UTF-8")
 arqs <- list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
 arqs <- c(arqs[!grepl("candidatos_p1", arqs)], arqs[grepl("candidatos_p1", arqs)])  # candidatos_p1 depende de ESPEC_RESTANTE
-invisible(lapply(arqs, source))
+carregar_r(arqs)
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
 ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }

@@ -3,7 +3,7 @@
 # Uso: Rscript scripts/dicionario_e25.R   (precisa de data/raw/rreo/E)
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R"))
-  source(f, encoding = "UTF-8")
+  carregar_r(f)
 rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
 cat("linhas do bruto:", nrow(rreo), "\n")
 cols <- tabela_colunas(rreo)

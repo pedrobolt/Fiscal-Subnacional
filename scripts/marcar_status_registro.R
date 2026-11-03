@@ -2,7 +2,7 @@
 # valido: candidato da lista fechada do P1; diagnostico: fora da lista; obsoleto_pib4382: candidatos em % do PIB
 # registrados em 27/10/2026 (commit 96645c6) com o PIB 12 meses do SGS 4382, vedado pelo contrato.
 source("R/utils_io.R", encoding = "UTF-8")
-source("R/evaluation/registro.R", encoding = "UTF-8")
+carregar_r("R/evaluation/registro.R")
 arq <- "experiments/registro.csv"
 d <- ler_csv(arq)
 if (!("status" %in% names(d))) {

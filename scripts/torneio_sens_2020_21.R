@@ -3,7 +3,7 @@
 # entra no registro de experimentos. Ordem obrigatória: commit do script e da declaração -> execução -> resultado no STATUS.
 # Uso: Rscript scripts/torneio_sens_2020_21.R. Aborta se houver código/documentos sem commit. Saídas: outputs/torneio_sens_2020_21_*.csv.
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 sujo <- system("git status --porcelain -- R scripts docs tests AGENTS.md", intern = TRUE)
 if (length(sujo)) stop("Há alterações sem commit em código/documentos; commite antes de executar:\n", paste(sujo, collapse = "\n"), call. = FALSE)
 cat("Commit:", system("git rev-parse --short HEAD", intern = TRUE), "\n")

@@ -2,7 +2,7 @@
 # Entradas: outputs/conceito_unico_bimestral.csv, data/raw/bcb_sgs_4643_*.json (mais recente), outputs/quebras_pessoal_harmonizado.csv.
 # Saidas (git-ignored): outputs/gap_estados_bimestral.csv, outputs/gap_resumo_classes.csv.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/gap_p1_p2.R
-source("R/utils_io.R", encoding = "UTF-8"); source("R/download/bcb_sgs.R", encoding = "UTF-8"); source("R/transform/gap_p1_p2.R", encoding = "UTF-8")
+source("R/utils_io.R", encoding = "UTF-8"); carregar_r("R/download/bcb_sgs.R"); carregar_r("R/transform/gap_p1_p2.R")
 x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
 p2 <- p2_estados_bim(x[x$exercicio >= 2018, ])
 arq <- sort(list.files(dados("data/raw"), "^bcb_sgs_4643_.*\\.json$", full.names = TRUE), decreasing = TRUE)[1]

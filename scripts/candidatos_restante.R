@@ -1,7 +1,7 @@
 # Candidatos do restante do ano em % do PIB (E3.4/E4). Uso: Rscript scripts/candidatos_restante.R [--registrar]
 # Saídas: outputs/restante_*.csv. Não faz chamadas à API do Siconfi (usa só o BCB baixado e o RREO local dos estados).
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
 ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }

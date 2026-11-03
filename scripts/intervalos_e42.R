@@ -1,7 +1,7 @@
 # E4.2: intervalos de 80% do SRW em R$ (modelo publicado do P1). Uso: Rscript scripts/intervalos_e42.R
 # Ordem: commit do script -> execução (o hash e a situação da árvore saem no início). Sem chamadas ao Siconfi.
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 commit <- system("git rev-parse --short HEAD", intern = TRUE)
 sujo <- system("git status --porcelain -- R scripts docs tests AGENTS.md", intern = TRUE)
 cat("Commit:", commit, "| árvore de código limpa:", length(sujo) == 0, "\n")
@@ -16,13 +16,13 @@ iv <- intervalos_backtest(bt, 2008:2025)
 dir.create(dados("outputs"), showWarnings = FALSE)
 gravar_csv(iv, dados("outputs/e42_intervalos_backtest.csv"))
 cob <- rbind(
-  cbind(amostra = "publicado (σ com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
-  cbind(amostra = "publicado (σ com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
-  cbind(amostra = "σ sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
+  cbind(amostra = "publicado (sigma com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
+  cbind(amostra = "publicado (sigma com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
+  cbind(amostra = "sigma sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
 gravar_csv(cob, dados("outputs/e42_cobertura.csv"))
 sig <- data.frame(corte = 1:11, sigma_com_bi = sigma_publicado(bt, 2026), sigma_sem_bi = sigma_publicado(bt, 2026, excluir = ANOS_PANDEMIA))
 gravar_csv(sig, dados("outputs/e42_sigma_2026.csv"))
-cat("\nσ de produção (alvo 2026, R$ bi):\n"); print(round(sig, 2), row.names = FALSE)
+cat("\nsigma de produção (alvo 2026, R$ bi):\n"); print(round(sig, 2), row.names = FALSE)
 cat("\nCobertura (nominal 80%):\n"); print(cob[c("amostra", "faixa", "pares", "cobertura", "wilson_inf", "wilson_sup", "contem_80", "anos", "cobertura_anos", "wilson_anos_inf", "wilson_anos_sup", "contem_80_anos")], row.names = FALSE, digits = 3)
 # Ilustração (não é previsão oficial): SRW de 2026 no último corte com dado
 ult <- max(reg$data[format(reg$data, "%Y") == "2026"]); m <- as.integer(format(ult, "%m"))

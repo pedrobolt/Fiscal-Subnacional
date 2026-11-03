@@ -1,7 +1,7 @@
 # Gate pré-E4: (a) SRW no BCB; (b) ganho do primário RREO dos estados. Uso: Rscript scripts/gate_sazonal.R [--registrar]
 # Escreve outputs/gate_*.csv e, com --registrar, acrescenta ao experiments/registro.csv.
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 registrar <- "--registrar" %in% commandArgs(TRUE)
 commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE), error = function(e) NA_character_)
 ultimo <- function(cod) { f <- sort(list.files(dados("data/raw"), sprintf("^bcb_sgs_%d_.*\\.json$", cod), full.names = TRUE)); f[length(f)] }

@@ -3,7 +3,7 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/conceito_unico.R
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/siconfi_dca.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R",
-            "R/transform/receita_mensal_a3.R", "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R", "R/transform/conceito_unico.R")) source(f, encoding = "UTF-8")
+            "R/transform/receita_mensal_a3.R", "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R", "R/transform/conceito_unico.R")) carregar_r(f)
 a3 <- ler_a3_estados(); fat <- fatores_dca(ler_dca_impostos(), a3)
 rb <- receita_bruta_liquida(receita_mensal_a3(a3), fat)
 rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")

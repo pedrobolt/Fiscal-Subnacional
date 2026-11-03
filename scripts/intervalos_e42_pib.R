@@ -1,7 +1,7 @@
-# E4.2b: intervalos do SRW em R$ com σ em % do PIB (mudança de protocolo pós-resultado, contrato 28/10/2026). UMA execução.
+# E4.2b: intervalos do SRW em R$ com sigma em % do PIB (mudança de protocolo pós-resultado, contrato 28/10/2026). UMA execução.
 # Uso: Rscript scripts/intervalos_e42_pib.R. Aborta se houver código/documentos sem commit. Sem chamadas ao Siconfi.
 source("R/utils_io.R", encoding = "UTF-8")
-invisible(lapply(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE), source))
+carregar_r(list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE))
 commit <- system("git rev-parse --short HEAD", intern = TRUE)
 sujo <- system("git status --porcelain -- R scripts docs tests AGENTS.md", intern = TRUE)
 cat("Commit:", commit, "| árvore de código limpa:", length(sujo) == 0, "\n")
@@ -16,16 +16,16 @@ iv <- intervalos_backtest(bt, 2008:2025, escala = "pib")
 dir.create(dados("outputs"), showWarnings = FALSE)
 gravar_csv(iv, dados("outputs/e42b_intervalos_backtest.csv"))
 cob <- rbind(
-  cbind(amostra = "publicado (σ com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
-  cbind(amostra = "publicado (σ com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
-  cbind(amostra = "σ sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
+  cbind(amostra = "publicado (sigma com 2020-22), alvos 2008-2025", cobertura_faixas(iv, "dentro_com")),
+  cbind(amostra = "publicado (sigma com 2020-22), sem alvos 2020-22", cobertura_faixas(iv, "dentro_com", anos_fora = ANOS_PANDEMIA)),
+  cbind(amostra = "sigma sem 2020-22, sem alvos 2020-22", cobertura_faixas(iv, "dentro_sem", anos_fora = ANOS_PANDEMIA)))
 gravar_csv(cob, dados("outputs/e42b_cobertura.csv"))
-pub <- cob[cob$amostra == "publicado (σ com 2020-22), alvos 2008-2025", ]
+pub <- cob[cob$amostra == "publicado (sigma com 2020-22), alvos 2008-2025", ]
 div <- texto_divulgacao(pub); gravar_csv(div, dados("outputs/e42b_divulgacao.csv"))
 err_pct <- bt; err_pct$erro <- bt$erro / bt$pib
 sig <- data.frame(corte = 1:11, sigma_com_pct_pib = 100 * sigma_publicado(err_pct, 2026), sigma_sem_pct_pib = 100 * sigma_publicado(err_pct, 2026, excluir = ANOS_PANDEMIA))
 gravar_csv(sig, dados("outputs/e42b_sigma_2026.csv"))
-cat("\nσ de produção (alvo 2026, % do PIB):\n"); print(round(sig, 3), row.names = FALSE)
+cat("\nsigma de produção (alvo 2026, % do PIB):\n"); print(round(sig, 3), row.names = FALSE)
 cat("\nCobertura (nominal 80%):\n"); print(cob[c("amostra", "faixa", "pares", "cobertura", "wilson_inf", "wilson_sup", "contem_80", "anos", "cobertura_anos", "wilson_anos_inf", "wilson_anos_sup", "contem_80_anos")], row.names = FALSE, digits = 3)
 cat("\nDivulgação por faixa (alvos 2008-2025, intervalo publicado):\n"); print(div, row.names = FALSE)
 # Ilustração (não é previsão oficial): PIB 2026 aproximado pelos 4 últimos trimestres do IBGE

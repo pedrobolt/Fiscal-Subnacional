@@ -3,7 +3,7 @@
 # outputs/alertas_resumo.csv, outputs/alertas_novos_por_rodada.csv.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/alertas_priorizados.R
 source("R/utils_io.R", encoding = "UTF-8")
-for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R", "R/quality/alertas.R")) source(f, encoding = "UTF-8")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R", "R/quality/alertas.R")) carregar_r(f)
 dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
 rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
 fl <- fluxos_a6_categorias(rreo, dic, dc)

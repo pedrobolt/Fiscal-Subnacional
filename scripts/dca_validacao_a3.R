@@ -3,7 +3,7 @@
 # "bruto de cota-parte") ou bruto - FUNDEB - transferências constitucionais (conceito "líquido de cota-parte"); tolerância 0,5% do bruto.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/dca_validacao_a3.R
 source("R/utils_io.R", encoding = "UTF-8")
-for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/siconfi_dca.R", "R/transform/dca_receita.R")) source(f, encoding = "UTF-8")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/siconfi_dca.R", "R/transform/dca_receita.R")) carregar_r(f)
 TOL <- 0.005
 d <- ler_dca_impostos()
 d$tipo <- c("Receitas Brutas Realizadas" = "bruto", "Deduções - FUNDEB" = "fundeb", "Deduções - Transferências Constitucionais" = "transf", "Outras Deduções da Receita" = "outras")[d$coluna]

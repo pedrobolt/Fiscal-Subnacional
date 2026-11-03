@@ -66,8 +66,8 @@ p1_srw_esferas <- function(series, ano_alvo, m) {
   out
 }
 
-#' Intervalo do P1 regional no protocolo vigente (E4.2b, contrato de 28/10/2026): σ do erro do SRW em % do PIB (rolante, só anos < alvo,
-#' suavizado e não crescente em m) × PIB do ano-alvo (premissa), previsão ± 1,2816 σ. `pib`: data.frame(ano, pib_bi) com o PIB do ano-alvo.
+#' Intervalo do P1 regional no protocolo vigente (E4.2b, contrato de 28/10/2026): sigma do erro do SRW em % do PIB (rolante, só anos < alvo,
+#' suavizado e não crescente em m) × PIB do ano-alvo (premissa), previsão ± 1,2816 sigma. `pib`: data.frame(ano, pib_bi) com o PIB do ano-alvo.
 #' Devolve sigma, inf, sup (NA se faltar histórico ou PIB). Não é um intervalo de 80%: ver `texto_cobertura()`.
 intervalo_p1_regional <- function(reg, pib, ano_alvo, m, previsao) {
   vazio <- list(sigma_bi = NA_real_, inf = NA_real_, sup = NA_real_, pib_bi = NA_real_)
@@ -145,10 +145,10 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
     r <- p1[p1$esfera == "regional", ]
     L <- c(L, "", sprintf("## P1 (SRW em R$), ano-alvo %d, corte m = %d (último dado do BCB: mês %d)", r$ano_alvo, r$corte_m, r$corte_m), "",
            paste0("- ", p1$esfera, ": ", sprintf("%.1f", p1$previsao_bi), " bi"))
-    if (!is.null(iv) && is.finite(iv$inf)) L <- c(L, "", sprintf("Faixa do regional: [%.1f; %.1f] bi (σ = %.1f bi, PIB do ano %.0f bi). %s.", iv$inf, iv$sup, iv$sigma_bi, iv$pib_bi, texto_cob))
+    if (!is.null(iv) && is.finite(iv$inf)) L <- c(L, "", sprintf("Faixa do regional: [%.1f; %.1f] bi (sigma = %.1f bi, PIB do ano %.0f bi). %s.", iv$inf, iv$sup, iv$sigma_bi, iv$pib_bi, texto_cob))
     else L <- c(L, "", "Faixa do regional: indisponível nesta rodada.")
     dif <- r$dif_regional_vs_soma_bi
-    if (is.finite(dif)) L <- c(L, sprintf("Linearidade: SRW regional − (estaduais + municipais) = %.3f bi.", dif))
+    if (is.finite(dif)) L <- c(L, sprintf("Linearidade: SRW regional - (estaduais + municipais) = %.3f bi.", dif))
   }
   if (!is.null(gap) && nrow(gap)) {
     g <- utils::tail(gap, 4)
@@ -159,6 +159,6 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
            sprintf("- %d b%d: com RPPS %.1f | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, p2_tot$p2_com, ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", p2_tot$p2_sem))))
   if (!is.null(alertas)) L <- c(L, "", sprintf("## Alertas novos. Bimestre de referência: %d b%d (prazo legal vencido antes da rodada)", alertas$ultimo[[1]], alertas$ultimo[[2]]), "",
     sprintf("- Último (referência e mais recentes): %d na lista, %d por tipo", alertas$lista_ultimo, alertas$contagem_ultimo),
-    sprintf("- Revisão (bimestres anteriores de t e t−1): %d na lista, %d por tipo", alertas$lista_revisao, alertas$contagem_revisao))
+    sprintf("- Revisão (bimestres anteriores de t e t-1): %d na lista, %d por tipo", alertas$lista_revisao, alertas$contagem_revisao))
   paste0(paste(L, collapse = "\n"), "\n")
 }

@@ -3,7 +3,7 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/quebras_e28.R   (precisa do bruto local: RREO estados, Anexo 3, DCA, RGF, extrato)
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/extrato.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R",
-            "R/quality/alertas.R")) source(f, encoding = "UTF-8")
+            "R/quality/alertas.R")) carregar_r(f)
 dir.create(dados("outputs"), showWarnings = FALSE)
 dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
 rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")

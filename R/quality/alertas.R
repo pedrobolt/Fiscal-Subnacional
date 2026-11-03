@@ -46,8 +46,8 @@ alerta_contas_conhecidas <- function(observadas, conhecidas, anexo) {
 # ---- (b) salto de categoria contra o mesmo bimestre do ano anterior --------------------------------------------------------
 
 #' `fluxos`: cod_ibge, serie (categoria), exercicio, periodo, valor (fluxo do bimestre); `receita_total`: cod_ibge, exercicio, periodo, rec_total.
-#' Alerta se |Δ − mediana(Δ_hist)| > k × MAD(Δ_hist) e > piso × receita total da UF no bimestre; Δ = valor − valor do mesmo bimestre
-#' do ano anterior; histórico = Δ da própria UF x série x bimestre em anos anteriores (mínimo `min_hist`).
+#' Alerta se |Delta - mediana(Delta_hist)| > k × MAD(Delta_hist) e > piso × receita total da UF no bimestre; Delta = valor - valor do mesmo bimestre
+#' do ano anterior; histórico = Delta da própria UF x série x bimestre em anos anteriores (mínimo `min_hist`).
 alerta_salto <- function(fluxos, receita_total, k = ALERTA_K_MAD, piso = ALERTA_PISO_RECEITA, min_hist = ALERTA_MIN_HIST,
                          piso_serie = ALERTA_PISO_SERIE) {
   f <- merge(fluxos, receita_total, by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE)
@@ -222,7 +222,7 @@ alerta_reclassificacao_pessoal <- function(ab, yoy) {
 
 #' Pessoal harmonizado (sensibilidade) para UFs que reclassificaram despesa no RREO sem mudança no RGF. Do primeiro bimestre afetado
 #' (`inicio`: cod_ibge, exercicio, periodo) em diante, o pessoal esperado é o do mesmo bimestre do ano anterior (já harmonizado) vezes a
-#' variação anual do RGF; o excedente (RREO − esperado) é o efeito da reclassificação. Não mexe no total da despesa nem no primário:
+#' variação anual do RGF; o excedente (RREO - esperado) é o efeito da reclassificação. Não mexe no total da despesa nem no primário:
 #' o excedente fica numa linha própria. `pessoal`: cod_ibge, exercicio, periodo, valor (fluxo do bimestre); `yoy`: yoy_pessoal_rreo_rgf().
 pessoal_harmonizado <- function(pessoal, yoy, inicio) {
   p <- merge(pessoal, yoy[, c("cod_ibge", "exercicio", "periodo", "rgf_yoy")], by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE)
@@ -248,7 +248,7 @@ INICIO_RECLASSIFICACAO <- data.frame(cod_ibge = c(33L, 41L, 43L), exercicio = 20
 INVENTARIO_ATE <- c(2026L, 4L)
 
 #' Marca cada alerta com `status` ("conhecida" ou "nova") e `quebra` (rótulo do inventário). Regras:
-#' RPPS 2023 (b em pessoal e demais receitas); reclassificação RJ/PR/RS (b em pessoal, Δ > 0, a partir do início de cada UF: reversão
+#' RPPS 2023 (b em pessoal e demais receitas); reclassificação RJ/PR/RS (b em pessoal, Delta > 0, a partir do início de cada UF: reversão
 #' não é conhecida); RS 2018 b1-b5 (qualquer tipo); flags inventariados do conceito único; quebras anuais do fator até 2025.
 marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTARIO_ATE) {
   if (!nrow(al)) { al$status <- character(0); al$quebra <- character(0); return(al) }
@@ -267,7 +267,7 @@ marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTA
   al
 }
 
-#' Materialidade = |Δ| / receita total da UF no bimestre (só para o alerta (b)); `receita_total`: cod_ibge, exercicio, periodo, rec_total.
+#' Materialidade = |Delta| / receita total da UF no bimestre (só para o alerta (b)); `receita_total`: cod_ibge, exercicio, periodo, rec_total.
 #' Ordena: novas primeiro, por materialidade decrescente (alertas sem valor em R$ depois), e devolve também o resumo (total ao lado).
 priorizar_alertas <- function(al, receita_total) {
   al <- marcar_conhecidas(al)
@@ -329,7 +329,7 @@ bimestre_referencia <- function(hoje, prazo = ALERTA_PRAZO_DIAS) {
 
 #' Aba de alertas da rodada. Alertas novos em dois grupos: "ultimo" (o bimestre de referência `ultimo = c(exercicio, periodo)`, de
 #' `bimestre_referencia()`, e qualquer bimestre mais recente, isto é, entregas antecipadas; mais os alertas sem bimestre, como os de dicionário)
-#' e "revisao" (bimestres anteriores de t e t−1). Entram na lista, em cada grupo: (b) com
+#' e "revisao" (bimestres anteriores de t e t-1). Entram na lista, em cada grupo: (b) com
 #' materialidade > `corte` da receita da UF e (d) entrega atrasada ou ausente de UF com peso > `corte_peso` da receita regional (`peso`: vetor
 #' alinhado a `p$alertas`, de `peso_receita_uf()`). O resto vira contagem por grupo, tipo e subtipo. `p`: saída de `priorizar_alertas()`.
 aba_alertas_rodada <- function(p, ultimo, peso, corte = ALERTA_CORTE_ABA, corte_peso = ALERTA_CORTE_PESO_ENTREGA) {

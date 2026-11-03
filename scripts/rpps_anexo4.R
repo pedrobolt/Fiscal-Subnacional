@@ -1,8 +1,8 @@
 # E3.6 (cont.): fluxo liquido do RPPS pelo Anexo 4 (2019-2024, 27 UFs, 6o bimestre) contra "com - sem RPPS" do Anexo 6 (2023-24).
 # Entradas: data/raw/rreo (Anexo 4, scripts/baixar_anexo4.R) e outputs/gap_rpps_anual.csv. Saidas (git-ignored): outputs/rpps_a4_uf.csv, rpps_a4_anual.csv.
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/rpps_anexo4.R
-source("R/utils_io.R", encoding = "UTF-8"); source("R/transform/rpps_anexo4.R", encoding = "UTF-8")
-for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) source(f, encoding = "UTF-8")
+source("R/utils_io.R", encoding = "UTF-8"); carregar_r("R/transform/rpps_anexo4.R")
+for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R")) carregar_r(f)
 r <- ler_rreo_pasta(dados("data/raw/rreo"), "E"); r <- r[r$anexo == "RREO-Anexo 04" & r$exercicio %in% 2019:2024, ]
 d <- rpps_liquido_a4(r); gravar_csv(d, dados("outputs/rpps_a4_uf.csv"))
 ok <- !is.na(d$liquido)
