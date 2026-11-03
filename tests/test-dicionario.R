@@ -75,10 +75,19 @@ test_that("dicionário: toda folha tem categoria do E5.1, natureza e estágio; e
   expect_true(all(a6$estagio_p2[a6$categoria_p2 %in% desp & a6$layout == "2015-17"] == "sem_caixa(liquidada)"))
 })
 
-test_that("RPPS: contas só-RPPS nunca entram; totais de conferência de 2023+ são os 'exceto fontes RPPS'", {
+test_that("RPPS (decisão de 30/10/2026): 4 contas primárias 'com fontes RPPS' entram; 'exceto fontes RPPS' é só referência da LDO", {
+  # as contas só-RPPS que não são primárias seguem fora do P2
   expect_true(all(CONTAS$usar_no_p2[CONTAS$rpps == "excluido"] == "nao"))
-  c23 <- CONTAS[CONTAS$layout == "2023+" & CONTAS$usar_no_p2 == "conferencia", ]
-  expect_true(all(c23$rpps[c23$cod_conta %in% c("ReceitaPrimariaTotalExcetoFontesRPPS", "DespesaPrimariaTotalExcetoFontesRPPS", "ResultadoPrimarioSemRPPSAcimaDaLinha")] == "ja_excluido"))
+  entram <- c("ReceitasPrimariasCorrentesComFontesRPPS", "ReceitasPrimariasDeCapitalComFontesRPPS",
+              "DespesasPrimariasCorrentesComFontesRPPS", "DespesasPrimariasDeCapitalComFontesRPPS")
+  e <- CONTAS[CONTAS$layout == "2023+" & CONTAS$cod_conta %in% entram, ]
+  expect_equal(nrow(e), 4L); expect_true(all(e$usar_no_p2 == "soma" & e$rpps == "incluido"))
+  expect_true(all(e$categoria_p2[grepl("^Receitas", e$cod_conta)] == "demais receitas"))
+  expect_true(all(e$categoria_p2[grepl("^Despesas", e$cod_conta)] == "pessoal"))
+  ref <- CONTAS[CONTAS$layout == "2023+" & CONTAS$cod_conta %in% c("ReceitaPrimariaTotalExcetoFontesRPPS", "DespesaPrimariaTotalExcetoFontesRPPS", "ResultadoPrimarioSemRPPSAcimaDaLinha"), ]
+  expect_true(all(ref$rpps == "referencia_ldo" & ref$usar_no_p2 == "referencia_ldo"))
+  # totais de conferência do P2 em 2023+: XVI e XXXIV (com RPPS)
+  expect_true(all(CONTAS$usar_no_p2[CONTAS$layout == "2023+" & CONTAS$cod_conta %in% c("RREO6TotalReceitaPrimaria", "ResultadoPrimarioComRPPSAcimaDaLinha")] == "conferencia"))
   # em 2015–22 o RPPS está dentro das contas e não há como separá-lo (quebra declarada)
   expect_true(all(CONTAS$rpps[CONTAS$cod_conta == "RREO6TotalReceitaPrimaria" & CONTAS$layout != "2023+"] == "incluido_nao_separavel"))
 })
@@ -96,27 +105,30 @@ test_that("caixa da despesa existe só nos layouts de 2018 em diante", {
 linha <- function(layout_ano, cod, coluna, valor, periodo = 6, ente = 11, anexo = "RREO-Anexo 06")
   data.frame(anexo = anexo, exercicio = layout_ano, periodo = periodo, cod_ibge = ente, cod_conta = cod, conta = cod, coluna = coluna, valor = valor, stringsAsFactors = FALSE)
 
-test_that("fechar_anexo6: caixa = paga + RP processados pagos + RPNP pagos reproduz o resultado publicado (2023+)", {
+test_that("fechar_anexo6: caixa = paga + RP processados pagos + RPNP pagos reproduz o resultado publicado (2023+, com RPPS)", {
   r <- rbind(
     linha(2024, "RREO6ICMS", "RECEITAS REALIZADAS (a)", 600), linha(2024, "RREO6IPVA", "RECEITAS REALIZADAS (a)", 100),
     linha(2024, "RREO6FPE", "RECEITAS REALIZADAS (a)", 300),
-    linha(2024, "ReceitaPrimariaTotalExcetoFontesRPPS", "RECEITAS REALIZADAS (a)", 1000),
-    linha(2024, "ReceitasPrimariasCorrentesComFontesRPPS", "RECEITAS REALIZADAS (a)", 77),            # RPPS: não entra
+    linha(2024, "ReceitasPrimariasCorrentesComFontesRPPS", "RECEITAS REALIZADAS (a)", 77),            # RPPS: entra (decisão de 30/10/2026)
+    linha(2024, "RREO6TotalReceitaPrimaria", "RECEITAS REALIZADAS (a)", 1077),
+    linha(2024, "ReceitaPrimariaTotalExcetoFontesRPPS", "RECEITAS REALIZADAS (a)", 1000),             # referência da LDO: não confere
     linha(2024, "RREO6PessoalEEncargosSociais", "DESPESAS PAGAS (a)", 400), linha(2024, "RREO6PessoalEEncargosSociais", "RESTOS A PAGAR PROCESSADOS PAGOS (b)", 30),
     linha(2024, "RREO6PessoalEEncargosSociais", "PAGOS (c)", 5), linha(2024, "RREO6PessoalEEncargosSociais", "DESPESAS EMPENHADAS", 999),
     linha(2024, "RREO6Investimentos", "DESPESAS PAGAS (a)", 100), linha(2024, "RREO6Investimentos", "PAGOS (c)", 20),
-    linha(2024, "DespesaPrimariaTotalExcetoFontesRPPS", "DESPESAS PAGAS (a)", 500), linha(2024, "DespesaPrimariaTotalExcetoFontesRPPS", "RESTOS A PAGAR PROCESSADOS PAGOS (b)", 30),
-    linha(2024, "DespesaPrimariaTotalExcetoFontesRPPS", "PAGOS (c)", 25),
-    linha(2024, "ResultadoPrimarioSemRPPSAcimaDaLinha", "VALOR", 1000 - 555))
+    linha(2024, "DespesasPrimariasCorrentesComFontesRPPS", "DESPESAS PAGAS (a)", 50),               # RPPS: entra, em pessoal
+    linha(2024, "RREO6TotalDespesaPrimaria", "DESPESAS PAGAS (a)", 550), linha(2024, "RREO6TotalDespesaPrimaria", "RESTOS A PAGAR PROCESSADOS PAGOS (b)", 30),
+    linha(2024, "RREO6TotalDespesaPrimaria", "PAGOS (c)", 25),
+    linha(2024, "DespesaPrimariaTotalExcetoFontesRPPS", "DESPESAS PAGAS (a)", 500),                  # referência da LDO: não confere
+    linha(2024, "ResultadoPrimarioComRPPSAcimaDaLinha", "VALOR", 1077 - 605))
   f <- fechar_anexo6(r, CONTAS, COLUNAS)
   expect_equal(nrow(f), 1); expect_true(f$rec_ok && f$desp_ok && f$resultado_ok)
-  expect_equal(f$desp_folhas, 555); expect_equal(f$rec_folhas, 1000)
+  expect_equal(f$desp_folhas, 605); expect_equal(f$rec_folhas, 1077)
 })
 
 test_that("fechar_anexo6 acusa quando a conta não fecha (resultado publicado diferente)", {
-  r <- rbind(linha(2024, "RREO6ICMS", "RECEITAS REALIZADAS (a)", 100), linha(2024, "ReceitaPrimariaTotalExcetoFontesRPPS", "RECEITAS REALIZADAS (a)", 100),
-             linha(2024, "RREO6PessoalEEncargosSociais", "DESPESAS PAGAS (a)", 40), linha(2024, "DespesaPrimariaTotalExcetoFontesRPPS", "DESPESAS PAGAS (a)", 41),
-             linha(2024, "ResultadoPrimarioSemRPPSAcimaDaLinha", "VALOR", 60))
+  r <- rbind(linha(2024, "RREO6ICMS", "RECEITAS REALIZADAS (a)", 100), linha(2024, "RREO6TotalReceitaPrimaria", "RECEITAS REALIZADAS (a)", 100),
+             linha(2024, "RREO6PessoalEEncargosSociais", "DESPESAS PAGAS (a)", 40), linha(2024, "RREO6TotalDespesaPrimaria", "DESPESAS PAGAS (a)", 41),
+             linha(2024, "ResultadoPrimarioComRPPSAcimaDaLinha", "VALOR", 60))
   f <- fechar_anexo6(r, CONTAS, COLUNAS, tol = 0.5)
   expect_true(f$rec_ok); expect_false(f$desp_ok)
 })

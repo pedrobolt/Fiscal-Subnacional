@@ -302,6 +302,12 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Registros: (a) a tabela do BCB por UF (Fisregp.xlsx, Tabelas Especiais, trimestral, defasagem de ~6 meses) existe, mas não será usada (não muda decisão de projeção); (b) a pergunta ao BCB sobre o RPPS na SGS 4643 segue como pendência externa, sem bloqueio; (c) a MSC (Matriz de Saldos Contábeis, Siconfi) fica como fonte candidata da Fase 2, sem trabalho agora.
 - Próximo: escopo do E6.1 por escrito (antes do E5), sem código até aprovação.
 
+### P2 com RPPS como série oficial (30/10/2026, branch `p2-com-rpps`)
+- Decisão do Pedro: P2 com RPPS em todo o período (E5, gap, ponte); sem RPPS só referência da meta da LDO. Teste de continuidade inconclusivo por falta de poder; escolha apoiada na construção do MDF (XVI = IV + V + XIII + XIV). Risco declarado: equivalência não verificada. Registrado no contrato como mudança de série.
+- Dicionário: 4 contas "com fontes RPPS" entram (receita → demais receitas; despesa → pessoal, que inclui o custeio administrativo do RPPS); "exceto fontes RPPS" = `referencia_ldo`. Fechamento 2023+ contra XVI/despesa total/XXXIV: 594/594, igual ao anterior. Conceito único recalculado (`outputs/conceito_unico_bimestral.csv`).
+- Gap: regra inalterada, fronteira de 2023 mantida na referência. Gap anual 2023: 20,9 → −5,3; 2024: 27,2 → 0,4 (por construção, soma do RPPS; não valida a premissa). Detalhes em `docs/nota_gap.md`, seção 6.
+- Comandos: `LC_ALL=C.UTF-8 Rscript scripts/dicionario_e25.R`, `scripts/conceito_unico.R`, `scripts/gap_p1_p2.R`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).

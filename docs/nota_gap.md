@@ -154,3 +154,17 @@ Fontes: Banco Central do Brasil, [Manual de Estatísticas Fiscais (maio de 2019)
 - Os dois ICs contêm 0 e 1. O teste não confirma nem refuta que a linha XXXIV reproduz o conceito pré-2023. Estimativas pontuais abaixo de 0,5 não têm peso: o IC é largo (poder baixo com n = 27 e R² de 5–6%).
 - Consequência: a proposta de P2 com RPPS (`docs/proposta_p2_com_rpps.md`) segue condicionada; a série oficial não muda. A premissa só será resolvida por fonte externa (resposta do BCB) ou por mais dados.
 - Critério e decisão foram aplicados como fixados no commit anterior ao cálculo; nenhuma mudança pós-resultado.
+
+## 6. Efeito da mudança de série (P2 com RPPS, 30/10/2026)
+Decisão registrada em `docs/contrato.md` ("Decisão da série do P2"). Gap anual (soma dos 6 bimestres, R$ bi, `outputs/gap_estados_bimestral.csv`, variante com 2020–22):
+
+| Ano | Série sem RPPS (2023+) | Série com RPPS |
+|---|---|---|
+| 2022 | 4,7 | 4,7 |
+| 2023 | 20,9 | −5,3 |
+| 2024 | 27,2 | 0,4 |
+| 2025 | −9,7 | −5,5 |
+
+- A mudança de 2023 em diante é, por construção, a soma do RPPS (≈ R$ 26 bi ao ano); **não valida** a premissa de equivalência com o conceito pré-2023 (risco declarado no contrato).
+- Classes do gap bruto (referência com fronteira em 2023 b1, regra inalterada), sobre os bimestres classificáveis, antes → depois: consistente 14 → 16 (63,6% → 72,7%); atípico 5 → 5 (22,7%); instável 3 → 1 (13,6% → 4,5%). Sem classificação em 24 bimestres, nas duas séries.
+- Mudança de série, não mudança de limiar: a regra (limiar, janela, piso) não foi alterada.
