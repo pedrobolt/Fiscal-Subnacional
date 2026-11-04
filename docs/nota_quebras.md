@@ -50,3 +50,17 @@ Alertas em tabela única (`tipo, subtipo, cod_ibge, serie, exercicio, periodo, v
 - O alerta (b) usa MAD sobre história curta (mín. 3 Δ): UFs de série curta ou volátil geram falsos positivos.
 - RGF: Executivo, liquidado; compara crescimento, não nível.
 - A conexão do alerta à rodada mensal e ao Excel é feita no E6.1/E6; aqui o módulo (`R/quality/alertas.R`) está testado com dados sintéticos.
+
+## 6. Regra de início da reclassificação de pessoal (fixada em 04/11/2026, antes de computar)
+
+Motivo: as datas de início de RJ/PR/RS (RJ 2025 b1, RS 2025 b5, PR 2025 b6) estavam digitadas em `scripts/quebras_e28.R` e em `INICIO_RECLASSIFICACAO`, e não saíam de uma regra. A regeneração (`scripts/reclassificacao_e28b.R`) substitui isso por uma regra explícita, aplicada às 27 UFs e a **duas versões** da série de pessoal do Anexo 6: **sem RPPS** (contas "com fontes RPPS" fora, como na nota de 29/10) e **com RPPS** (série oficial desde o #52).
+
+**Regra (parâmetros em `R/quality/reclassificacao.R`, fixados antes de ver o resultado):**
+1. Pessoal do RREO (fluxo do bimestre, conceito original do Anexo 6) contra o **mesmo bimestre do ano anterior**: variação ≥ **25%**.
+2. **Sem salto correspondente no RGF**: variação do RREO menos a do RGF (Executivo, soma dos 2 meses do bimestre) ≥ **20 p.p.**
+3. **Persistência**: as condições 1 e 2 valem em pelo menos **2 bimestres consecutivos** (a corrida atravessa a virada de ano). Bimestre sem RGF ou sem variação não sinaliza e quebra a corrida.
+4. **Início** = primeiro bimestre da corrida. Só as corridas que começam em **2024 b1 ou depois** são candidatas a "reclassificação de 2025"; as anteriores são reportadas como informação.
+5. Magnitude da corrida: variação média do RREO e do RGF e **excedente** (pessoal do RREO menos o esperado pela variação do RGF) em R$ e em % da despesa primária dos mesmos bimestres.
+6. Sensibilidade declarada, sem mudar a regra: x ∈ {15%, 25%, 40%}, pp ∈ {10, 20, 30}, persistência ∈ {2, 3}; o início de RJ/PR/RS é reportado em cada combinação.
+
+Mudança de qualquer parâmetro depois de ver o resultado entra no STATUS como "mudança pós-resultado".
