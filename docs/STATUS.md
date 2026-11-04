@@ -338,7 +338,7 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 
 ### Congelamento do E5 (P2) e do E6.2 (4/11/2026)
 - Proposta v4 congelada em `docs/proposta_e62_e5_fase2.md` (série do informe: com RPPS, sem exclusão; dummies do E5; despesa 2015–17 em duas etapas; Fase 2 e pendência da rodada aprovadas). Resumo no contrato.
-- `marcar_conhecidas()` restrito à série sem RPPS (PR #56). Crescimento real nas duas séries: tabela em 2.7 da proposta (script no PR #57). PI 2024 b3–b4: efeito de base, sem dummy (`docs/nota_quebras.md`, 6.4).
+- `marcar_conhecidas()` restrito à série sem RPPS (PR #56). Crescimento real nas duas séries: tabela em 2.7 da proposta (script no PR #58). PI 2024 b3–b4: efeito de base, sem dummy (`docs/nota_quebras.md`, 6.4).
 - Próximo: relatório E5.0 (anos-alvo, poder, teste de despesa total e primário com RPPS de RJ/PR/RS); etapa sem download da despesa 2015–17; investigar a receita sem RPPS do RS em 2025.
 
 ## Pendências abertas
