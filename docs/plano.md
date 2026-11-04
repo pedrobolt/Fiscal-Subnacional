@@ -75,4 +75,5 @@ Aceite: todo o processo está documentado no HANDOVER, na nota metodológica e n
 Viés da LDO via PDFs · Rigidez orçamentária · Elasticidade do ICMS · Ano t+1 e cenários ·
 Hierárquico/pooling/clusters · 20 maiores municípios · Ponte RREO × BCB completa ·
 Projeto à parte: dinâmica da dívida (DCL/RCL) ·
+ICMS histórico CONFAZ 1997+ para sazonalidade (decisão de 04/11/2026: fora do E5; ativar só se o E5 mostrar o ICMS como ponto fraco; ressalvas na proposta, seção 3) ·
 RREO dos estados antes de 2015 (decisão de 28/10/2026: não seguir agora): a planilha "Execução Orçamentária de Estados 1995–2013" do Tesouro é anual e não foi aberta (colunas e estágio da despesa não verificados); o SISTN não tem série pública do RREO. A API do Siconfi não tem RREO antes de 2015.
