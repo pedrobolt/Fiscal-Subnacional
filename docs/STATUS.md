@@ -341,6 +341,11 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - `marcar_conhecidas()` restrito à série sem RPPS (PR #56). Crescimento real nas duas séries: tabela em 2.7 da proposta (script no PR #58). PI 2024 b3–b4: efeito de base, sem dummy (`docs/nota_quebras.md`, 6.4).
 - Próximo: relatório E5.0 (anos-alvo, poder, teste de despesa total e primário com RPPS de RJ/PR/RS); etapa sem download da despesa 2015–17; investigar a receita sem RPPS do RS em 2025.
 
+### Intraorçamentárias e liberação do E5 (4/11/2026)
+- E5.0 aprovado pelo Pedro (16:41): degrau RJ/PR/RS 2025+ sai da série com RPPS em despesa total e primário; receita desde 2015; testes formais como informação (decisão por magnitude e bootstrap por ano); RJ 2025 em acompanhamento com variante do E5 sem o RJ; RS com dummy de receita só na série sem RPPS.
+- Achado das intra (`docs/relatorio_intra.md`, nota de quebras seção 7): o A6 inclui as intra na receita e na despesa primárias desde 2023 (todas as UFs); simétrico, o primário não está subestimado (líquido de R$ 4,0 bi em 2023). Quebra de 2023 de -7,9 p.p. no crescimento real de receita e despesa. Harmonização em `R/transform/intra.R` (total e duas categorias validadas), **não ligada** à rodada. Critério da etapa 2 da despesa 2015–17 refixado (`docs/intra_criterios.md` 2d).
+- Próximo: aprovação do Pedro do relatório das intra; o E5 (estados) segue o protocolo v4.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
