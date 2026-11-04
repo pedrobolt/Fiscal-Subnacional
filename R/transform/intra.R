@@ -46,3 +46,37 @@ total_harmonizado <- function(fl, intra, lado) {
   a$harmonizado <- a$bruto - a$fluxo; names(a)[names(a) == "fluxo"] <- "intra"; a$lado <- lado
   a
 }
+
+#' Linhas explicitas "intraorcamentarias nao alocadas" (negativas): a intra das series em que o mapeamento NAO passou na validacao fica no valor
+#' bruto da categoria e sai aqui, por lado, para que categorias + esta linha = total harmonizado, exatamente. Receita: 0 enquanto toda a intra de
+#' receita estiver em `rec:demais receitas`. `fl`: serie com as UF x bimestre a cobrir; `intra`: fluxo_intra().
+linhas_nao_alocadas <- function(fl, intra, series = INTRA_SERIES_VALIDADAS) {
+  chaves <- unique(fl[, c("cod_ibge", "exercicio", "periodo")])
+  nao <- intra[!intra$serie %in% series, ]
+  um <- function(lado) {
+    s <- nao[nao$lado == lado, ]
+    a <- if (nrow(s)) aggregate(fluxo ~ cod_ibge + exercicio + periodo, s, sum) else data.frame(cod_ibge = integer(0), exercicio = integer(0), periodo = integer(0), fluxo = numeric(0))
+    x <- merge(chaves, a, by = c("cod_ibge", "exercicio", "periodo"), all.x = TRUE); x$fluxo[is.na(x$fluxo)] <- 0
+    data.frame(cod_ibge = x$cod_ibge, serie = paste0(lado, ":intra nao alocada"), exercicio = x$exercicio, periodo = x$periodo, valor = -x$fluxo, valor_bruto = -x$fluxo)
+  }
+  rbind(um("rec"), um("desp"))
+}
+
+#' Serie harmonizada completa: categorias validadas sem a intra, demais categorias brutas, mais as linhas "intra nao alocada".
+harmonizar_fluxos <- function(fl, intra, series = INTRA_SERIES_VALIDADAS) {
+  h <- harmonizar_intra(fl, intra, series)
+  rbind(h[, c("cod_ibge", "serie", "exercicio", "periodo", "valor", "valor_bruto")], linhas_nao_alocadas(fl, intra, series))
+}
+
+#' Identidade: por UF x bimestre e lado, soma das categorias harmonizadas (com a linha "nao alocada") = `total_harmonizado()`.
+#' Devolve a maior diferenca absoluta (R$) e a tabela; `fl` e a serie bruta usada para os totais. Falha de verdade se `tol` for excedida.
+checar_identidade_intra <- function(fh, fl, intra, tol = 1) {
+  d <- do.call(rbind, lapply(c("rec", "desp"), function(l) {
+    t <- total_harmonizado(fl, intra, l)
+    s <- aggregate(valor ~ cod_ibge + exercicio + periodo, fh[grepl(paste0("^", l, ":"), fh$serie), ], sum)
+    m <- merge(t[, c("cod_ibge", "exercicio", "periodo", "harmonizado")], s, by = c("cod_ibge", "exercicio", "periodo"))
+    m$lado <- l; m$dif <- m$valor - m$harmonizado; m }))
+  mx <- max(abs(d$dif), na.rm = TRUE)
+  if (!is.finite(mx) || mx > tol) stop(sprintf("Identidade das intraorcamentarias violada: maior diferenca R$ %s", format(round(mx, 2), big.mark = ".", decimal.mark = ",")), call. = FALSE)
+  list(max_abs = mx, tabela = d)
+}

@@ -55,3 +55,9 @@ Crescimento real dos estados (27 UFs, IPCA mensal do SGS 433, bimestres compará
 1. **Harmonização no total e em duas categorias** (demais receitas e pessoal). Custeio, investimento e demais despesas de capital ficam brutos.
 2. **Implementação:** `R/transform/intra.R` (`fluxo_intra`, `harmonizar_intra`, `total_harmonizado`, com testes). **Não ligada à rodada nem ao informe**: ligar muda os números publicados de 2023 em diante e depende da sua aprovação.
 3. Para o E5: usar o total harmonizado e as duas categorias harmonizadas. Os anos-alvo com 2023 como alvo passam a ter o conceito consolidado nos dois lados do cálculo de crescimento.
+
+## Atualização de 04/11/2026 (17:03): linha "intraorçamentárias não alocadas"
+
+Decisão do Pedro: nas categorias em que o mapeamento não passou (custeio, investimento, demais despesas de capital) o valor fica bruto, e uma linha explícita negativa, `desp:intra nao alocada` (e `rec:intra nao alocada`, hoje zero porque toda a intra de receita está em `rec:demais receitas`), faz **categorias + essa linha = total harmonizado, exatamente**. Implementação: `linhas_nao_alocadas()`, `harmonizar_fluxos()` e `checar_identidade_intra()` em `R/transform/intra.R`; a checagem falha se a diferença passar de R$ 1.
+- **Teste na série real** (`scripts/intra_harmonizacao.R`, UF × bimestre × lado, 2021–2026): maior diferença absoluta **R$ 0,0000076**, em 1.836 combinações de UF, bimestre e lado. A identidade falha de propósito se uma categoria validada estiver ausente em algum bimestre (testado).
+- **Tamanho da linha** (`outputs/intra_nao_alocada.csv`, soma das 27 UFs, despesa): -R$ 15,85 bi (2023), -R$ 21,97 bi (2024), -R$ 19,38 bi (2025) e -R$ 13,08 bi (2026 b1–b4). Zero até 2022.
