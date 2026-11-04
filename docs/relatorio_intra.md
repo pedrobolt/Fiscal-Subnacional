@@ -61,3 +61,20 @@ Crescimento real dos estados (27 UFs, IPCA mensal do SGS 433, bimestres compará
 Decisão do Pedro: nas categorias em que o mapeamento não passou (custeio, investimento, demais despesas de capital) o valor fica bruto, e uma linha explícita negativa, `desp:intra nao alocada` (e `rec:intra nao alocada`, hoje zero porque toda a intra de receita está em `rec:demais receitas`), faz **categorias + essa linha = total harmonizado, exatamente**. Implementação: `linhas_nao_alocadas()`, `harmonizar_fluxos()` e `checar_identidade_intra()` em `R/transform/intra.R`; a checagem falha se a diferença passar de R$ 1.
 - **Teste na série real** (`scripts/intra_harmonizacao.R`, UF × bimestre × lado, 2021–2026): maior diferença absoluta **R$ 0,0000076**, em 1.836 combinações de UF, bimestre e lado. A identidade falha de propósito se uma categoria validada estiver ausente em algum bimestre (testado).
 - **Tamanho da linha** (`outputs/intra_nao_alocada.csv`, soma das 27 UFs, despesa): -R$ 15,85 bi (2023), -R$ 21,97 bi (2024), -R$ 19,38 bi (2025) e -R$ 13,08 bi (2026 b1–b4). Zero até 2022.
+
+## Atualização de 04/11/2026 (rodada): harmonização ligada ao informe
+
+Ligada à rodada (`scripts/rodada_mensal_corpo.R`, etapas P2 e gap): o P2 e o gap usam o **conceito consolidado** (com RPPS, sem intraorçamentárias) de 2023 em diante; a série bruta fica como referência (`p2_resultado.csv`: `p2_com_bruto`; `gap_bruto.csv`; `p2_categorias_bruto.csv`). Primário consolidado = primário bruto - (intra de receita - intra de despesa); NA se faltar a intra de receita no UF × bimestre.
+
+**Quanto o gap muda** (`outputs/gap_intra_comparacao.csv`, gerado por `scripts/gap_intra_comparacao.R`, rodada de teste offline e rápida de 04/11/2026; reconferir na primeira rodada oficial). Antes de 2023 não muda (diferença 0,00).
+
+| Ano | Gap médio bruto (R$ bi/bim.) | Gap médio consolidado | Diferença média | Diferença absoluta média |
+|---|---|---|---|---|
+| 2023 | -0,88 | -1,56 | -0,68 | 0,74 |
+| 2024 (4 bim.) | -6,34 | -6,27 | 0,07 | 0,14 |
+| 2025 | -0,92 | -1,34 | -0,41 | 0,65 |
+| 2026 (4 bim.) | 2,31 | 1,71 | -0,60 | 0,65 |
+
+2026 por bimestre (R$ bi): b1 6,38 para 4,13; b2 2,01 para 1,78; b3 3,62 para 3,60; b4 -2,79 para -2,68. O razão r muda em média -0,2 a -0,4 p.p. em 2023–2026. **Nenhuma classe do informe muda** (0 bimestres, com ou sem 2020–2022). A mudança é maior no b1, onde a intra de receita pesa mais no primário.
+
+**Mudança de conceito registrada no contrato** (04/11/2026): ver `docs/contrato.md`.

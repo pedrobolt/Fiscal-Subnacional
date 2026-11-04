@@ -61,3 +61,13 @@ test_that("categorias + 'intra nao alocada' = total harmonizado, exatamente, em 
   fl3 <- fl2[!(fl2$serie == "desp:pessoal" & fl2$exercicio == 2023L & fl2$periodo == 2L), ]
   expect_error(checar_identidade_intra(harmonizar_fluxos(fl3, f), fl3, f), "Identidade")
 })
+
+test_that("harmonizar_conceito_unico retira a intra de 2023 em diante e deixa NA onde falta a intra", {
+  f <- fluxo_intra(rreo2)    # receita intra (5,7,8) e despesa intra pessoal (10,15,20) + custeio (1,2,3) + investimento (0,2,0) por bimestre, UF 11, 2023
+  x <- data.frame(cod_ibge = c(11L, 11L, 11L, 11L, 12L), exercicio = c(2022L, 2023L, 2023L, 2023L, 2023L), periodo = c(1L, 1L, 2L, 3L, 1L),
+                  rec_total = c(1000, 1000, 1000, 1000, 500), primario_a6 = c(100, 100, 100, 100, 50))
+  h <- harmonizar_conceito_unico(x, f)
+  expect_equal(h$rec_total, c(1000, 995, 993, 992, NA))                                # 2022 intacto; UF 12 sem intra: NA
+  expect_equal(h$primario_a6, c(100, 100 - (5 - 11), 100 - (7 - 19), 100 - (8 - 23), NA))
+  expect_equal(h$rec_total_bruto, x$rec_total); expect_equal(h$primario_a6_bruto, x$primario_a6)
+})

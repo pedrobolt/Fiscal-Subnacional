@@ -118,12 +118,20 @@ et_p2 <- function(ctx) {
   dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
   rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
   ano <- as.integer(format(hoje, "%Y"))
-  cat_bim <- p2_categorias_bim(fluxos_a6_categorias(rreo, dic, dc), c(ano - 1L, ano))
+  # Conceito consolidado (decisao de 04/11/2026, docs/contrato.md): com RPPS, sem intraorcamentarias de 2023 em diante; a serie bruta fica como referencia.
+  ctx$intra <- fluxo_intra(rreo)
+  fl <- fluxos_a6_categorias(rreo, dic, dc)
+  fh <- harmonizar_fluxos(fl, ctx$intra)
+  checar_identidade_intra(fh[fh$exercicio %in% c(ano - 1L, ano), ], fl[fl$exercicio %in% c(ano - 1L, ano), ], ctx$intra)   # falha a etapa se categorias + nao alocada != total
+  cat_bim <- p2_categorias_bim(fh, c(ano - 1L, ano))
   gravar_csv(cat_bim, file.path(pasta, "p2_categorias.csv"))
+  gravar_csv(p2_categorias_bim(fl, c(ano - 1L, ano)), file.path(pasta, "p2_categorias_bruto.csv"))
   x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
-  com <- p2_estados_bim(x[x$exercicio >= 2018, ])[, c("exercicio", "periodo", "n_ufs", "p2")]; names(com)[4] <- "p2_com"
+  xh <- harmonizar_conceito_unico(x[x$exercicio >= 2018, ], ctx$intra); ctx$xh <- xh
+  com <- p2_estados_bim(xh)[, c("exercicio", "periodo", "n_ufs", "p2")]; names(com)[4] <- "p2_com"
+  bru <- p2_estados_bim(transform(xh, rec_total = rec_total_bruto, primario_a6 = primario_a6_bruto))[, c("exercicio", "periodo", "p2")]; names(bru)[3] <- "p2_com_bruto"
   sem <- p2_sem_rpps_ldo_bim(rreo)[, c("exercicio", "periodo", "p2_com")]; names(sem)[3] <- "p2_sem"
-  tot <- merge(com, sem, by = c("exercicio", "periodo"), all.x = TRUE)
+  tot <- merge(merge(com, bru, by = c("exercicio", "periodo"), all.x = TRUE), sem, by = c("exercicio", "periodo"), all.x = TRUE)
   tot <- tot[order(tot$exercicio, tot$periodo), ]
   ctx$p2_tot <- tot[!is.na(tot$p2_com) & tot$exercicio >= ano - 1L, ]
   gravar_csv(ctx$p2_tot, file.path(pasta, "p2_resultado.csv"))
@@ -131,10 +139,13 @@ et_p2 <- function(ctx) {
 
 # ---- 6. Gap P1 x P2 (regra congelada em docs/contrato.md), com e sem 2020-22 --------------------------------------------------
 et_gap <- function(ctx) {
-  x <- ler_csv(dados("outputs/conceito_unico_bimestral.csv"))
-  p2 <- p2_estados_bim(x[x$exercicio >= 2018, ])
+  if (is.null(ctx$xh)) stop("gap exige o P2 harmonizado (etapa p2)", call. = FALSE)
+  p2 <- p2_estados_bim(ctx$xh)                                                 # conceito consolidado (decisao de 04/11/2026)
+  p2_bruto <- p2_estados_bim(transform(ctx$xh, rec_total = rec_total_bruto, primario_a6 = primario_a6_bruto))
   p1 <- p1_estados_bim(ctx$series$estaduais |> (\(s) data.frame(data = s$data, valor = -s$valor_bi * 1000))())
   h <- ler_csv(dados("outputs/quebras_pessoal_harmonizado.csv")); exc <- aggregate(excedente ~ exercicio + periodo, h, sum)
+  db <- gap_bimestral(p2_bruto, p1, exc); db <- db[!is.na(db$g), c("exercicio", "periodo", "p2", "p1", "g", "r")]
+  gravar_csv(db, file.path(pasta, "gap_bruto.csv"))                             # referencia: gap com as intra de 2023 em diante
   d <- gap_bimestral(p2, p1, exc); d <- d[!is.na(d$g), ]
   rot <- function(ex) { cb <- classificar_gap(d, "r", ex); ifelse(d$apos_reclass & cb$classe != "excluido", "quebra_conhecida", cb$classe) }
   d$classe_informe <- rot(integer(0)); d$classe_sem_2020_22 <- rot(2020:2022)

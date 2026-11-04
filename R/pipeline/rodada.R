@@ -155,8 +155,8 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
     L <- c(L, "", "## Gap P1 x P2 (estados, últimos bimestres)", "",
            sprintf("- %d b%d: P2 %.1f | P1 %.1f | gap %.1f bi (%.1f%% da receita) | classe %s", g$exercicio, g$periodo, g$p2, g$p1, g$g, 100 * g$r, g$classe_informe))
   }
-  if (!is.null(p2_tot) && nrow(p2_tot)) L <- c(L, "", "## P2 realizado, resultado primário (R$ bi, com RPPS; sem RPPS = referência da LDO, 2023+)", "",
-           sprintf("- %d b%d: com RPPS %.1f | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, p2_tot$p2_com, ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", p2_tot$p2_sem))))
+  if (!is.null(p2_tot) && nrow(p2_tot)) L <- c(L, "", "## P2 realizado, resultado primário (R$ bi, conceito consolidado: com RPPS, sem intraorçamentárias de 2023 em diante; sem RPPS = referência da LDO, 2023+)", "",
+           sprintf("- %d b%d: consolidado %.1f | bruto (com intra) %s | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, p2_tot$p2_com, if ("p2_com_bruto" %in% names(p2_tot)) ifelse(is.na(p2_tot$p2_com_bruto), "n.d.", sprintf("%.1f", p2_tot$p2_com_bruto)) else rep("n.d.", nrow(p2_tot)), ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", p2_tot$p2_sem))))
   if (!is.null(alertas)) L <- c(L, "", sprintf("## Alertas novos. Bimestre de referência: %d b%d (prazo legal vencido antes da rodada)", alertas$ultimo[[1]], alertas$ultimo[[2]]), "",
     sprintf("- Último (referência e mais recentes): %d na lista, %d por tipo", alertas$lista_ultimo, alertas$contagem_ultimo),
     sprintf("- Revisão (bimestres anteriores de t e t-1): %d na lista, %d por tipo", alertas$lista_revisao, alertas$contagem_revisao))

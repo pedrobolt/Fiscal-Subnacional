@@ -80,3 +80,21 @@ checar_identidade_intra <- function(fh, fl, intra, tol = 1) {
   if (!is.finite(mx) || mx > tol) stop(sprintf("Identidade das intraorcamentarias violada: maior diferenca R$ %s", format(round(mx, 2), big.mark = ".", decimal.mark = ",")), call. = FALSE)
   list(max_abs = mx, tabela = d)
 }
+
+#' Aplica a harmonizacao ao conceito unico bimestral (`x`: cod_ibge, exercicio, periodo, rec_total, primario_a6, em R$, fluxo do bimestre): de 2023 em
+#' diante, rec_total = rec_total - intra de receita e primario_a6 = primario_a6 - (intra de receita - intra de despesa paga). Guarda os valores
+#' brutos em `rec_total_bruto` e `primario_a6_bruto`. UF x bimestre de 2023+ sem intra no Anexo 1 fica NA (nao se usa o bruto em silencio).
+harmonizar_conceito_unico <- function(x, intra) {
+  w <- function(l) { s <- intra[intra$lado == l, ]; if (!nrow(s)) return(NULL); a <- aggregate(fluxo ~ cod_ibge + exercicio + periodo, s, sum); names(a)[4] <- paste0("intra_", l); a }
+  ir <- w("rec"); id <- w("desp")
+  x$rec_total_bruto <- x$rec_total; x$primario_a6_bruto <- x$primario_a6
+  k <- paste(x$cod_ibge, x$exercicio, x$periodo)
+  r <- if (is.null(ir)) rep(NA_real_, nrow(x)) else ir$intra_rec[match(k, paste(ir$cod_ibge, ir$exercicio, ir$periodo))]
+  d <- if (is.null(id)) rep(NA_real_, nrow(x)) else id$intra_desp[match(k, paste(id$cod_ibge, id$exercicio, id$periodo))]
+  d[is.na(d)] <- 0                                  # sem linha de despesa intra no bimestre = 0, desde que haja a de receita
+  apos <- x$exercicio >= 2023L
+  x$rec_total <- ifelse(apos, x$rec_total_bruto - r, x$rec_total_bruto)
+  x$primario_a6 <- ifelse(apos, x$primario_a6_bruto - (r - d), x$primario_a6_bruto)
+  x$intra_rec <- ifelse(apos, r, 0); x$intra_desp <- ifelse(apos, ifelse(is.na(r), NA_real_, d), 0)
+  x
+}
