@@ -76,3 +76,10 @@ cr <- do.call(rbind, lapply(jan, function(j) do.call(rbind, lapply(c("rec", "des
   data.frame(janela = j[[1]], lado = l, n_uf = length(k), cresc_real_bruto_pct = g("b_real"), cresc_real_sem_intra_pct = g("h_real"), dif_pp = g("h_real") - g("b_real")) }))))
 gravar_csv(cr, dados("outputs/intra_crescimento.csv")); cat("\n==== Crescimento real dos estados, com intra (bruto, A6 de 2023+) e sem intra (harmonizado) ====\n")
 print(transform(cr, cresc_real_bruto_pct = round(cresc_real_bruto_pct, 2), cresc_real_sem_intra_pct = round(cresc_real_sem_intra_pct, 2), dif_pp = round(dif_pp, 2)), row.names = FALSE)
+
+# ---- identidade: categorias + "intra nao alocada" = total harmonizado, UF x bimestre, 2021-2026 --------------------------------------------------
+fh <- harmonizar_fluxos(fl, INT); ch <- checar_identidade_intra(fh, fl, INT)
+na <- aggregate(valor ~ exercicio + serie, fh[grepl("nao alocada", fh$serie), ], sum); na$valor_bi <- round(na$valor / 1e9, 2)
+gravar_csv(na, dados("outputs/intra_nao_alocada.csv"))
+cat(sprintf("\n==== Identidade (categorias + intra nao alocada = total harmonizado): maior diferenca absoluta R$ %s em %d UF x bimestre x lado ====\n", format(ch$max_abs, digits = 3), nrow(ch$tabela)))
+cat("Intra nao alocada (R$ bi, soma das 27 UFs, bimestres disponiveis) por ano:\n"); print(na[na$serie == "desp:intra nao alocada", c("exercicio", "valor_bi")], row.names = FALSE)
