@@ -51,7 +51,7 @@ Campos de crescimento projetado preenchidos quando o E5 existir; antes, "pendent
 
 **Ressalvas:** a classe do gap saiu "quebra_conhecida" nos quatro bimestres de 2026 da rodada de teste, então fica na aba Gap, e o texto usa o gap em % da receita. P1 (previsão) e P2 (realizado) nunca aparecem lado a lado sem rótulo. % do PIB e variação real usam as premissas oficiais (a rodada de teste usou fixture).
 
-## 2. E5 (P2): protocolo proposto (versão 3)
+## 2. E5 (P2): protocolo (versão 4, congelado)
 
 ### 2.1 Objeto
 - Estados agora (categorias do dicionário). Receita: ICMS, IPVA, FPE, FUNDEB (receita e dedução), demais receitas. Despesa: pessoal, custeio, investimento, demais despesas e de capital. ISS, IPTU e FPM entram com os municípios, com o mesmo protocolo.
