@@ -145,3 +145,16 @@ O alerta novo (série sem RPPS: RREO +40% e +37% contra RGF +12% e +7% nos bimes
 4. **Limites:** não localizei a causa do vale de 2023 b3–b4 (não li as notas explicativas do RREO do PI); a conclusão é de padrão nos dados, não de causa.
 
 **Tratamento:** sem dummy e sem exclusão no E5. O alerta é rotulado como ruído de base de UF volátil (a regra de persistência de 2 bimestres não o filtra); a rotulagem automática não é implementada, e o alerta continua "nova" para revisão até haver decisão.
+
+## 7. Quebra de 2023 no conceito do Anexo 6: intraorçamentárias (4/11/2026)
+
+Até 2022 o total da despesa primária e o da receita primária do Anexo 6 **não** incluem as contas intraorçamentárias do Anexo 1; de 2023 em diante **incluem** nos dois lados. Em todas as UFs. Fonte e números: `docs/relatorio_intra.md` (despesa: etapa 1, `docs/despesa_1517_etapa1.md`).
+
+| Quebra | UFs | Início | Efeito | Tratamento |
+|---|---|---|---|---|
+| Intraorçamentárias entram no total de receita e despesa primárias do A6 | 27 | 2023 b1 | Crescimento real de 2023 contra 2022: receita 5,6% com intra contra -2,3% sem; despesa 7,8% contra -0,1% (-7,9 p.p. nos dois lados). A partir de 2024 a diferença é de 0,0 a 0,5 p.p. | **Harmonizar** (regra de 29/10): retirar a intra do Anexo 1 de 2023 em diante no total e em `rec:demais receitas` e `desp:pessoal`; sem dummy. Custeio, investimento e demais despesas de capital ficam brutos (mapeamento não validado). |
+
+- O efeito líquido no primário é pequeno (soma das 27 UFs: R$ 4,0 bi em 2023, R$ 1,5 bi em 2024 e R$ 2,2 bi em 2025; mediana de 0,07% a 0,13% da receita): o primário com RPPS não está subestimado.
+- Soma-se ao degrau do RPPS de 2023 (seção 3 desta nota): os dois entram em 2023, mas o do RPPS está nas contas "com fontes RPPS" (pessoal e demais receitas) e o das intra nas contas intraorçamentárias, e a harmonização das intra não substitui as dummies do RPPS (RS 2023) já decididas.
+- A despesa de intra é só a paga (RP pagos de intra dependem do Anexo 7). Resíduo de 0,3% a 0,4% da receita não identificado.
+

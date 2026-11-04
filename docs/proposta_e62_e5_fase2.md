@@ -78,6 +78,8 @@ Reconstrução proposta: **pagas dos grupos primários do Anexo 1 + restos a pag
 1. *Etapa sem download:* em 2018–2025, comparar as "pagas" do Anexo 1 (grupos primários) com a "paga" do Anexo 6. Isso mostra, sem baixar nada, o quanto resta a explicar pelos RP pagos.
 2. *Etapa com Anexo 7:* reconstrução completa em 2018–2025 vs caixa do Anexo 6. **Usar 2015–17** se a diferença for ≤ 1% da despesa primária em ≥ 90% dos UF-anos (unidade: UF-ano no b6; reporto também os acumulados bimestrais). Se falhar, o liquidado entra só como sensibilidade declarada, e a despesa começa em 2018.
 
+**Atualização de 04/11/2026 (16:41, depois do congelamento; motivo: achado das intraorçamentárias, #59).** A variante C da etapa 1 foi definida depois de ver o resultado. A etapa 2 usa agora a definição **harmonizada, fixada antes de qualquer cálculo com o Anexo 7**: alvo = caixa do Anexo 6 (paga + RP processados pagos + RPNP pagos) menos, de 2023 em diante, a intra de despesa primária paga do Anexo 1; reconstrução = pagas do Anexo 1 (Pessoal, Outras despesas correntes, Investimentos, Inversões financeiras) **sem as contas Intra em todos os anos** + RP pagos do Anexo 7 sem intra; critério: diferença ≤ 1% do alvo em ≥ 90% dos UF-anos (b6, 2018–2025). Texto completo em `docs/intra_criterios.md`, seção 2d; o critério desta seção 2.3 vale nessa definição.
+
 ### 2.4 Amostra e anos-alvo (C4)
 Treino mínimo proposto: 3 anos (parâmetro a congelar). Anos-alvo por escolha (aritmética de disponibilidade; contagens a confirmar):
 
