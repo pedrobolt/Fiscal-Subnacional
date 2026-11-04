@@ -2,7 +2,7 @@
 source("_targets.R")
 entes <- ler_entes(baixar_entes()); m <- entes[entes$esfera == "M", ]
 b <- lapply(c(`2025` = 2025, `2019` = 2019), function(a) montar_base_municipal(m, a))
-saveRDS(b, "outputs/base_municipal_cobertura.rds")
+saveRDS(b, dados("outputs/base_municipal_cobertura.rds"))
 for (a in names(b)) {
   d <- b[[a]]
   cat("\n==== ", a, " ====\n")

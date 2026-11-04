@@ -60,7 +60,7 @@ classificar_coluna <- function(coluna, exercicio) {
 # ---- Tabela de colunas -------------------------------------------------------------------------------------------------
 
 #' Estágios que compõem o caixa da despesa (contrato): despesa paga + restos a pagar pagos (processados e não processados).
-#' Confirmado em 28/10/2026: receita realizada − (a + b + c) reproduz o resultado primário publicado em 486 de 486 linhas
+#' Confirmado em 28/10/2026: receita realizada - (a + b + c) reproduz o resultado primário publicado em 486 de 486 linhas
 #' (2018–22) e 594 de 594 (2023+); (a) sozinha ou (a + b) não fecham.
 ESTAGIOS_CAIXA_DESPESA <- c("paga", "rp_processado_pago", "rpnp_pago")
 ESTAGIO_RECEITA <- "receita_realizada"
@@ -130,7 +130,7 @@ contas_a6 <- function() {
     rec("TransferenciasDaLC871996", B, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes", nota = "Lei Kandir; só em 2018–22"),
     rec("TransferenciasDaLCn611989", BC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("TransferenciasDoFUNDEB", BC, "receita FUNDEB", "corrente", pai = "RREO6TransferenciasCorrentes",
-        nota = "Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto − dedução + receita FUNDEB"),
+        nota = "Receita recebida do FUNDEB, categoria própria. Impostos e FPE estão pelo bruto; a dedução de formação do FUNDEB não está nos Anexos 1 e 6 (ver linha do Anexo 3). Líquido = bruto - dedução + receita FUNDEB"),
     rec("RREO6ConveniosCorrentes", A, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6OutrasTransferenciasCorrentes", ABC, "demais receitas", "corrente", pai = "RREO6TransferenciasCorrentes"),
     rec("RREO6DividaAtiva", A, "demais receitas", "corrente", pai = "RREO6DemaisReceitasCorrentes"),
@@ -143,21 +143,21 @@ contas_a6 <- function() {
         nota = "Alienação de bens que não é de investimentos; entra no primário (verificado contra o total)"),
     # receitas: totais e subtotais (só conferência)
     L("RREO6TotalReceitaPrimaria", ABC, "rec_total", nota = "Receita primária total; em 2023+ inclui fontes RPPS", rpps = "inclui_rpps_em_2023+"),
-    L("ReceitaPrimariaTotalExcetoFontesRPPS", C, "rec_total", rpps = "ja_excluido", nota = "Total de conferência do P2 em 2023+"),
-    L("ReceitasPrimariasCorrentesExcetoFontesRPPS", C, "rec_subtotal", rpps = "ja_excluido"),
-    L("ReceitasPrimariasDeCapitalExcetoFontesRPPS", C, "rec_subtotal", rpps = "ja_excluido"),
+    L("ReceitaPrimariaTotalExcetoFontesRPPS", C, "rec_total", rpps = "referencia_ldo", nota = "Total de conferência do P2 em 2023+"),
+    L("ReceitasPrimariasCorrentesExcetoFontesRPPS", C, "rec_subtotal", rpps = "referencia_ldo"),
+    L("ReceitasPrimariasDeCapitalExcetoFontesRPPS", C, "rec_subtotal", rpps = "referencia_ldo"),
     L("RREO6ReceitasPrimariasCorrentes", A, "rec_subtotal"),
     L("ReceitasPrimariasCorrentes", B, "rec_subtotal"),
     L("RREO6ReceitasPrimariasDeCapital", AB, "rec_subtotal"),
     L("ReceitasCorrentes", B, "rec_subtotal"),
-    L("ReceitasCorrentesExcetoFontesRPPS", C, "rec_subtotal", rpps = "ja_excluido"),
+    L("ReceitasCorrentesExcetoFontesRPPS", C, "rec_subtotal", rpps = "referencia_ldo"),
     L("RREO6ReceitasTributarias", ABC, "rec_subtotal"),
     L("RREO6ReceitasDeContribuicoes", A, "rec_subtotal"),
     L("RREO6ReceitaPatrimonial", ABC, "filho_de_folha"),
     L("RREO6TransferenciasCorrentes", ABC, "rec_subtotal"),
     L("RREO6DemaisReceitasCorrentes", ABC, "rec_subtotal"),
     L("RREO6ReceitasDeCapital", AB, "rec_subtotal"),
-    L("ReceitasDeCapitalExcetoFontesRPPS", C, "rec_subtotal", rpps = "ja_excluido"),
+    L("ReceitasDeCapitalExcetoFontesRPPS", C, "rec_subtotal", rpps = "referencia_ldo"),
     L("RREO6TransferenciasDeCapital", ABC, "rec_subtotal"),
     L("RREO6AlienacaoDeBens", ABC, "rec_subtotal"),
     # receitas fora do primário (financeiras) e fontes RPPS
@@ -170,9 +170,9 @@ contas_a6 <- function() {
     L("ReceitasDeAlienacaoDeInvestimentosPermanentes", BC, "memo_financeira"),
     L("ReceitasDeAlienacaoDeInvestimentosTemporarios", BC, "memo_financeira"),
     L("OutrasReceitasDeCapitalNaoPrimarias", BC, "memo_financeira"),
-    L("ReceitasPrimariasCorrentesComFontesRPPS", C, "so_rpps", rpps = "excluido", nota = "Fontes RPPS: fora do P2 (contrato)"),
+    rec("ReceitasPrimariasCorrentesComFontesRPPS", C, "demais receitas", "corrente", rpps = "incluido", nota = "Fontes RPPS: entra no P2 (decisão de 30/10/2026, série com RPPS); mapeada em demais receitas"),
     L("ReceitasNaoPrimariasCorrentesComFontesRPPS", C, "so_rpps", rpps = "excluido"),
-    L("ReceitasPrimariasDeCapitalComFontesRPPS", C, "so_rpps", rpps = "excluido"),
+    rec("ReceitasPrimariasDeCapitalComFontesRPPS", C, "demais receitas", "capital", rpps = "incluido", nota = "Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em demais receitas"),
     L("ReceitasNaoPrimariasDeCapitalComFontesRPPS", C, "so_rpps", rpps = "excluido"),
     L("RecursosArrecadadosEmExerciciosAnteriores", BC, "memo_financeira", nota = "Recursos do RPPS arrecadados em exercícios anteriores"),
     L("ReservaOrcamentariaDoRPPSPrevidenciario", BC, "so_rpps", rpps = "excluido"),
@@ -186,18 +186,18 @@ contas_a6 <- function() {
     des("RREO6ReservaDeContingencia", ABC, "demais despesas", "corrente", nota = "A reserva só tem dotação no bruto observado (nenhum valor pago); `sinalizar_reserva_paga()` avisa se aparecer pago"),
     # despesas: totais, subtotais, filhos
     L("RREO6TotalDespesaPrimaria", ABC, "desp_total", rpps = "inclui_rpps_em_2023+"),
-    L("DespesaPrimariaTotalExcetoFontesRPPS", C, "desp_total", rpps = "ja_excluido", nota = "Total de conferência do P2 em 2023+"),
+    L("DespesaPrimariaTotalExcetoFontesRPPS", C, "desp_total", rpps = "referencia_ldo", nota = "Total de conferência do P2 em 2023+"),
     L("DespesaPrimariaTotalOpcional", B, "desp_total"),
     L("RREO6DespesasPrimariasCorrentes", AB, "desp_subtotal"),
     L("RREO6DespesasPrimariasDeCapital", AB, "desp_subtotal"),
-    L("DespesasPrimariasCorrentesExcetoFontesRPPS", C, "desp_subtotal", rpps = "ja_excluido"),
-    L("DespesasPrimariasDeCapitalExcetoFontesRPPS", C, "desp_subtotal", rpps = "ja_excluido"),
-    L("DespesasCorrentesExcetoFontesRPPS", C, "desp_subtotal", rpps = "ja_excluido"),
-    L("DespesasDeCapitalExcetoFontesRPPS", C, "desp_subtotal", rpps = "ja_excluido"),
+    L("DespesasPrimariasCorrentesExcetoFontesRPPS", C, "desp_subtotal", rpps = "referencia_ldo"),
+    L("DespesasPrimariasDeCapitalExcetoFontesRPPS", C, "desp_subtotal", rpps = "referencia_ldo"),
+    L("DespesasCorrentesExcetoFontesRPPS", C, "desp_subtotal", rpps = "referencia_ldo"),
+    L("DespesasDeCapitalExcetoFontesRPPS", C, "desp_subtotal", rpps = "referencia_ldo"),
     L("RREO6DespesasCorrentes", AB, "desp_subtotal"),
     L("RREO6DespesasDeCapital", AB, "desp_subtotal"),
-    L("DespesasPrimariasCorrentesComFontesRPPS", C, "so_rpps", rpps = "excluido"),
-    L("DespesasPrimariasDeCapitalComFontesRPPS", C, "so_rpps", rpps = "excluido"),
+    L("DespesasPrimariasCorrentesComFontesRPPS", C, "desp_folha", "pessoal", "corrente", NA, "incluido", "Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em pessoal; inclui o custeio administrativo do RPPS"),
+    L("DespesasPrimariasDeCapitalComFontesRPPS", C, "desp_folha", "pessoal", "capital", NA, "incluido", "Fontes RPPS: entra no P2 (decisão de 30/10/2026); mapeada em pessoal; inclui o custeio administrativo do RPPS"),
     L("DespesasNaoPrimariasCorrentesComFontesRPPS", C, "so_rpps", rpps = "excluido"),
     L("DespesasNaoPrimariasDeCapitalComFontesRPPS", C, "so_rpps", rpps = "excluido"),
     L("RREO6DemaisDespesasCorrentes", ABC, "filho_de_folha", pai = "RREO6OutrasDespesasCorrentes"),
@@ -211,10 +211,10 @@ contas_a6 <- function() {
     # resultado e metas
     L("RREO6ResultadoPrimarioEstadosMunicipios", AB, "resultado"),
     L("ResultadoPrimarioOpcional", B, "resultado"),
-    L("ResultadoPrimarioSemRPPSAcimaDaLinha", C, "resultado", rpps = "ja_excluido", nota = "Resultado de conferência do P2 em 2023+"),
+    L("ResultadoPrimarioSemRPPSAcimaDaLinha", C, "resultado", rpps = "referencia_ldo", nota = "Resultado de conferência do P2 em 2023+"),
     L("ResultadoPrimarioComRPPSAcimaDaLinha", C, "resultado", rpps = "inclui_rpps_em_2023+"),
     L("ResultadoPrimarioAbaixoDaLinha", B, "resultado_abaixo_da_linha"),
-    L("ResultadoPrimarioAbaixoDaLinhaSemRPPS", C, "resultado_abaixo_da_linha", rpps = "ja_excluido"),
+    L("ResultadoPrimarioAbaixoDaLinhaSemRPPS", C, "resultado_abaixo_da_linha", rpps = "referencia_ldo"),
     L("RREO6MetaDeResultadoPrimarioFixadaNoAnexoDeMetasFiscaisDaLDOParaOExercicioDeReferencia", ABC, "meta"),
     L("MetaResultadoPrimarioOpcional", B, "meta"),
     L("RREO6SaldoDeExerciciosAnteriores", ABC, "memo_financeira"),
@@ -263,6 +263,7 @@ expandir_contas_a6 <- function() {
                ifelse(out$papel == "filho_de_folha", "detalhe", "memo"))))
   out$usar_no_p2 <- ifelse(out$papel %in% c("rec_folha", "desp_folha"), "soma",
                     ifelse(out$papel %in% c("rec_total", "desp_total", "resultado"), "conferencia", "nao"))
+  out$usar_no_p2[out$rpps == "referencia_ldo"] <- "referencia_ldo"   # P2 sem RPPS: só referência da meta da LDO
   out$estagio_p2 <- ifelse(out$papel == "rec_folha", "receita_realizada",
                     ifelse(out$papel == "desp_folha" & out$layout != "2015-17", "paga+rp_processado_pago+rpnp_pago",
                     ifelse(out$papel == "desp_folha", "sem_caixa(liquidada)", NA)))
@@ -371,7 +372,7 @@ cobertura_dicionario <- function(rreo, dic_contas, dic_colunas) {
 
 # ---- Acumulado -> fluxo do bimestre (E2.6) ----------------------------------------------------------------------------
 
-#' Converte valores acumulados no ano (RREO é "até o bimestre") em fluxo do bimestre: fluxo_b = acum_b − acum_{b−1}; no
+#' Converte valores acumulados no ano (RREO é "até o bimestre") em fluxo do bimestre: fluxo_b = acum_b - acum_{b-1}; no
 #' bimestre 1, fluxo = acum. Se o bimestre anterior não existe para a mesma série, o fluxo é NA (nunca se supõe zero).
 #' `x` precisa de: chave de série (colunas em `serie`), `ano`, `periodo`, `valor`. Retorna x com `fluxo` e `acum_anterior_ausente`.
 acumulado_para_fluxo <- function(x, serie = c("cod_ibge", "cod_conta", "estagio"), ano = "exercicio", periodo = "periodo", valor = "valor") {
@@ -386,7 +387,7 @@ acumulado_para_fluxo <- function(x, serie = c("cod_ibge", "cod_conta", "estagio"
 # ---- Fechamento contra o publicado ----------------------------------------------------------------------------------------
 
 #' Fechamento do Anexo 6 por ente x exercício x bimestre. Para cada arquivo: soma das folhas de receita e de despesa (pelo
-#' dicionário) contra o total publicado, e receita − despesa contra o resultado publicado. Em 2015–17 não há caixa: o
+#' dicionário) contra o total publicado, e receita - despesa contra o resultado publicado. Em 2015–17 não há caixa: o
 #' resultado fecha na liquidação. `tol` em reais. Retorna uma linha por ente x ano x bimestre.
 fechar_anexo6 <- function(rreo, dic_contas, dic_colunas, tol = 1000) {
   d <- aplicar_dicionario(rreo[rreo$anexo == "RREO-Anexo 06", ], dic_contas, dic_colunas)
@@ -394,16 +395,16 @@ fechar_anexo6 <- function(rreo, dic_contas, dic_colunas, tol = 1000) {
   d$chave <- paste(d$cod_ibge, d$exercicio, d$periodo)
   corrente <- d$ano_rel %in% c("corrente", "nao_se_aplica")
   rec <- d[d$papel_coluna == "receita_p2" & corrente, ]
-  rec$grupo <- ifelse(rec$papel_conta == "rec_folha", "folhas", ifelse(rec$papel_conta == "rec_total" & rec$rpps != "inclui_rpps", "total", NA))
+  rec$grupo <- ifelse(rec$papel_conta == "rec_folha", "folhas", ifelse(rec$papel_conta == "rec_total" & !rec$rpps %in% "referencia_ldo", "total", NA))
   # 2015–17: despesa na liquidação; 2018+: caixa = soma dos estágios
   dsp <- d[(d$papel_coluna == "despesa_caixa_p2") | (d$papel_coluna == "despesa_sem_caixa" & d$estagio == "liquidada" & corrente), ]
   dsp <- dsp[!duplicated(dsp[, c("chave", "cod_conta", "estagio", "coluna")]), ]
-  dsp$grupo <- ifelse(dsp$papel_conta == "desp_folha", "folhas", ifelse(dsp$papel_conta == "desp_total" & dsp$rpps != "inclui_rpps", "total", NA))
+  dsp$grupo <- ifelse(dsp$papel_conta == "desp_folha", "folhas", ifelse(dsp$papel_conta == "desp_total" & !dsp$rpps %in% "referencia_ldo", "total", NA))
   rec <- rec[!duplicated(rec[, c("chave", "cod_conta", "coluna")]), ]
   soma <- function(x, g) { y <- x[!is.na(x$grupo) & x$grupo == g, ]; tapply(y$valor, y$chave, sum, na.rm = TRUE) }
   chaves <- sort(unique(d$chave))
   get <- function(v) { o <- v[chaves]; ifelse(is.na(o), NA_real_, o) }
-  res_pub <- d[d$papel_conta == "resultado" & d$rpps != "inclui_rpps", ]
+  res_pub <- d[d$papel_conta == "resultado" & !d$rpps %in% "referencia_ldo", ]
   res_pub <- res_pub[res_pub$papel_coluna == "resultado_ou_meta" | (res_pub$layout == "2015-17" & res_pub$estagio == "liquidada" & res_pub$ano_rel == "corrente"), ]
   res_pub <- res_pub[!duplicated(res_pub[, c("chave", "cod_conta", "coluna")]), ]
   rp <- tapply(res_pub$valor, res_pub$chave, function(z) z[1])

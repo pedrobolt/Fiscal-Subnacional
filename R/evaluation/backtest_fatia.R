@@ -51,7 +51,7 @@ com_pct_pib <- function(previsao, premissas) {
 }
 
 #' Grava as tabelas em outputs/ (não versionado). Retorna os caminhos.
-gravar_saidas_fatia <- function(bt, resumo, previsao, pasta = "outputs") {
+gravar_saidas_fatia <- function(bt, resumo, previsao, pasta = dados("outputs")) {
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
   arqs <- c(file.path(pasta, "fatia_erros.csv"), file.path(pasta, "fatia_resumo.csv"),
             file.path(pasta, "fatia_previsao_ano_corrente.csv"))

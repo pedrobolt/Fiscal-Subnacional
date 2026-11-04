@@ -124,3 +124,38 @@ test_that("ajustes de uso: piso proprio em demais receitas, fator_defasado como 
   expect_equal(nrow(ab$lista), 1L); expect_equal(ab$lista$serie, "rec:ICMS")
   expect_equal(sum(ab$contagem$n), 2L)
 })
+
+test_that("aba da rodada: último bimestre vs revisão; entrega atrasada entra na lista se a UF pesa > 5% da receita regional", {
+  rec <- data.frame(cod_ibge = c(35L, 31L, 12L), exercicio = 2025L, rec_total = c(70, 25, 5))        # pesos 70%, 25%, 5% (não > 5%)
+  expect_equal(peso_receita_uf(rec, c(35L, 12L, 35L), c(2026L, 2026L, NA)), c(0.7, 0.05, NA))
+  expect_true(is.na(peso_receita_uf(rec, 35L, 2025L)))                                                # sem ano anterior: NA
+  al <- rbind(mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2026L, 4L, valor = 9e8),        # último bimestre, material
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:IPVA", 2026L, 3L, valor = 9e8),        # revisão, material
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "desp:custeio", 2026L, 4L, valor = 1e7),    # imaterial: contagem
+              mk_alerta("d", "entrega_atrasada", 35L, "RREO", 2026L, 4L),                              # UF grande: lista
+              mk_alerta("d", "entrega_atrasada", 12L, "RREO", 2026L, 3L),                              # UF pequena: contagem (revisão)
+              mk_alerta("d", "entrega_ausente", 31L, "RREO", 2026L, 4L),                               # ausente de UF grande: lista
+              mk_alerta("d", "retificacao", 35L, "RREO", 2026L, 4L),                                   # retificação: contagem
+              mk_alerta("a", "conta_sem_dicionario", serie = "X"))                                     # sem bimestre: grupo ultimo
+  p <- priorizar_alertas(al, data.frame(cod_ibge = 35L, exercicio = 2026L, periodo = 3:4, rec_total = 10e8))
+  pe <- peso_receita_uf(rec, p$alertas$cod_ibge, p$alertas$exercicio)
+  ab <- aba_alertas_rodada(p, c(2026L, 4L), pe)
+  expect_equal(sort(paste(ab$lista$grupo, ab$lista$subtipo)), sort(c("ultimo salto_vs_ano_anterior", "revisao salto_vs_ano_anterior", "ultimo entrega_atrasada", "ultimo entrega_ausente")))
+  expect_equal(ab$lista$grupo[1:3], rep("ultimo", 3))                                                    # último bimestre primeiro
+  c1 <- ab$contagem; expect_equal(sum(c1$n), 4L); expect_equal(sum(c1$n[c1$grupo == "revisao"]), 1L)
+})
+
+test_that("bimestre de referência: prazo legal vencido antes da rodada; entrega antecipada não o move e cai em 'último'", {
+  expect_equal(unname(bimestre_referencia(as.Date("2026-11-03"))), c(2026L, 4L))     # b4 acabou em 31/8, prazo 30/9; b5 acaba em 31/10, prazo 30/11
+  expect_equal(unname(bimestre_referencia(as.Date("2026-09-30"))), c(2026L, 3L))     # prazo do b4 vence em 30/9: ainda não "venceu antes"
+  expect_equal(unname(bimestre_referencia(as.Date("2026-10-01"))), c(2026L, 4L))
+  expect_equal(unname(bimestre_referencia(as.Date("2026-02-15"))), c(2025L, 6L))     # b6 de 2025: prazo 30/1/2026
+  al <- rbind(mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2026L, 5L, valor = 9e8),   # b5 entregue antes do prazo por SP
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:IPVA", 2026L, 4L, valor = 9e8),   # referência
+              mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ISS", 2026L, 3L, valor = 9e8))    # revisão
+  p <- priorizar_alertas(al, data.frame(cod_ibge = 35L, exercicio = 2026L, periodo = 3:5, rec_total = 10e8))
+  ref <- bimestre_referencia(as.Date("2026-11-03"))
+  ab <- aba_alertas_rodada(p, ref, rep(NA_real_, nrow(p$alertas)))
+  g <- setNames(ab$lista$grupo, ab$lista$serie)
+  expect_equal(g[["rec:ICMS"]], "ultimo"); expect_equal(g[["rec:IPVA"]], "ultimo"); expect_equal(g[["rec:ISS"]], "revisao")
+})

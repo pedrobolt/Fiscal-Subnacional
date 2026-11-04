@@ -24,7 +24,7 @@ trava_ocupada <- function(lockfile, tolerancia_s = 120) {
   file.exists(lockfile) && as.numeric(difftime(Sys.time(), file.mtime(lockfile), units = "secs")) < tolerancia_s
 }
 
-executar_carga <- function(fatia, de = 2, pasta = "data/raw/rreo", faixas = faixas_carga(), hoje = Sys.Date()) {
+executar_carga <- function(fatia, de = 2, pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date()) {
   if (de != 2) stop("A carga usa exatamente 2 processos (2 conexões); não aumentar sem autorização do Pedro.", call. = FALSE)
   lock <- file.path(pasta, sprintf("_carga_fatia%d.lock", fatia))
   if (trava_ocupada(lock)) stop("A fatia ", fatia, " parece já estar em execução (", lock, " atualizado há menos de 2 min).", call. = FALSE)
@@ -44,7 +44,7 @@ executar_carga <- function(fatia, de = 2, pasta = "data/raw/rreo", faixas = faix
 
 #' Progresso: por faixa, ente x ano com extrato baixado, jobs pendentes (com os extratos locais) e
 #' estimativa de chamadas restantes e do tempo, a partir do ritmo observado na última hora nos logs de carga.
-progresso_carga <- function(pasta = "data/raw/rreo", faixas = faixas_carga(), hoje = Sys.Date()) {
+progresso_carga <- function(pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date()) {
   entes <- ler_entes(baixar_entes(pasta, hoje))
   linhas <- list()
   for (f in faixas) {

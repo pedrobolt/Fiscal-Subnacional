@@ -6,7 +6,7 @@
 #' @param caminho caminho do arquivo YAML.
 #' @param ano_t ano-alvo do modelo (obrigatório, sem default); precisa ter todas as séries preenchidas.
 #' @return lista com versao, fonte e data.frame `anos` (ano, ipca, pib_real, pib_nominal).
-ler_premissas <- function(caminho = "premissas.yml", ano_t) {
+ler_premissas <- function(caminho = dados("premissas.yml"), ano_t) {
   if (missing(ano_t)) {
     stop("ano_t é obrigatório (ex.: ler_premissas(ano_t = 2026)); fechamentos de jan/fev usam o ano anterior.", call. = FALSE)
   }

@@ -10,7 +10,7 @@ estado_demonstrativo <- function(pasta, esfera, id, ano, periodo, anexo) {
   if (any(n > 0, na.rm = TRUE)) "com_dados" else if (any(!is.na(n))) "vazio" else "ausente"
 }
 
-cobertura_rreo <- function(ids, anos, periodos = 1:6, anexos = ANEXOS_RREO, esfera = "E", pasta = "data/raw/rreo",
+cobertura_rreo <- function(ids, anos, periodos = 1:6, anexos = ANEXOS_RREO, esfera = "E", pasta = dados("data/raw/rreo"),
                            hoje = Sys.Date()) {
   g <- expand.grid(ano = anos, periodo = periodos, anexo = unname(anexos), stringsAsFactors = FALSE)
   g <- g[mapply(bimestre_disponivel, g$ano, g$periodo, MoreArgs = list(hoje = hoje)), ]  # só bimestres já publicados

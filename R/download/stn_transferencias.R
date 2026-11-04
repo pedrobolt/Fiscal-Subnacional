@@ -26,7 +26,7 @@ csv_valido <- function(arquivo) {
 
 #' Baixa os arquivos que faltam em `pasta/<dataset>/`. `pausa`: segundos entre pedidos. Respeita Retry-After e
 #' interrompe após `max_recusas` recusas (429) seguidas. Retorna data.frame(name, situacao).
-baixar_stn <- function(dataset, pasta = "data/raw/stn", pausa = 5, max_recusas = 3, filtro = NULL) {
+baixar_stn <- function(dataset, pasta = dados("data/raw/stn"), pausa = 5, max_recusas = 3, filtro = NULL) {
   dest <- file.path(pasta, dataset); dir.create(dest, showWarnings = FALSE, recursive = TRUE)
   r <- recursos_stn(dataset)
   if (!is.null(filtro)) r <- r[grepl(filtro, r$name), ]

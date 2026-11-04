@@ -41,7 +41,7 @@ extrato_atualizado <- function(pasta, id_ente, ano, idade_max_dias = 7, agora = 
 
 #' Atualiza o RREO de `ids` (esfera "E" ou "M") nos `anos` e `periodos` dados, nessa ordem de anos.
 #' Retorna data.frame com a contagem de jobs por motivo. `fatia`/`de` repartem os entes entre processos.
-atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = "data/raw/rreo", fatia = 1, de = 1,
+atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = dados("data/raw/rreo"), fatia = 1, de = 1,
                            idade_max_extrato_dias = 7, tag = "", hoje = Sys.Date(), ao_avancar = NULL) {
   ids <- ids[(seq_along(ids) - 1) %% de == fatia - 1]
   log <- sprintf("_log_%s%s.csv", esfera, tag)

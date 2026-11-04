@@ -9,7 +9,7 @@ url_extrato <- function(id_ente, ano) {
 dir_extrato <- function(pasta, ano) file.path(pasta, "extrato", ano)
 
 #' Baixa o extrato de um ente x ano e grava como snapshot novo. Retorna o caminho.
-baixar_extrato <- function(id_ente, ano, pasta = "data/raw/rreo", tentativas = 4, pausa = 0.3,
+baixar_extrato <- function(id_ente, ano, pasta = dados("data/raw/rreo"), tentativas = 4, pausa = 0.3,
                            log = "_log_extrato.csv", agora = Sys.time()) {
   dir.create(dir_extrato(pasta, ano), showWarnings = FALSE, recursive = TRUE)
   destino <- file.path(dir_extrato(pasta, ano), sprintf("%s_s%s.json.gz", id_ente, carimbo_utc(agora)))

@@ -1,9 +1,9 @@
 # E4.2: intervalos de previsão do P1 (modelo publicado: SRW em R$). Nível 80%, paramétrico (contrato, "Intervalos de previsão"):
-# previsão ± 1,2816 × σ do corte; σ = RMSE do modelo publicado naquele corte, estimado de forma rolante (só anos < alvo),
+# previsão ± 1,2816 × sigma do corte; sigma = RMSE do modelo publicado naquele corte, estimado de forma rolante (só anos < alvo),
 # suavizado entre cortes vizinhos (pesos 1-2-1 sobre o RMSE², extremos refletidos), forçado a não crescer com o corte.
 
 Z80 <- stats::qnorm(0.90)   # 1,2816
-MIN_ANOS_SIGMA <- 8         # mínimo de anos de erro passado para estimar σ (igual ao mínimo de treino dos modelos)
+MIN_ANOS_SIGMA <- 8         # mínimo de anos de erro passado para estimar sigma (igual ao mínimo de treino dos modelos)
 
 #' Média móvel 1-2-1 (pesos 1/4, 1/2, 1/4) sobre `v`, com extremos refletidos sem repetir a borda (v[0] = v[2], v[n+1] = v[n-1]).
 suavizar_121 <- function(v) {
@@ -12,24 +12,24 @@ suavizar_121 <- function(v) {
   (ext[1:n] + 2 * ext[2:(n + 1)] + ext[3:(n + 2)]) / 4
 }
 
-#' Ajuste isotônico não crescente (PAV): o σ² não pode crescer com o corte.
+#' Ajuste isotônico não crescente (PAV): o sigma² não pode crescer com o corte.
 isotonica_nao_crescente <- function(v) rev(stats::isoreg(rev(v))$yf)
 
-#' σ² por corte a partir dos erros passados (data.frame com ano, corte, erro), só anos < `ano_alvo` e fora de `excluir`.
+#' sigma² por corte a partir dos erros passados (data.frame com ano, corte, erro), só anos < `ano_alvo` e fora de `excluir`.
 #' NA se o corte tiver menos de `min_anos` anos de erro.
 sigma2_corte <- function(erros, ano_alvo, cortes = 1:11, excluir = integer(0), min_anos = MIN_ANOS_SIGMA) {
   e <- erros[erros$ano < ano_alvo & !(erros$ano %in% excluir) & !is.na(erros$erro), ]
   vapply(cortes, function(m) { z <- e$erro[e$corte == m]; if (length(z) < min_anos) NA_real_ else mean(z^2) }, numeric(1))
 }
 
-#' σ publicado por corte para o alvo `ano_alvo` (vetor de comprimento length(cortes)); NA se faltar histórico em algum corte.
+#' sigma publicado por corte para o alvo `ano_alvo` (vetor de comprimento length(cortes)); NA se faltar histórico em algum corte.
 sigma_publicado <- function(erros, ano_alvo, cortes = 1:11, excluir = integer(0), min_anos = MIN_ANOS_SIGMA) {
   s2 <- sigma2_corte(erros, ano_alvo, cortes, excluir, min_anos)
   if (anyNA(s2)) return(rep(NA_real_, length(cortes)))
   sqrt(isotonica_nao_crescente(suavizar_121(s2)))
 }
 
-#' Intervalo `[inf, sup]` = previsão ± Z80 × σ.
+#' Intervalo `[inf, sup]` = previsão ± Z80 × sigma.
 intervalo_80 <- function(previsao, sigma) data.frame(inf = previsao - Z80 * sigma, sup = previsao + Z80 * sigma)
 
 #' Intervalo de Wilson para uma proporção (k acertos em n). `conf`: nível (0,90 por padrão).
@@ -42,8 +42,8 @@ wilson <- function(k, n, conf = 0.90) {
 }
 
 #' Intervalos e cobertura para todos os alvos. `bt`: backtest do modelo publicado (ano, corte, previsao, realizado, erro, pib),
-#' com anos suficientes antes do primeiro alvo. `escala`: "brl" (σ do erro em R$ bi) ou "pib" (σ do erro em fração do PIB do
-#' ano do erro, multiplicado pelo PIB do ano-alvo; E4.2b). Retorna uma linha por alvo x corte com σ (na unidade de R$ bi) com e
+#' com anos suficientes antes do primeiro alvo. `escala`: "brl" (sigma do erro em R$ bi) ou "pib" (sigma do erro em fração do PIB do
+#' ano do erro, multiplicado pelo PIB do ano-alvo; E4.2b). Retorna uma linha por alvo x corte com sigma (na unidade de R$ bi) com e
 #' sem 2020–22 e as coberturas.
 intervalos_backtest <- function(bt, alvos, cortes = 1:11, pandemia = 2020:2022, min_anos = MIN_ANOS_SIGMA, escala = c("brl", "pib")) {
   escala <- match.arg(escala)
