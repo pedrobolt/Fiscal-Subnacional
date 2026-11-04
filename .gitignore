@@ -20,3 +20,6 @@ renv/cellar/
 .Rhistory
 .RData
 .Rproj.user/
+
+# Arquivos movidos para quarentena (AGENTS.md: nada se apaga sem pedido; mover para _to_delete/ e avisar)
+_to_delete/

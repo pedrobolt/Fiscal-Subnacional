@@ -8,7 +8,7 @@ SIDRA_PIB_TRIM  <- "t/1846/n1/all/v/585/p/all/c11255/90707"
 
 #' Baixa os dois recortes do SIDRA e guarda o JSON bruto em `pasta` (um arquivo por tabela e data de consulta).
 #' Retorna c(anual = <arquivo>, trimestral = <arquivo>).
-baixar_pib_ibge <- function(pasta = "data/raw", hoje = Sys.Date(), tentativas = 4) {
+baixar_pib_ibge <- function(pasta = dados("data/raw"), hoje = Sys.Date(), tentativas = 4) {
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
   um <- function(caminho, nome) {
     destino <- file.path(pasta, sprintf("ibge_pib_%s_%s.json", nome, format(hoje, "%Y%m%d")))

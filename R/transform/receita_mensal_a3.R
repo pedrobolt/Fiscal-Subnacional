@@ -19,7 +19,7 @@ mes_coluna_a3 <- function(exercicio, periodo, coluna) {
 
 #' Lê os arquivos do Anexo 3 dos estados (versão original, sem snapshots) e devolve formato longo das contas acompanhadas:
 #' cod_ibge, uf, exercicio, periodo, categoria, tipo ("mensal", "total12m", "previsao"), mes, valor.
-ler_a3_estados <- function(pasta = "data/raw/rreo/E") {
+ler_a3_estados <- function(pasta = dados("data/raw/rreo/E")) {
   arqs <- list.files(pasta, "^[0-9]+_b[1-6]_a03\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
   out <- lapply(arqs, function(a) {
     x <- ler_rreo(a)

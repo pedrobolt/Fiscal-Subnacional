@@ -1,7 +1,7 @@
 # Manifesto do bruto do RREO (E2.0): lista de arquivos com tamanho e MD5, contagens e datas de coleta.
 # Usado para empacotar o Release e para conferir a carga inicial (scripts/empacotar_dados.R e restaurar_dados.R).
 
-manifesto_arquivos <- function(pasta = "data/raw/rreo") {
+manifesto_arquivos <- function(pasta = dados("data/raw/rreo")) {
   arqs <- sort(list.files(pasta, recursive = TRUE, full.names = FALSE))
   completos <- file.path(pasta, arqs)
   data.frame(arquivo = arqs, bytes = file.size(completos),
@@ -9,7 +9,7 @@ manifesto_arquivos <- function(pasta = "data/raw/rreo") {
 }
 
 #' Resumo do manifesto: contagem por esfera e ano (arquivos .json.gz) e datas de coleta (a partir dos logs).
-resumo_manifesto <- function(man, pasta = "data/raw/rreo", commit = NA_character_, invalidos = NA_integer_) {
+resumo_manifesto <- function(man, pasta = dados("data/raw/rreo"), commit = NA_character_, invalidos = NA_integer_) {
   j <- man[grepl("\\.json\\.gz$", man$arquivo), ]
   partes <- strsplit(j$arquivo, "/")
   esfera <- vapply(partes, `[`, "", 1); ano <- vapply(partes, `[`, "", 2)

@@ -30,7 +30,7 @@ registrar_chamada <- function(pasta, linha, log = "_log.csv") {
 
 #' Baixa um demonstrativo do RREO (um ente, ano, bimestre, anexo) e guarda o JSON compactado.
 #' Retorna o caminho do arquivo, ou NA se a resposta veio vazia e não foi guardada.
-baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = "data/raw/rreo",
+baixar_rreo <- function(id_ente, ano, periodo, anexo, esfera = "E", pasta = dados("data/raw/rreo"),
                         tentativas = 4, hoje = Sys.Date(), pausa = 0.3, tipo = "RREO", log = "_log.csv",
                         snapshot = FALSE) {
   base <- caminho_rreo(pasta, esfera, id_ente, ano, periodo, anexo, tipo)
@@ -93,7 +93,7 @@ listar_estados <- function(entes) {
   e[order(e$cod_ibge), ]
 }
 
-baixar_entes <- function(pasta = "data/raw/rreo", hoje = Sys.Date()) {
+baixar_entes <- function(pasta = dados("data/raw/rreo"), hoje = Sys.Date()) {
   dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
   destino <- file.path(pasta, sprintf("_entes_%s.json", format(hoje, "%Y%m%d")))
   if (!file.exists(destino)) {
@@ -118,7 +118,7 @@ bimestre_disponivel <- function(ano, b, hoje = Sys.Date()) {
 
 #' Baixa em lote (sequencial, 1 conexão) e devolve os caminhos obtidos. Reentrante: pula o que já existe.
 baixar_rreo_lote <- function(entes, anos, periodos = 1:6, anexos = ANEXOS_RREO, esfera = "E",
-                             pasta = "data/raw/rreo", hoje = Sys.Date()) {
+                             pasta = dados("data/raw/rreo"), hoje = Sys.Date()) {
   caminhos <- character(0)
   for (ano in anos) for (b in periodos) for (anx in anexos) for (id in entes) {
     if (!bimestre_disponivel(ano, b, hoje)) next
@@ -130,7 +130,7 @@ baixar_rreo_lote <- function(entes, anos, periodos = 1:6, anexos = ANEXOS_RREO, 
 
 #' E2.1: baixa o RREO (Anexos 1 e 6) dos 27 entes estaduais. Sequencial (1 conexão) e retomável.
 #' Rodar fora do pipeline: Rscript -e 'source("_targets.R"); baixar_rreo_estados()'
-baixar_rreo_estados <- function(anos = 2015:2026, pasta = "data/raw/rreo", hoje = Sys.Date()) {
+baixar_rreo_estados <- function(anos = 2015:2026, pasta = dados("data/raw/rreo"), hoje = Sys.Date()) {
   entes <- ler_entes(baixar_entes(pasta, hoje))
   estados <- listar_estados(entes)
   stopifnot(nrow(estados) == 27)
@@ -139,7 +139,7 @@ baixar_rreo_estados <- function(anos = 2015:2026, pasta = "data/raw/rreo", hoje 
 
 #' Município: tenta "RREO" e, se vier vazio (sem declaração desse tipo), "RREO Simplificado".
 #' Retorna o caminho do arquivo com dados, ou NA se nenhum dos dois tem dados.
-baixar_rreo_municipal <- function(id_ente, ano, periodo, anexo, pasta = "data/raw/rreo", log = "_log_M.csv",
+baixar_rreo_municipal <- function(id_ente, ano, periodo, anexo, pasta = dados("data/raw/rreo"), log = "_log_M.csv",
                                   hoje = Sys.Date()) {
   for (tipo in TIPOS_RREO) {
     p <- baixar_rreo(id_ente, ano, periodo, anexo, esfera = "M", pasta = pasta, tipo = tipo, log = log, hoje = hoje)
@@ -151,7 +151,7 @@ baixar_rreo_municipal <- function(id_ente, ano, periodo, anexo, pasta = "data/ra
 #' Coleta municipal sequencial (1 conexão por processo). Para 2 conexões, rodar 2 processos com
 #' fatia = 1 e 2, de = 2: cada um pega os entes de posição congruente. Retomável.
 baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO, fatia = 1, de = 1,
-                                   pasta = "data/raw/rreo", tag = "", hoje = Sys.Date()) {
+                                   pasta = dados("data/raw/rreo"), tag = "", hoje = Sys.Date()) {
   ids <- ids[(seq_along(ids) - 1) %% de == fatia - 1]
   log <- sprintf("_log_M%s.csv", tag)
   n <- 0
@@ -175,7 +175,7 @@ baixar_rreo_municipios <- function(ids, anos, periodos = 6, anexos = ANEXOS_RREO
 #' Nunca apaga: com `quarentenar = TRUE`, move os inválidos e as sobras .tmp para `<pasta>/../_quarentena/` (mesmo caminho
 #' relativo; nome com carimbo se já existir lá) e registra cada movimento em `_quarentena/_registro.csv`
 #' (momento, origem, destino, motivo). A retomada da coleta rebaixa o que foi movido.
-validar_rreo_pasta <- function(pasta = "data/raw/rreo", quarentenar = FALSE) {
+validar_rreo_pasta <- function(pasta = dados("data/raw/rreo"), quarentenar = FALSE) {
   tmps <- list.files(pasta, pattern = "\\.tmp$", recursive = TRUE, full.names = TRUE)
   arqs <- list.files(pasta, pattern = "\\.json\\.gz$", recursive = TRUE, full.names = TRUE)
   ok <- vapply(arqs, function(a) {

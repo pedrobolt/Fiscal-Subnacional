@@ -104,7 +104,7 @@ available_at_stn <- function(ano, mes, defasagem_extra = 0L, calendario = NULL) 
 }
 
 #' Fonte `stn` para montar_info(): ano, mes, valor_fpe, valor_fpm (R$ bi; NA se ausente/descartado), tratamento, available_at.
-carregar_stn <- function(pasta = "data/raw/stn", defasagem_extra = 0L, ate = NULL) {
+carregar_stn <- function(pasta = dados("data/raw/stn"), defasagem_extra = 0L, ate = NULL) {
   fpe <- deduplicar_stn(ler_stn_pasta(file.path(pasta, "estados"), "estados"))
   fpm <- deduplicar_stn(ler_stn_pasta(file.path(pasta, "municipios"), "municipios"))
   s <- corrigir_escala_stn(serie_stn_mensal(fpe, fpm, ate))

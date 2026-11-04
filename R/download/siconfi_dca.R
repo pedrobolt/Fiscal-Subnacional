@@ -6,7 +6,7 @@ url_dca <- function(id_ente, ano, anexo = "DCA-Anexo I-C")
 
 caminho_dca <- function(pasta, id_ente, ano) file.path(pasta, "E", ano, sprintf("%s_i_c.json.gz", id_ente))
 
-baixar_dca <- function(id_ente, ano, pasta = "data/raw/dca", tentativas = 4, pausa = 0.3) {
+baixar_dca <- function(id_ente, ano, pasta = dados("data/raw/dca"), tentativas = 4, pausa = 0.3) {
   destino <- caminho_dca(pasta, id_ente, ano)
   if (file.exists(destino)) return(destino)
   dir.create(dirname(destino), showWarnings = FALSE, recursive = TRUE)
@@ -40,8 +40,8 @@ baixar_dca <- function(id_ente, ano, pasta = "data/raw/dca", tentativas = 4, pau
 
 ler_dca <- function(arquivo) ler_json_utf8(arquivo)$items
 
-baixar_dca_estados <- function(anos = 2015:2025, pasta = "data/raw/dca") {
-  entes <- ler_entes(baixar_entes("data/raw/rreo", Sys.Date()))
+baixar_dca_estados <- function(anos = 2015:2025, pasta = dados("data/raw/dca")) {
+  entes <- ler_entes(baixar_entes(dados("data/raw/rreo"), Sys.Date()))
   est <- listar_estados(entes); stopifnot(nrow(est) == 27)
   for (a in anos) for (id in est$cod_ibge) baixar_dca(id, a, pasta)
   invisible(TRUE)

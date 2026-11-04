@@ -1,7 +1,7 @@
 # Atualização automática do Anexo 3 (RCL) e da DCA dos estados para a rodada mensal (E6.1): baixa o que ainda não existe e
 # já está disponível; arquivo existente nunca é sobrescrito. Sem passo manual: a rodada chama esta função e depois
 # `fatores_dca()`, que sempre usa o último fator disponível.
-atualizar_a3_dca <- function(hoje = Sys.Date(), pasta_rreo = "data/raw/rreo", pasta_dca = "data/raw/dca") {
+atualizar_a3_dca <- function(hoje = Sys.Date(), pasta_rreo = dados("data/raw/rreo"), pasta_dca = dados("data/raw/dca")) {
   entes <- ler_entes(baixar_entes(pasta_rreo, hoje))
   est <- listar_estados(entes); stopifnot(nrow(est) == 27)
   ano <- as.integer(format(hoje, "%Y"))

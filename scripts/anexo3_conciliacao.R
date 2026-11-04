@@ -4,17 +4,17 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/anexo3_conciliacao.R   (precisa de data/raw/rreo/E com Anexos 3 e 6)
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R", "R/transform/receita_mensal_a3.R"))
-  source(f, encoding = "UTF-8")
-dir.create("outputs", showWarnings = FALSE)
+  carregar_r(f)
+dir.create(dados("outputs"), showWarnings = FALSE)
 ESPERADO <- c(ICMS = 0.15, IPVA = 0.10, ITCD = 0.20, FPE = 0.20, IRRF = 0)
 TOL <- 0.005   # 0,5 ponto percentual
 
 a3 <- ler_a3_estados()
 cat("linhas A3 (contas acompanhadas):", nrow(a3), "| UFs:", length(unique(a3$cod_ibge)), "| exercícios:", paste(range(a3$exercicio), collapse = "-"), "\n")
 mensal <- receita_mensal_a3(a3)
-gravar_csv(mensal, "outputs/a3_receita_mensal_uf.csv")
+gravar_csv(mensal, dados("outputs/a3_receita_mensal_uf.csv"))
 
-rreo <- ler_rreo_pasta("data/raw/rreo", "E")
+rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
 dc <- ler_dicionario("data/dicionario_colunas_estados.csv"); dcont <- ler_dicionario("data/dicionario_contas_estados.csv")
 a6 <- aplicar_dicionario(rreo[rreo$anexo == "RREO-Anexo 06", ], dcont, dc)
 cat6 <- c(RREO6ICMS = "ICMS", RREO6IPVA = "IPVA", RREO6ITCD = "ITCD", RREO6IRRF = "IRRF", RREO6CotaParteDoFPE = "FPE", RREO6FPE = "FPE")
@@ -32,14 +32,14 @@ r$razao <- (r$a3_12m - r$a6_acum) / r$a3_12m
 r$esperado <- ESPERADO[r$categoria]
 r$dif_pp <- 100 * (r$razao - r$esperado)
 r$confere <- is.finite(r$razao) & abs(r$razao - r$esperado) <= TOL
-gravar_csv(r, "outputs/a3_a6_regra_legal.csv")
+gravar_csv(r, dados("outputs/a3_a6_regra_legal.csv"))
 res <- do.call(rbind, lapply(split(r, r$categoria), function(z) data.frame(categoria = z$categoria[1], esperado = z$esperado[1], n = nrow(z),
   confere = sum(z$confere), pct_confere = round(100 * mean(z$confere), 1), mediana_razao = round(median(z$razao, na.rm = TRUE), 4))))
 print(res, row.names = FALSE)
-gravar_csv(res, "outputs/a3_a6_regra_legal_resumo.csv")
+gravar_csv(res, dados("outputs/a3_a6_regra_legal_resumo.csv"))
 por_ano <- aggregate(confere ~ categoria + exercicio, r, function(x) round(100 * mean(x), 0))
 print(reshape(por_ano, idvar = "exercicio", timevar = "categoria", direction = "wide"), row.names = FALSE)
-gravar_csv(r[!r$confere, ], "outputs/a3_a6_regra_legal_excecoes.csv")
+gravar_csv(r[!r$confere, ], dados("outputs/a3_a6_regra_legal_excecoes.csv"))
 
 # (1b) Acréscimo após o primeiro resultado (a regra declarada só fecha para SP, AC, AM e DF em ICMS/IPVA): segundo regime, em que o
 # A6 também deduz a cota-parte dos municípios (ICMS: 1 - 0,25 - 0,15 = 0,60 do A3, razão 0,40; IPVA: 1 - 0,50 - 0,10 = 0,40, razão 0,60).
@@ -48,7 +48,7 @@ ESP2 <- c(ICMS = 0.40, IPVA = 0.60)
 r$esperado_liq <- ifelse(r$categoria %in% names(ESP2), ESP2[r$categoria], NA_real_)
 r$regime <- ifelse(r$confere, "bruto_municipal", ifelse(!is.na(r$esperado_liq) & is.finite(r$razao) & abs(r$razao - r$esperado_liq) <= TOL, "liquido_municipal", "fora"))
 r$regime[r$categoria %in% c("FPE", "ITCD", "IRRF") & r$confere] <- "unico"
-gravar_csv(r, "outputs/a3_a6_regra_legal.csv")
+gravar_csv(r, dados("outputs/a3_a6_regra_legal.csv"))
 print(table(r$categoria, r$regime))
 reg <- reshape(aggregate(regime ~ uf + exercicio, r[r$categoria == "ICMS", ], function(x) substr(x[1], 1, 1)), idvar = "uf", timevar = "exercicio", direction = "wide")
 print(reg, row.names = FALSE)
@@ -65,5 +65,5 @@ f2 <- merge(f2, r[, c("cod_ibge", "exercicio", "categoria", "esperado", "esperad
 f2$esp_uso <- ifelse(f2$regime == "liquido_municipal", f2$esperado_liq, f2$esperado)
 f2 <- f2[f2$regime != "fora", ]
 f2$confere <- is.finite(f2$razao) & abs(f2$razao - f2$esp_uso) <= 0.01
-gravar_csv(f2, "outputs/a3_a6_fluxo_bimestral.csv")
+gravar_csv(f2, dados("outputs/a3_a6_fluxo_bimestral.csv"))
 print(aggregate(confere ~ categoria, f2, function(x) c(n = length(x), pct = round(100 * mean(x), 1))))
