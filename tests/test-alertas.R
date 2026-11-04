@@ -81,7 +81,7 @@ test_that("pessoal harmonizado: a partir do inicio usa o ano anterior x variacao
 
 test_that("quebras inventariadas viram conhecida e as demais saem por materialidade", {
   al <- rbind(
-    mk_alerta("b", "salto_vs_ano_anterior", 33L, "desp:pessoal", 2025L, 3L, valor = 5e9),     # reclassificação RJ: conhecida
+    mk_alerta("b", "salto_vs_ano_anterior", 33L, "desp:pessoal", 2025L, 3L, valor = 5e9),     # reclassificação RJ: conhecida só na série SEM
     mk_alerta("b", "salto_vs_ano_anterior", 33L, "desp:pessoal", 2026L, 2L, valor = -5e9),    # reversão: nova
     mk_alerta("b", "salto_vs_ano_anterior", 35L, "desp:pessoal", 2023L, 2L, valor = 1e9),     # RPPS 2023: conhecida
     mk_alerta("b", "salto_vs_ano_anterior", 35L, "rec:ICMS", 2023L, 2L, valor = 1e9),         # ICMS 2023: nova
@@ -90,14 +90,17 @@ test_that("quebras inventariadas viram conhecida e as demais saem por materialid
     mk_alerta("c", "fator_instavel", 31L, "ICMS", 2026L, 4L),                                  # nova, sem R$
     mk_alerta("c", "conceito_original", 14L, "A6", 2020L, 1L))                                # conhecida
   rt <- unique(data.frame(cod_ibge = al$cod_ibge, exercicio = al$exercicio, periodo = al$periodo, rec_total = 10e9))
+  s <- marcar_conhecidas(al, serie_rpps = "sem")                    # serie SEM RPPS: a reclassificacao de RJ e conhecida
+  expect_equal(s$quebra[1], "reclassificacao de pessoal RJ/PR/RS"); expect_equal(sum(s$status == "conhecida"), 3L)
+  expect_equal(marcar_conhecidas(al)$status[1], "nova")             # serie COM (padrao): nao ha quebra de pessoal em 2025
   p <- priorizar_alertas(al, rt)
   a <- p$alertas
-  expect_equal(sum(a$status == "conhecida"), 3L)
-  expect_true(all(a$status[1:5] == "nova") && all(a$status[6:8] == "conhecida"))
+  expect_equal(sum(a$status == "conhecida"), 2L)
+  expect_true(all(a$status[1:6] == "nova") && all(a$status[7:8] == "conhecida"))
   expect_equal(a$cod_ibge[1], 31L)                                  # maior |Δ|/receita primeiro
-  expect_true(is.na(a$materialidade[5]))                            # sem R$ por último entre as novas
+  expect_true(is.na(a$materialidade[6]))                            # sem R$ por último entre as novas
   expect_equal(sum(p$resumo$n), nrow(al))
-  expect_equal(nrow(alertas_novos_por_rodada(a, 2022L)), 5L)
+  expect_equal(nrow(alertas_novos_por_rodada(a, 2022L)), 6L)
   expect_equal(nrow(marcar_conhecidas(alertas_vazio())), 0L)
 })
 

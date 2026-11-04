@@ -250,7 +250,7 @@ INVENTARIO_ATE <- c(2026L, 4L)
 #' Marca cada alerta com `status` ("conhecida" ou "nova") e `quebra` (rótulo do inventário). Regras:
 #' RPPS 2023 (b em pessoal e demais receitas); reclassificação RJ/PR/RS (b em pessoal, Delta > 0, a partir do início de cada UF: reversão
 #' não é conhecida); RS 2018 b1-b5 (qualquer tipo); flags inventariados do conceito único; quebras anuais do fator até 2025.
-marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTARIO_ATE) {
+marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTARIO_ATE, serie_rpps = "com") {
   if (!nrow(al)) { al$status <- character(0); al$quebra <- character(0); return(al) }
   quebra <- rep(NA_character_, nrow(al))
   dentro <- !is.na(al$exercicio) & (al$exercicio < ate[1] | (al$exercicio == ate[1] & (is.na(al$periodo) | al$periodo <= ate[2])))
@@ -258,7 +258,8 @@ marcar_conhecidas <- function(al, inicio = INICIO_RECLASSIFICACAO, ate = INVENTA
   quebra[dentro & b & al$exercicio %in% 2023L & al$serie %in% c("desp:pessoal", "rec:demais receitas")] <- "RPPS 2023"
   ini <- inicio[match(al$cod_ibge, inicio$cod_ibge), ]
   apos <- !is.na(ini$exercicio) & (al$exercicio > ini$exercicio | (al$exercicio == ini$exercicio & al$periodo >= ini$periodo))
-  quebra[dentro & b & al$serie %in% "desp:pessoal" & apos & !is.na(al$valor) & al$valor > 0] <- "reclassificacao de pessoal RJ/PR/RS"
+  if (identical(serie_rpps, "sem"))   # a reclassificacao de 2025 so existe na serie SEM RPPS (E2.8b); na serie oficial (COM) o alerta segue "nova"
+    quebra[dentro & b & al$serie %in% "desp:pessoal" & apos & !is.na(al$valor) & al$valor > 0] <- "reclassificacao de pessoal RJ/PR/RS"
   quebra[dentro & al$cod_ibge %in% 43L & al$exercicio %in% 2018L & al$periodo %in% 1:5 & al$tipo != "b"] <- "RS 2018 A6 vazio"
   quebra[dentro & al$tipo == "c" & al$subtipo %in% c("conceito_original", "custeio_nao_positivo", "quebra_na_troca_de_conceito")] <- "flag do conceito unico"
   quebra[dentro & al$tipo == "c" & al$subtipo == "fator_instavel" & al$exercicio <= 2025L] <- "quebra anual do fator"
