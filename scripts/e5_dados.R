@@ -1,5 +1,5 @@
 # E5 estados: monta os insumos (painel, base dos modelos, A6 totais) a partir do cache do RREO e dos fluxos harmonizados. Funcao `e5_montar()`.
-# Uso (de outro script): source("scripts/e5_dados.R"); D <- e5_montar()
+# Uso (de outro script): carregar_r("scripts/e5_dados.R"); D <- e5_montar()
 source("R/utils_io.R", encoding = "UTF-8")
 carregar_r(c("R/download/snapshots.R", "R/download/bcb_sgs.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R",
              "R/quality/alertas.R", "R/transform/intra.R", "R/models/e5.R"))

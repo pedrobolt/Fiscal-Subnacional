@@ -2,7 +2,7 @@
 # Uso: LC_ALL=C.UTF-8 Rscript scripts/e5_rodar.R [--rapida] [--sem-m4] [--sem-variantes] [--sem-registro]
 # Saidas (FISCAL_DADOS/outputs): e5_previsoes.csv, e5_metricas.csv, e5_criterios.csv, e5_decisao.csv, e5_variantes.csv, e5_testes_painel.csv, e5_entes.csv, e5_diag_estimacao.csv,
 # e5_diag_categorias.csv; linhas em experiments/registro.csv (status e5_v4, hash do commit do codigo).
-source("scripts/e5_dados.R", encoding = "UTF-8")
+source("R/utils_io.R", encoding = "UTF-8"); carregar_r("scripts/e5_dados.R")
 carregar_r("R/evaluation/registro.R")
 args <- commandArgs(TRUE); sem_m4 <- "--sem-m4" %in% args || "--rapida" %in% args; rapida <- "--rapida" %in% args
 modelos <- if (sem_m4) c("M1", "M2", "M3") else c("M1", "M2", "M3", "M4")
