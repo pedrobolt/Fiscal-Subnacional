@@ -1,14 +1,14 @@
 # E5 (estados): especificação fixada antes de rodar (4/11/2026)
 
-Implementa o protocolo v4 (`docs/proposta_e62_e5_fase2.md`, seção 2) com a série harmonizada (com RPPS, sem intraorçamentárias de 2023 em diante). **Nenhum modelo foi rodado.** Este arquivo é commitado antes do código e dos resultados; o registro da execução (`experiments/registro.csv`, status `e5_v4`) grava o hash deste commit. Mudança depois do resultado entra como tal, com data. Pontos que vão além do texto do protocolo estão marcados **[NOVO]** e listados na seção 9 para decisão.
+Implementa o protocolo v4 (`docs/proposta_e62_e5_fase2.md`, seção 2) com a série harmonizada (com RPPS, sem intraorçamentárias de 2023 em diante). **Nenhum modelo foi rodado.** Este arquivo é commitado antes do código e dos resultados; o registro da execução (`experiments/registro.csv`, status `e5_v4`) grava o hash deste commit. Mudança depois do resultado entra como tal, com data. Aprovada em 04/11 (17:41), com a correção da amostra S (seção 9). Pontos que vão além do texto do protocolo estão marcados **[NOVO]** e listados na seção 9 para decisão.
 
 ## 1. Alvos e amostras
 - **Alvos de aceitação:** receita total e despesa total (harmonizadas), cada uma em três faixas (b1–b2, b3–b4, b5): 6 células. Primário = receita − despesa, por diferença (sem modelo próprio). **[NOVO]** As categorias (ICMS, IPVA, FPE, pessoal, custeio, investimento, demais) são **diagnóstico**: recebem os mesmos candidatos e métricas, sem aceitação própria; a previsão oficial de cada alvo vem do modelo aceito para o total, aplicado ao total diretamente (não à soma das categorias). Motivo: 6 células já têm poder baixo (E5.0); 6 × 7 categorias multiplicam comparações sem ganho de decisão.
 - Variável modelada: log da razão r = restante/acumulado no corte, só para séries positivas. Séries de sinal misto (dedução do FUNDEB, linhas RPPS, "intra não alocada") entram em nível, só no B0' (SRW em R$), sem candidatos.
-- **Receita:** 2015+, 27 UFs, incluindo UF-bimestres `conceito_original` com marca. Alvos 2018–2025 (8 anos; 5 sem 2020–22), 214 UF-anos (133 sem 2020–22) no total (E5.0, `docs/relatorio_e5_0.md`, seção 1). Robustez: sem os UF-bimestres `conceito_original`.
-- **Despesa:** 2018+ (D1): alvos 2021–2025 (5 anos; 3 sem 2020–22), 134 UF-anos (81). A reconstrução 2015–17 só entra se a etapa 2 (Anexo 7, depois da carga histórica) passar; nesse caso a despesa 2015+ é rodada como **adendo versionado**, sem alterar os resultados desta especificação.
+- **Receita:** 2015+, 27 UFs, incluindo UF-bimestres `conceito_original` com marca. Alvos 2018–2025 (8 anos), 214 UF-anos no total; as contagens sem 2020–22 (5 anos, 133 UF-anos) são do E5.0 (`docs/relatorio_e5_0.md`, seção 1); as da amostra S (seção abaixo) saem do CSV na execução. Robustez: sem os UF-bimestres `conceito_original`.
+- **Despesa:** 2018+ (D1): alvos 2021–2025 (5 anos), 134 UF-anos (sem 2020–22: 3 anos, 81 UF-anos, E5.0). A reconstrução 2015–17 só entra se a etapa 2 (Anexo 7, depois da carga histórica) passar; nesse caso a despesa 2015+ é rodada como **adendo versionado**, sem alterar os resultados desta especificação.
 - Treino: janela expansiva, mínimo de 3 UF-anos válidos anteriores e o ano anterior válido. Em cada corte só entram dados com `available_at` ≤ data do corte (regra do contrato; testes de vazamento existentes). Comparação sempre nas **mesmas células UF-ano-corte** para todos os candidatos e o B0 (interseção).
-- **Amostras de avaliação:** (A) completa; (S) sem 2020–22 no treino e no teste. Variantes de robustez: sem o RJ; sem UF-bimestres `conceito_original` (receita); sem RS.
+- **Amostras de avaliação:** (A) completa; (S) **sem 2020–21 no treino e no teste, com 2022 dentro e marcado** (LC 194 via `d_resto`/`d_base`). Sensibilidade adicional, sem peso na aceitação: sem 2020–22. Variantes de robustez: sem o RJ; sem UF-bimestres `conceito_original` (receita); sem RS.
 
 ## 2. Candidatos (lista fechada)
 Estimados por faixa, com efeito fixo de corte dentro da faixa. Preditores comuns a M1–M4 (**pré-registrados**):
@@ -45,8 +45,8 @@ Um candidato é **aceito** na faixa se, na amostra A, **todas** valem:
 1. RMSE ≥ 10% menor que o do B0, e menor em **cada** corte da faixa;
 2. melhor que o B0 (erro absoluto menor) em mais de 50% dos pares UF-ano e em mais de 50% dos anos;
 3. acerto de sinal não pior; 4. viés: |ME| ≤ |ME(B0)| + 0,1 × RMSE(B0);
-5. **[NOVO]** bootstrap por blocos de ano (2.000 reamostras, semente 20261104): fração com RMSE do candidato < RMSE do B0 ≥ 0,80;
-6. **[NOVO]** na amostra S, RMSE não maior que o do B0 (não se exige −10%).
+5. **[NOVO, aprovado]** bootstrap por blocos de ano (2.000 reamostras, semente 20261104): fração com RMSE do candidato < RMSE do B0 ≥ 0,80;
+6. **[NOVO, aprovado]** na amostra S, RMSE não maior que o do B0 (não se exige −10%).
 Falhou em 6 → "ressalva" e vai para a sombra. Poder fraco (E5.0: 0,15–0,49 com T = 8): os testes formais (teste S do painel, `pEPA`; C com clusters por região; MCS sobre a perda média por ano) são **informação**; nenhum p-valor decide. Contagem de comparações reportada (6 células × candidatos), sem correção.
 
 **Previsão oficial por alvo × faixa:** M5 se ele próprio passa nos critérios e há ao menos 2 aceitos; senão o aceito de menor RMSE; senão **o B0**. Antes de qualquer decisão, nada de M1–M5 vai para o informe.
@@ -67,9 +67,10 @@ Promoção da sombra a oficial só por nova versão do protocolo, com sua aprova
 ## 8. Execução e reprodutibilidade
 Código em `R/models/` e `scripts/e5_*.R`, semente fixa, saídas em `outputs/e5_*.csv`, linhas em `experiments/registro.csv` com o hash do commit da especificação. Pacotes novos no `renv`: `lme4`, `rstanarm`, `BMS`, `pEPA` (todos com binário Windows no CRAN; `pEPA` já confirmado). Municípios fora. Ordem: OK a esta especificação → commit do código → execução → relatório com números só de CSVs.
 
-## 9. Pontos para decidir (onde a especificação vai além ou escolhe entre leituras do protocolo)
-1. **Parametrização do M4 (importa só para ele).** Com a resposta em log r(t) e a priori normal(0, 1), o coeficiente de x1 é puxado para 0; com a resposta em log r(t) − log r(t−1), o mesmo coeficiente (β − 1) é puxado para 0 = B0, e o encolhimento vai na direção do benchmark. Para M1–M3 as duas formas são equivalentes. Proponho a **diferença**; o texto do protocolo, lido literalmente, é o nível.
-2. Aceitação só nos totais; categorias como diagnóstico (seção 1).
-3. Critérios 5 e 6 da seção 4 (limiar 0,80 do bootstrap e a exigência na amostra S) são meus e não estão no protocolo; fixados agora para não serem escolhidos depois do resultado.
-4. O plano (28/10) falava em "sem 2020–21, mantendo 2022 com marca"; o protocolo v4 diz "sem 2020–22". Segui o protocolo, com a marca de 2022 em `d_resto`/`d_base`.
-5. Métrica de aceitação em % do total anual da UF (segue o protocolo e a saída C7) enquanto o poder do E5.0 foi calculado no log r.
+## 9. Decisões do Pedro sobre os pontos acima (04/11, 17:41)
+1. **M4 com a resposta em diferença** (log r(t) − log r(t−1)), encolhendo para o B0: aprovado. M1–M3 são equivalentes nas duas formas.
+2. **Aceitação só nos totais; categorias como diagnóstico:** aprovado. No informe, o "destaque para [categoria]" (bloco 5 do texto) vem das contribuições **realizadas** no acumulado do ano (P2 realizado), não de projeções de categoria sem aceitação (registrado no gabarito, `docs/proposta_e62_e5_fase2.md`).
+3. **Critérios 5 e 6 da seção 4** (bootstrap ≥ 0,80; RMSE não maior que o do B0 na amostra S): aprovados como estão.
+4. **Correção da v4 (04/11, 17:41):** a amostra de robustez S é "sem 2020–21, com 2022 dentro e marcado", conforme a decisão de 28/10; o texto da v4 ("sem 2020–22") divergiu dessa decisão. "Sem 2020–22" fica só como sensibilidade adicional. As contagens do E5.0 para "sem 2020–22" continuam válidas apenas para essa sensibilidade; as da amostra S serão recalculadas na execução.
+5. **Métrica em % do total anual da UF:** aprovada (o poder do E5.0 foi calculado em log r).
+6. **Ordem:** PR do `renv` (`lme4`, `rstanarm`, `BMS`, `pEPA`) e teste de instalação no Windows da CNI antes do código do E5.
