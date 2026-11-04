@@ -133,6 +133,8 @@ Comparação: teste S do painel (Akgun et al., 2024) como principal; estatístic
 - **Dupla contagem na série com RPPS:** o teste de nível (a série com RPPS cresce muito menos que a sem RPPS; a parcela RPPS cai no valor aproximado em que o resto sobe) não mostra dupla contagem; mostra absorção. Não é auditoria de lançamentos.
 
 ## 3. Antes de 2015: CONFAZ (D)
+
+**Atualização de 04/11/2026 (16:29, depois do congelamento; motivo: resultado da conferência do download).** O Pedro baixou três extrações (fev, jun e set/2026), guardadas sem alteração em `FISCAL_DADOS/data/raw/confaz/`. Conferência inicial: (i) o arquivo 1997–2023 tem cabeçalhos deslocados uma coluna; (ii) a extração de set/2026 veio sem a coluna de total do ICMS (o total sai pela soma das seções); (iii) os dados só são estáveis até cerca de 4 meses antes de cada extração, com revisões de 6% a 20% nos meses recentes. **Decisão: o CONFAZ não entra no E5 agora.** Fica na lista da Fase 2 (gate E7.1) como "ICMS histórico CONFAZ 1997+ para sazonalidade", a ativar só se o E5 mostrar o ICMS como ponto fraco, com as três ressalvas acima. Os critérios (a) a (d) abaixo ficam como registro do plano de verificação, não a executar agora; os arquivos não foram conferidos por mim.
 Só o CONFAZ entra. RREO pré-2015, PAF e RCL 2000–2014 do Tesouro não serão usados.
 - O boletim cobre ICMS, IPVA, ITCMD e taxas, e a consulta vai de 1998 em diante. Para o E5 isso é compatível com a razão: **a razão restante/acumulado do ICMS mensal por UF não depende da diferença de conceito**, o que deixa a série longa (1998+) utilizável para ICMS e IPVA, mas não para as outras categorias nem para a despesa.
 - **Verificação de meio dia, com o download pelo Pedro no PC da CNI.** O que trazer: os arquivos de dados abertos como baixados, com a data do download no nome e sem sobrescrever (em `FISCAL_DADOS\data\raw\confaz\`), baixados duas vezes em dias distintos para o teste de hash. Critérios fixados antes: (a) mesmo conteúdo nas duas baixas; (b) razão CONFAZ / ICMS bruto do Anexo 3 por UF-ano, 2015–2025; (c) usar o **nível** se a razão ficar entre 0,95 e 1,05 em ≥ 90% dos UF-anos, senão só a **variação** ou a **razão intra-ano**; (d) documentar conceito, início da série, defasagem (`available_at` = dia 9 do mês m+2, prazo legal) e ausência de vintages.
@@ -153,6 +155,7 @@ Opcional, depois dos municípios e só se sobrar tempo. Versão mínima: resulta
 6. Intervalos por quantis empíricos ou conformal.
 7. Painel com aprendizado de máquina.
 8. FPE/FPM pela regra para t+1.
+9. ICMS histórico CONFAZ 1997+ para sazonalidade (incluído em 04/11/2026; só se o E5 mostrar o ICMS como ponto fraco; ressalvas na seção 3).
 
 ## 7. Pendência da rodada (aprovada)
 - Etapa **opcional** = só alimenta sensibilidade ou nota, nunca um número publicado. Hoje: RGF. DCA e Anexo 3 continuam obrigatórios.
