@@ -113,7 +113,7 @@ Mudança de qualquer parâmetro depois de ver o resultado entra no STATUS como "
 2. **Sem sinal de dupla contagem** na série com RPPS: se a complementação do Tesouro fosse contada como pessoal e o benefício pago com fonte RPPS também, a série com RPPS subiria quase tanto quanto a série sem RPPS, e não sobe (tabela acima). É um teste de nível por UF, não uma auditoria de lançamentos.
 3. **Datas:** RJ 2025 b1, RS 2025 b5 e PR 2025 b6 estavam certas **para a série sem RPPS** e agora saem de uma regra. Leitura, não testada: no PR (2025 b6) e no RS (2025 b5) o salto fica concentrado num bimestre (acima de 100%), o que sugere ajuste retroativo dentro do ano, em que a mudança de fonte entra no acumulado e o fluxo do bimestre absorve o que veio antes.
 4. **Por que os arquivos de 30/10 não reproduziam:** os valores de `outputs/quebras_pessoal_rgf.csv` do diretório de trabalho (30/10) coincidem com a série com RPPS (RS 2025 b5: variação de 8%; PR 2025 b6: 4%), enquanto a nota media a série sem RPPS; é a explicação mais simples, mas não verifiquei a data de geração contra a versão do dicionário. As datas da nota estavam certas para a série sem RPPS; a nota estava incompleta ao não dizer que valem só para ela, e as magnitudes antigas (30–41% da despesa) saíram de um cálculo que não reproduzi.
-5. **Novos achados:** (i) **RS 2023** na série com RPPS: as contas "com fontes RPPS" entram no pessoal e há degrau; (ii) **PI 2024 b3–b4** aparece nas duas versões (RREO +34% a +39% contra RGF +10%), fora de RJ/PR/RS e sem relação com RPPS: fica como alerta novo, sem análise; (iii) a origem normativa da troca de fonte em 2025 **não está confirmada**.
+5. **Novos achados:** (i) **RS 2023** na série com RPPS: as contas "com fontes RPPS" entram no pessoal e há degrau; (ii) **PI 2024 b3–b4** aparece nas duas versões (RREO +34% a +39% contra RGF +10%), fora de RJ/PR/RS e sem relação com RPPS: analisado em 6.4 (efeito de base, não quebra); (iii) a origem normativa da troca de fonte em 2025 **não está confirmada**.
 
 ### 6.3 O que muda nas dummies do E5
 
@@ -124,4 +124,24 @@ Mudança de qualquer parâmetro depois de ver o resultado entra no STATUS como "
 | Sem RPPS (referência da LDO) | degrau RJ/PR/RS de 2025 em diante | **mantém**, com as datas acima |
 | Harmonização pela proporção do RGF | sensibilidade | sensibilidade, só para a série sem RPPS |
 
-`INICIO_RECLASSIFICACAO` (usada por `marcar_conhecidas()` nos alertas) continua com as datas da série sem RPPS e marca como "conhecida" alertas de pessoal da série com RPPS que não têm essa quebra; na rodada de 03/11 isso atingiu 3 alertas. **Correção proposta, sem código até aprovação:** restringir o rótulo à série sem RPPS.
+`INICIO_RECLASSIFICACAO` (usada por `marcar_conhecidas()` nos alertas) tem as datas da série sem RPPS e marcava como "conhecida" alertas de pessoal da série com RPPS que não têm essa quebra (3 alertas na rodada de 03/11). **Corrigido (decisão de 04/11, PR #56):** o rótulo só vale com `serie_rpps = "sem"`; o padrão é a série oficial (com RPPS), em que o alerta segue "nova".
+
+**Decisões de 04/11 sobre o E5:** o degrau RJ/PR/RS 2025+ sai da série com RPPS em pessoal; entram o degrau de RS em 2023 e a dummy de composição de RS em 2024 (IPE-Saúde). A retirada fica **condicionada** ao teste do E5.0 de despesa total e primário com RPPS dessas UFs em 2025.
+
+### 6.4 PI 2024 b3–b4: efeito de base, não quebra (análise de 04/11/2026)
+
+O alerta novo (série sem RPPS: RREO +40% e +37% contra RGF +12% e +7% nos bimestres 3 e 4 de 2024; série com RPPS: +34% de média) vem da regra fixada em 6.0, que exige 2 bimestres seguidos e não distingue UF volátil. Dados de `outputs/reclass_rpps_diferenca.csv` e `reclass_yoy_{sem,com}.csv` (pessoal do RREO, R$ milhões, fluxo do bimestre, série sem RPPS):
+
+| Ano | b1 | b2 | b3 | b4 | b5 | b6 | Total |
+|---|---|---|---|---|---|---|---|
+| 2022 | 535 | 1.153 | 1.311 | 1.201 | 1.120 | 1.699 | 7.019 |
+| 2023 | 957 | 1.214 | 939 | 981 | 1.386 | 1.749 | 7.228 |
+| 2024 | 1.186 | 1.446 | 1.317 | 1.345 | 1.088 | 1.876 | 8.259 |
+| 2025 | 974 | 1.606 | 1.311 | 1.177 | 1.310 | 2.244 | 8.622 |
+
+1. **Nível, não salto:** os bimestres 3 e 4 de 2024 (1.317 e 1.345) ficam na faixa dos vizinhos do mesmo ano (1.088 a 1.446) e em 2025 voltam a 1.311 e 1.177 (variação de -0,5% e -12,5%). Não há mudança persistente de nível.
+2. **O que dispara a regra é a base:** os bimestres 3 e 4 de 2023 (939 e 981) são baixos (variação de -28% e -18% contra 2022), e a comparação de 2024 contra eles sai de +40% e +37%. O total anual de 2024 sobe 14,3% contra 2023 (e 3,0% em 2023 contra 2022).
+3. **Sem relação com RPPS:** a parcela das fontes RPPS no pessoal do PI oscila entre 19% e 32% sem tendência (22% e 24% nos bimestres 3 e 4 de 2024).
+4. **Limites:** não localizei a causa do vale de 2023 b3–b4 (não li as notas explicativas do RREO do PI); a conclusão é de padrão nos dados, não de causa.
+
+**Tratamento:** sem dummy e sem exclusão no E5. O alerta é rotulado como ruído de base de UF volátil (a regra de persistência de 2 bimestres não o filtra); a rotulagem automática não é implementada, e o alerta continua "nova" para revisão até haver decisão.
