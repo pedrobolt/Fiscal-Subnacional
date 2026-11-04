@@ -13,6 +13,17 @@ faixas_carga <- function() {
   )
 }
 
+# Idade máxima do extrato local (dias) antes de reconsultar o Siconfi: 7 para o exercício corrente (t) e o anterior (t-1), onde as
+# retificações são frequentes; 90 para os anteriores. Retificações de anos antigos ficam com a revisão trimestral completa (plano).
+EXTRATO_IDADE_RECENTE <- 7
+EXTRATO_IDADE_ANTIGO <- 90
+
+#' Idade máxima do extrato para um exercício: `recente` para t e t-1 (t = ano de `hoje`), `antigo` para os anteriores. Vetorizada em `ano`.
+idade_max_extrato <- function(ano, hoje = Sys.Date(), recente = EXTRATO_IDADE_RECENTE, antigo = EXTRATO_IDADE_ANTIGO) {
+  t <- as.integer(format(hoje, "%Y"))
+  ifelse(ano >= t - 1L, recente, antigo)
+}
+
 #' Ids da esfera a partir do cadastro de entes. Municípios excluem o DF (5300108), tratado como estado.
 ids_da_esfera <- function(entes, esfera) {
   if (esfera == "E") return(listar_estados(entes)$cod_ibge)
@@ -24,7 +35,8 @@ trava_ocupada <- function(lockfile, tolerancia_s = 120) {
   file.exists(lockfile) && as.numeric(difftime(Sys.time(), file.mtime(lockfile), units = "secs")) < tolerancia_s
 }
 
-executar_carga <- function(fatia, de = 2, pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date()) {
+executar_carga <- function(fatia, de = 2, pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date(),
+                           idade_recente = EXTRATO_IDADE_RECENTE, idade_antigo = EXTRATO_IDADE_ANTIGO) {
   if (de != 2) stop("A carga usa exatamente 2 processos (2 conexões); não aumentar sem autorização do Pedro.", call. = FALSE)
   lock <- file.path(pasta, sprintf("_carga_fatia%d.lock", fatia))
   if (trava_ocupada(lock)) stop("A fatia ", fatia, " parece já estar em execução (", lock, " atualizado há menos de 2 min).", call. = FALSE)
@@ -34,7 +46,8 @@ executar_carga <- function(fatia, de = 2, pasta = dados("data/raw/rreo"), faixas
   for (f in faixas) {
     ids <- ids_da_esfera(entes, f$esfera)
     for (ano in f$anos) {
-      r <- atualizar_rreo(ids, ano, f$periodos, f$esfera, pasta, fatia, de, tag = paste0("_carga", fatia), hoje = hoje, ao_avancar = batimento)
+      r <- atualizar_rreo(ids, ano, f$periodos, f$esfera, pasta, fatia, de, idade_max_extrato_dias = idade_max_extrato(ano, hoje, idade_recente, idade_antigo),
+                        tag = paste0("_carga", fatia), hoje = hoje, ao_avancar = batimento)
       cat(format(Sys.time(), "%Y-%m-%d %H:%M:%S"), f$nome, "ano", ano, "fatia", fatia, "| novos:", r$jobs[1],
           "retificados:", r$jobs[2], "vazios com entrega:", r$jobs[3], "| falhas:", attr(r, "falhas"), "\n")
     }
@@ -44,24 +57,27 @@ executar_carga <- function(fatia, de = 2, pasta = dados("data/raw/rreo"), faixas
 
 #' Progresso: por faixa, ente x ano com extrato baixado, jobs pendentes (com os extratos locais) e
 #' estimativa de chamadas restantes e do tempo, a partir do ritmo observado na última hora nos logs de carga.
-progresso_carga <- function(pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date()) {
+progresso_carga <- function(pasta = dados("data/raw/rreo"), faixas = faixas_carga(), hoje = Sys.Date(),
+                            idade_recente = EXTRATO_IDADE_RECENTE, idade_antigo = EXTRATO_IDADE_ANTIGO) {
+  agora <- as.POSIXct(format(hoje, "%Y-%m-%d 23:59:59"), tz = "UTC")
   entes <- ler_entes(baixar_entes(pasta, hoje))
   linhas <- list()
   for (f in faixas) {
     ids <- ids_da_esfera(entes, f$esfera)
     for (ano in f$anos) {
-      tem <- 0; pend <- 0
+      tem <- 0; pend <- 0; venc <- 0; lim <- idade_max_extrato(ano, hoje, idade_recente, idade_antigo)
       for (id in ids) {
         v <- extrato_vigente(pasta, id, ano)
         if (nrow(v) == 0) next
         tem <- tem + 1
+        if (as.numeric(difftime(agora, v$baixado_em, units = "days")) > lim) venc <- venc + 1   # a próxima execução reconsulta este extrato
         e <- ler_extrato(v$arquivo)
         e <- e[e$periodo %in% f$periodos & vapply(e$periodo, function(b) bimestre_disponivel(ano, b, hoje), logical(1)), ]
         pend <- pend + nrow(planejar_jobs(e, pasta, f$esfera, periodos = f$periodos))
       }
       nper <- sum(vapply(f$periodos, function(b) bimestre_disponivel(ano, b, hoje), logical(1)))
       linhas[[length(linhas) + 1]] <- data.frame(faixa = f$nome, ano = ano, entes = length(ids), com_extrato = tem,
-                                                 jobs_pendentes = pend, jobs_por_ente_ano_sem_extrato = 1 + 2 * nper)
+                                                 jobs_pendentes = pend, extratos_vencidos = venc, jobs_por_ente_ano_sem_extrato = 1 + 2 * nper)
     }
   }
   p <- do.call(rbind, linhas)
@@ -70,6 +86,9 @@ progresso_carga <- function(pasta = dados("data/raw/rreo"), faixas = faixas_carg
   taxa <- if (length(mom)) sum(mom > Sys.time() - 3600) / 3600 else NA_real_
   # Ente x ano sem extrato ainda custa 1 chamada de extrato + 2 anexos x bimestres da faixa
   p$chamadas_restantes <- p$jobs_pendentes + (p$entes - p$com_extrato) * p$jobs_por_ente_ano_sem_extrato
+  # Consultas de extrato da próxima execução: extratos existentes vencidos (idade acima do limite do ano) + entes x ano sem extrato
+  attr(p, "extratos") <- list(vencidos = sum(p$extratos_vencidos), sem_extrato = sum(p$entes - p$com_extrato),
+                              total = sum(p$extratos_vencidos) + sum(p$entes - p$com_extrato))
   attr(p, "resumo") <- list(chamadas_restantes = sum(p$chamadas_restantes), chamadas_por_s_ultima_hora = taxa,
                             horas_restantes = if (is.finite(taxa) && taxa > 0) sum(p$chamadas_restantes) / taxa / 3600 else NA_real_)
   p

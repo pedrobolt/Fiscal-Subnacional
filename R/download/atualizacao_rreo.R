@@ -40,6 +40,7 @@ extrato_atualizado <- function(pasta, id_ente, ano, idade_max_dias = 7, agora = 
 }
 
 #' Atualiza o RREO de `ids` (esfera "E" ou "M") nos `anos` e `periodos` dados, nessa ordem de anos.
+#' `idade_max_extrato_dias`: número, ou função do ano (ex.: `function(a) idade_max_extrato(a)`), para idades diferentes por exercício.
 #' Retorna data.frame com a contagem de jobs por motivo. `fatia`/`de` repartem os entes entre processos.
 atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = dados("data/raw/rreo"), fatia = 1, de = 1,
                            idade_max_extrato_dias = 7, tag = "", hoje = Sys.Date(), ao_avancar = NULL) {
@@ -48,10 +49,11 @@ atualizar_rreo <- function(ids, anos, periodos = 1:6, esfera = "M", pasta = dado
   contagem <- character(0)
   falhas <- 0
   for (ano in anos) for (id in ids) {
+    idade_ano <- if (is.function(idade_max_extrato_dias)) idade_max_extrato_dias(ano) else idade_max_extrato_dias
     if (!is.null(ao_avancar)) ao_avancar(id, ano)
     # Uma falha de rede num ente x ano não derruba a rodada: fica registrada e a próxima rodada tenta de novo.
     res <- tryCatch({
-      ext <- ler_extrato(extrato_atualizado(pasta, id, ano, idade_max_extrato_dias, log = sprintf("_log_extrato%s.csv", tag)))
+      ext <- ler_extrato(extrato_atualizado(pasta, id, ano, idade_ano, log = sprintf("_log_extrato%s.csv", tag)))
       ext <- ext[ext$periodo %in% periodos & vapply(ext$periodo, function(b) bimestre_disponivel(ano, b, hoje), logical(1)), ]
       jobs <- planejar_jobs(ext, pasta, esfera, periodos = periodos)
       for (j in seq_len(nrow(jobs))) {
