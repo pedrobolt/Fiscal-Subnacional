@@ -5,7 +5,7 @@
 #   --sem-download  pula Siconfi, BCB e IBGE (usa o que está em data/raw); a rodada sai DEGRADADA.
 #   --rapida        pula conceito único e alertas (usa as saídas de outputs/ já calculadas); a rodada sai DEGRADADA.
 # Dados sob a raiz FISCAL_DADOS (padrão: a pasta do repositório); ver docs/HANDOVER.md, 3h.
-# Saída: outputs/rodada/<data>/ (resumo.md, p1.csv, p2_categorias.csv, p2_resultado.csv, gap.csv, alertas_*.csv, etapas.csv, carimbo.txt) e o
+# Saída: outputs/rodada/<data>/ (resumo.md, informe.xlsx, informe_texto.md, p1.csv, p2_categorias.csv, p2_resultado.csv, gap.csv, alertas_*.csv, etapas.csv, carimbo.txt) e o
 # arquivo de previsões emitidas outputs/arquivo/previsoes_emitidas.csv (uma linha por rodada x modelo x esfera x ano-alvo).
 # Código de saída: 0 = OK; 2 = DEGRADADA (alguma etapa falhou ou foi pulada); 1 = erro fatal. Rodar no Windows da CNI: ver docs/HANDOVER.md.
 # A rodada é sequencial: no máximo 1 conexão por vez ao Siconfi (limite combinado: 2).
@@ -199,6 +199,30 @@ et_aba <- function(ctx) {
                       lista_revisao = n("revisao")[["lista"]], contagem_revisao = n("revisao")[["contagem"]], ultimo = ult)
 }
 
+# ---- 8. Informe (E6.2): planilha e texto, so de outputs da rodada e do arquivo de previsoes ---------------------------------------------------------
+et_informe <- function(ctx) {
+  if (is.null(ctx$p1)) stop("informe exige o P1 (etapa p1)", call. = FALSE)
+  ano <- ctx$corte$ano_alvo; p1 <- ctx$p1; k <- match(p1$esfera, c("regional", "estaduais", "municipais"))
+  p1$faixa_intervalo_inf <- c(ctx$iv$inf, NA, NA)[k]; p1$faixa_intervalo_sup <- c(ctx$iv$sup, NA, NA)[k]
+  lido <- function(n) tryCatch(ler_csv(file.path(pasta, n)), error = function(e) NULL)
+  ind <- tryCatch(e5_ipca_bim(ler_sgs(ultimo("bcb_sgs", "433"))), error = function(e) NULL)
+  fh_tot <- if (!is.null(ctx$p2_ins)) e5_com_totais(ctx$p2_ins$fh) else NULL
+  base_ant <- NULL
+  if (!is.null(fh_tot) && !is.null(ctx$p2_proj)) {
+    b <- ctx$p2_proj$corte; x <- fh_tot[fh_tot$exercicio == ano - 1L & fh_tot$serie %in% c("rec:total", "desp:total"), ]
+    A <- aggregate(valor ~ cod_ibge + serie, x[x$periodo <= b, ], sum); T <- aggregate(valor ~ cod_ibge + serie, x, sum)
+    base_ant <- merge(setNames(A, c("cod_ibge", "serie", "A")), setNames(T, c("cod_ibge", "serie", "T")))
+  }
+  arq <- if (file.exists(cam$arquivo)) ler_csv(cam$arquivo, colClasses = c(data_rodada = "character", vintage_bcb = "character", ultimo_dado = "character", commit = "character")) else NULL
+  rm <- tryCatch(ler_csv(file.path("data", "protocolo", "e5_rmse_agregado.csv"), colClasses = c(membros = "character")), error = function(e) NULL); if (!is.null(rm)) rm$membros[is.na(rm$membros)] <- ""
+  rel <- tryCatch(ler_csv(file.path("data", "protocolo", "p1_rmse_relativo.csv")), error = function(e) NULL)
+  stn <- tryCatch(carregar_stn(), error = function(e) NULL)
+  I <- list(p1_rel = rel, stn = stn, dia = dia, oficial = oficial, status = ctx$status_prelim, commit = commit, corte = ctx$corte, bim_ref = ctx$alertas$ultimo, prem = ctx$prem, p1 = p1, iv = ctx$iv, txt_cob = ctx$txt_cob, pib = ctx$pib, series = ctx$series,
+            gap = ctx$gap[, c("exercicio", "periodo", "p2", "p1", "g", "r", "classe_informe", "classe_sem_2020_22")], p2_tot = ctx$p2_tot, p2_cat = if (!is.null(lido("p2_categorias.csv"))) informe_p2(lido("p2_categorias.csv"), ind, ano) else NULL,
+            alertas_lista = lido("alertas_aba_lista.csv"), alertas_contagem = lido("alertas_aba_contagem.csv"), proj = ctx$p2_proj, rmse = rm, arquivo = arq, fh_tot = fh_tot, base_ant = base_ant)
+  escrever_informe(I, file.path(pasta, "informe.xlsx"), file.path(pasta, "informe_texto.md"))
+}
+
 # ---- Execução ----------------------------------------------------------------------------------------------------------------------
 pula <- function(nome, motivo) etapa_pulada(nome, motivo)
 etapas <- rbind(
@@ -217,6 +241,7 @@ etapas <- rbind(etapas,
   rodar_etapa("aba_alertas", et_aba, ctx))
 ctx$status_prelim <- status_rodada(etapas, ctx$avisos)$status      # o arquivo guarda o status das etapas anteriores a ele
 etapas <- rbind(etapas, rodar_etapa("arquivo", et_arquivo, ctx))
+etapas <- rbind(etapas, rodar_etapa("informe", et_informe, ctx))
 st <- status_rodada(etapas, ctx$avisos)
 gravar_csv(etapas[, c("etapa", "estado", "msg")], file.path(pasta, "etapas.csv"))
 writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
