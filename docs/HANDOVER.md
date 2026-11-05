@@ -119,6 +119,33 @@ Cada tarefa do `docs/plano.md` é feita numa branch própria e entra em `main` p
 ## 7b. Decisões tomadas e por quê
 Ver `docs/STATUS.md` (seção Decisões). Mudanças de conceito exigem aprovação de quem responde pelo projeto.
 
+## Revisão anual do modelo
+
+Procedimento de manutenção (decisão de Pedro, 05/11/2026). Vale para o P1 (regional) e o P2 (estados, E5).
+
+**Princípios**
+1. **Mensal.** Os modelos são reestimados automaticamente a cada rodada (janela expansiva). A estrutura é fixa: preditores, dummies e modelo adotado por célula não mudam entre revisões. As previsões oficiais e as sombras ficam arquivadas (`outputs/arquivo/previsoes_emitidas.csv`; oficial = TRUE só para o modelo adotado).
+2. **Anual**, depois do 6º bimestre e da DCA do ano (~março): backtest refeito com o ano novo, pelas mesmas regras congeladas do P1 (`docs/contrato.md`) e do E5 (`docs/e5_especificacao.md`, protocolo v4); comparação prospectiva oficial × sombras; troca de modelo por célula (série × faixa) só com evidência, registrada como **nova versão do protocolo, com data**; no máximo um item da Fase 2 por revisão (gate do E7.1).
+3. **Quebras e mudanças de conceito** não esperam a revisão anual: quando os alertas as detectam, entram como mudança declarada na nota de quebras (`docs/nota_quebras.md`) e no contrato, com data, e valem a partir dali.
+4. **Não trocar modelo por erros de poucos meses.** Erro de uma ou duas rodadas, ou de um único ano, não é evidência; ganho concentrado em um ano (como 2020 ou 2022 no E5) não basta.
+
+**Checklist da revisão anual**
+
+| # | O que fazer | Onde registrar |
+|---|---|---|
+| 1 | Confirmar que o 6º bimestre e a DCA do ano estão na base (carga, dicionário, harmonização intra/RPPS) e que não há alertas abertos de quebra | `outputs/alertas_rodada.csv`; `docs/nota_quebras.md` |
+| 2 | Congelar o ano-alvo novo e os critérios **antes** de computar (commit próprio); qualquer mudança depois do resultado é registrada como pós-resultado, com data | `docs/contrato.md`; `docs/e5_especificacao.md` |
+| 3 | Refazer o torneio do P1 com o ano novo (`scripts/torneio_e4.R`, sensibilidade 2020–21 em `scripts/torneio_sens_2020_21.R`) | `experiments/registro.csv`; `docs/nota_p1.md` |
+| 4 | Refazer o backtest do E5 (`scripts/e5_dados.R`, `e5_rodar.R`, `e5_relatorio.R`) com o mesmo protocolo: critérios 1–6, amostras A e S, aceitação só nos totais | `docs/relatorio_e5.md`; `experiments/registro.csv` |
+| 5 | Repetir as checagens de robustez: B0' em R$, sem `conceito_original`, sem RJ, sem RS, erro por ano (`scripts/e5_adendo.R`) | `docs/relatorio_e5_adendo.md` |
+| 6 | Comparar **prospectivamente** o modelo oficial e as sombras nas previsões emitidas no ano (erro realizado × `previsoes_emitidas.csv`), por célula e por corte | tabela no relatório da revisão |
+| 7 | Decidir célula a célula: manter o adotado, salvo evidência que satisfaça os critérios congelados e não dependa de um ano só; se trocar, atualizar a tabela de adoção (`data/protocolo/e5_adocao.csv`) com `desde` e `motivo` | `data/protocolo/e5_adocao.csv`; `docs/contrato.md` (versão e data do protocolo) |
+| 8 | Se houver troca de método entre faixas, medir e reportar o salto (`p2_projecao_salto.csv`) | resumo da rodada; informe |
+| 9 | Escolher no máximo um item da Fase 2 pelo gate (tabela de erro) e justificar | `docs/plano.md` (E7.1); `docs/STATUS.md` |
+| 10 | Rodar a suíte completa (Windows) e uma rodada de teste (sem `--oficial`) antes da primeira rodada oficial com o protocolo novo | PR da revisão; `docs/STATUS.md` |
+
+Sempre em PR próprio por mudança (uma tarefa por branch), com os números dos documentos vindos de CSVs.
+
 ## 8. Problemas conhecidos e como tratar
 - RJ, PR e RS: reclassificação de pessoal no RREO (RJ desde 2025 b1, PR 2025 b6, RS 2025 b5; persiste em 2026). Tratamento: ver `docs/nota_quebras.md` (degrau na despesa total e no primário; pessoal harmonizado por linha de excedente; harmonização pela proporção do RGF só como sensibilidade).
 - Histórico do BCB é revisado; avaliação histórica usa a série atual. Snapshots próprios desde [data do E2.4].

@@ -69,6 +69,7 @@ Aceite: cada categoria usa o candidato vencedor no backtest, nem que seja o benc
 - E7.3 Nota metodológica
 - E7.4 Checklist e playbook da rodada mensal
 - E7.5 Completar o HANDOVER (dados, decisões, como rodar, problemas conhecidos)
+- E7.6 Revisão anual do modelo (procedimento permanente, decisão de 05/11/2026; detalhes e checklist no HANDOVER, "Revisão anual do modelo"): mensal reestima com estrutura fixa e arquiva oficial e sombras; anual (~março, após o 6º bimestre e a DCA) refaz o backtest pelas regras congeladas do P1 e do E5, compara oficial × sombras de forma prospectiva e só troca modelo por célula com evidência, como nova versão do protocolo com data, no máximo um item da Fase 2 por revisão; quebras e mudanças de conceito entram quando os alertas detectam, via nota de quebras; não se troca modelo por erros de poucos meses.
 Aceite: todo o processo está documentado no HANDOVER, na nota metodológica e no playbook.
 
 ## Fase 2 (posterior; cada item só entra pelo gate)
