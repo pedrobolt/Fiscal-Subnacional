@@ -32,6 +32,7 @@ ultimo <- function(prefixo, cod) { f <- sort(list.files(dados("data/raw"), sprin
 et_bcb <- function(ctx) {
   erros <- character(0)
   if (!sem_download) for (cod in SGS_PRIMARIO) tryCatch(baixar_sgs(cod, SGS_INICIO_DOWNLOAD, hoje, hoje = hoje), error = function(e) erros <<- c(erros, sprintf("SGS %d: %s", cod, conditionMessage(e))))
+  if (!sem_download) tryCatch(baixar_sgs(433, as.Date("2014-01-01"), hoje, hoje = hoje), error = function(e) ctx$avisos <- c(ctx$avisos, paste("SGS 433 (IPCA, deflator do P2 projetado): download falhou, usa o arquivo local:", conditionMessage(e))))
   arqs <- vapply(unname(SGS_PRIMARIO), function(c) ultimo("bcb_sgs", c), ""); names(arqs) <- c("regional", "estaduais", "municipais")
   if (anyNA(arqs)) stop("sem arquivo local do SGS: ", paste(names(arqs)[is.na(arqs)], collapse = ", "), call. = FALSE)
   ctx$series <- lapply(arqs, function(a) { s <- ler_sgs(a); primario_bi(s[s$data >= SGS_INICIO_ANALISE, ]) })
@@ -47,6 +48,7 @@ et_pib <- function(ctx) {
     ctx$avisos <- c(ctx$avisos, paste("IBGE/SIDRA indisponível, PIB do último arquivo local:", conditionMessage(e))); c(anual = ultimo("ibge_pib", "6784"), trimestral = ultimo("ibge_pib", "1846")) })
   pib <- pib_ibge_anual(arq[["anual"]], arq[["trimestral"]])[, c("ano", "pib_bi")]
   prem <- tryCatch(ler_premissas(ano_t = ano), error = function(e) NULL)
+  ctx$prem <- prem
   pib <- pib[pib$ano < ano, ]
   if (!is.null(prem)) { ctx$pib_fonte <- paste("premissas.yml", prem$versao); pib <- rbind(pib, data.frame(ano = ano, pib_bi = prem$anos$pib_nominal[prem$anos$ano == ano])) }
   else { ctx$pib_fonte <- "aproximado (4 últimos trimestres do IBGE)"; ctx$avisos <- c(ctx$avisos, "premissas.yml ausente ou incompleta para o ano-alvo: faixa e m3 usam o PIB aproximado, não oficial")
@@ -109,7 +111,10 @@ et_p1 <- function(ctx) {
 # ---- 4b. Arquivo de previsões emitidas: grava com o status da rodada (a avaliação prospectiva pode filtrar por ele) -----------------
 et_arquivo <- function(ctx) {
   if (is.null(ctx$linhas_arquivo)) stop("sem previsões desta rodada para arquivar", call. = FALSE)
-  l <- ctx$linhas_arquivo; l$status_rodada <- ctx$status_prelim
+  cols <- setdiff(ARQUIVO_COLUNAS, "status_rodada"); l <- ctx$linhas_arquivo[, cols]
+  if (!is.null(ctx$linhas_p2)) l <- rbind(l, ctx$linhas_p2[, cols])
+  l$status_rodada <- ctx$status_prelim
+  l$status_rodada <- ctx$status_prelim
   arquivar_previsoes(cam$arquivo, l)
 }
 
@@ -123,6 +128,8 @@ et_p2 <- function(ctx) {
   fl <- fluxos_a6_categorias(rreo, dic, dc)
   fh <- harmonizar_fluxos(fl, ctx$intra)
   checar_identidade_intra(fh[fh$exercicio %in% c(ano - 1L, ano), ], fl[fl$exercicio %in% c(ano - 1L, ano), ], ctx$intra)   # falha a etapa se categorias + nao alocada != total
+  dic_sem <- dic; dic_sem$papel[dic_sem$anexo == "RREO-Anexo 06" & dic_sem$rpps %in% "incluido"] <- "memo_rpps"
+  ctx$p2_ins <- list(fh = fh, fl = fl, fs = fluxos_a6_categorias(rreo, dic_sem, dc), rreo = rreo, dic = dic, dc = dc)
   cat_bim <- p2_categorias_bim(fh, c(ano - 1L, ano))
   gravar_csv(cat_bim, file.path(pasta, "p2_categorias.csv"))
   gravar_csv(p2_categorias_bim(fl, c(ano - 1L, ano)), file.path(pasta, "p2_categorias_bruto.csv"))
@@ -135,6 +142,27 @@ et_p2 <- function(ctx) {
   tot <- tot[order(tot$exercicio, tot$periodo), ]
   ctx$p2_tot <- tot[!is.na(tot$p2_com) & tot$exercicio >= ano - 1L, ]
   gravar_csv(ctx$p2_tot, file.path(pasta, "p2_resultado.csv"))
+}
+
+# ---- 5b. P2 projetado (E5): modelo adotado por serie e faixa (data/protocolo/e5_adocao.csv); os demais candidatos vao ao arquivo como sombra --------------
+et_p2_proj <- function(ctx) {
+  if (is.null(ctx$p2_ins)) stop("sem os fluxos do P2 (etapa p2 falhou)", call. = FALSE)
+  ano <- ctx$corte$ano_alvo; f_ipca <- ultimo("bcb_sgs", "433")
+  if (is.na(f_ipca)) stop("sem arquivo local do SGS 433 (IPCA)", call. = FALSE)
+  sgs <- ler_sgs(f_ipca); ip <- if (!is.null(ctx$prem)) ctx$prem$anos$ipca[ctx$prem$anos$ano == ano] else NA_real_
+  if (length(ip) != 1 || is.na(ip)) { ctx$avisos <- c(ctx$avisos, "premissas.yml sem IPCA do ano-alvo: restante do ano deflacionado pelo IPCA dos ultimos 12 meses (nao oficial)"); ip <- prod(1 + utils::tail(sgs$valor, 12) / 100) - 1 }
+  adocao <- e5_ler_adocao(); i <- ctx$p2_ins
+  r <- e5_projecao_rodada(i$fh, i$fl, i$fs, i$rreo, i$dic, i$dc, sgs, ip, ano, adocao)
+  if (is.null(r)) { ctx$avisos <- c(ctx$avisos, sprintf("P2 projetado: sem bimestre utilizavel em %d (ano fechado ou UFs incompletas)", ano)); return(invisible(NULL)) }
+  ctx$p2_proj <- r; r$premissa_ipca <- ip
+  sal <- e5_salto_troca(r, adocao); ctx$p2_salto <- sal
+  gravar_csv(r$cresc, file.path(pasta, "p2_projecao.csv")); gravar_csv(e5_primario(r$cresc[!grepl("^prev_", r$cresc$modelo), ]), file.path(pasta, "p2_projecao_primario.csv"))
+  gravar_csv(r$uf[!grepl("^prev_", r$uf$modelo), ], file.path(pasta, "p2_projecao_uf.csv"))
+  if (!is.null(sal)) gravar_csv(sal, file.path(pasta, "p2_projecao_salto.csv"))
+  cc <- r$cresc[r$cresc$conceito == "consolidado" & !grepl("^prev_", r$cresc$modelo), ]
+  c1 <- ctx$corte; vint <- sub("^.*_([0-9]{8})\\.json$", "\\1", ctx$arq_sgs[["regional"]])
+  ctx$linhas_p2 <- data.frame(data_rodada = dia, modelo = paste0("p2_", sub("^[a-z]+:", "", cc$serie), "_", cc$modelo), esfera = ifelse(cc$serie == "rec:total", "estados_receita", "estados_despesa"), ano_alvo = ano, corte_m = 2L * r$corte,
+    ultimo_dado = format(c1$ultimo), vintage_bcb = vint, pib_ano_alvo_bi = ctx$pib$pib_bi[ctx$pib$ano == ano], previsao_bi = cc$That_bi, intervalo_inf_bi = NA_real_, intervalo_sup_bi = NA_real_, oficial = cc$oficial, commit = commit, stringsAsFactors = FALSE)
 }
 
 # ---- 6. Gap P1 x P2 (regra congelada em docs/contrato.md), com e sem 2020-22 --------------------------------------------------
@@ -184,6 +212,7 @@ etapas <- rbind(etapas,
   if (rapida) pula("alertas", "--rapida") else rodar_etapa("alertas", et_alertas, ctx),
   rodar_etapa("p1", et_p1, ctx),
   rodar_etapa("p2", et_p2, ctx),
+  rodar_etapa("p2_projecao", et_p2_proj, ctx),
   rodar_etapa("gap", et_gap, ctx),
   rodar_etapa("aba_alertas", et_aba, ctx))
 ctx$status_prelim <- status_rodada(etapas, ctx$avisos)$status      # o arquivo guarda o status das etapas anteriores a ele
@@ -191,7 +220,7 @@ etapas <- rbind(etapas, rodar_etapa("arquivo", et_arquivo, ctx))
 st <- status_rodada(etapas, ctx$avisos)
 gravar_csv(etapas[, c("etapa", "estado", "msg")], file.path(pasta, "etapas.csv"))
 writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
-txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4), oficial)
+txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4), oficial, ctx$p2_proj, ctx$p2_salto)
 writeLines(txt, file.path(pasta, "resumo.md"), useBytes = TRUE)
 cat(txt)
 quit(status = codigo_saida(st$status))
