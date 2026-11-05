@@ -16,7 +16,7 @@ no conceito do Banco Central (P1) e as receitas e despesas no conceito RREO/Sico
 - Responsável atual: Pedro Leite (ECON). Próximo responsável: [preencher].
 
 ## 3. Como rodar (rodada mensal)
-Pré-requisitos: R (≥ 4.3), Rtools (Windows); pacotes instalados com `renv::restore()`.
+Pré-requisitos: R 4.6.1 (versão de produção da CNI; é a versão de referência registrada no `renv.lock`), Rtools opcional (Windows); pacotes instalados com `renv::restore(exclude = c('Matrix', 'MASS', 'nlme', 'boot'))`. **Matrix, MASS, nlme e boot usam as versões que já vêm com o R** (pacotes recomendados): o `exclude` evita instalá-los do repositório, que exigiria compilação no Windows sem Rtools e pode não ter versão compatível com o R instalado. Os demais pacotes, inclusive `lme4`, `rstanarm`, `BMS` e `pEPA` (E5), instalam como binários. Testado no Windows da CNI em 04/11/2026 (restore com esse `exclude`; `lme4`, `rstanarm`, `BMS` e `pEPA` carregam; um `lmer` mínimo roda).
 No Linux, instalar antes a biblioteca de sistema `libglpk40` (exigida pelo `igraph`, dependência do `targets`).
 ```
 Rscript -e "renv::restore()"                 # só na primeira vez ou após mudança de pacotes
@@ -46,7 +46,7 @@ O bruto (`data/raw/rreo/`, ~125 MB compactado, 30 mil arquivos) não está no gi
 
 ### 3c. Carga histórica do RREO municipal (Windows, sem supervisor)
 Só depois de a E2.4 (snapshots e extrato) estar aprovada e mergeada. Faixas, na ordem: (0) estados; (1) municípios, 6º bimestre de 2025 a 2015; (2) municípios, bimestres 1–5 de 2026 a 2023. Bimestres 1–5 de 2015–2022 **não** entram (pendência condicionada ao E4). Estimativa: ~378 mil chamadas, ~3 dias de API a 1,44 chamada/s (2 conexões; o ritmo na sua rede pode variar).
-1. Preparar: clone atualizado do repositório na `main`; `Rscript -e "renv::restore()"` (no Windows, se a instalação do pacote Matrix falhar por falta de compilador, use `renv::restore(exclude = 'Matrix')`, que mantém o Matrix já incluído no R, ou instale o Rtools); restaurar o bruto já coletado (HANDOVER 3b, `scripts/restaurar_dados.R`) para não rebaixar o que já existe.
+1. Preparar: clone atualizado do repositório na `main`; `Rscript -e "renv::restore()"` (no Windows, se a instalação do pacote Matrix falhar por falta de compilador, use `renv::restore(exclude = c('Matrix', 'MASS', 'nlme', 'boot'))`, que mantém as versões já incluídas no R, ou instale o Rtools); restaurar o bruto já coletado (HANDOVER 3b, `scripts/restaurar_dados.R`) para não rebaixar o que já existe.
 2. Impedir suspensão: Configurações > Sistema > Energia > "Suspensão" = Nunca (na tomada); notebook: tampa fechada = não fazer nada. Deixar o computador na tomada.
 3. Abrir **dois** terminais (PowerShell) na raiz do repositório e rodar um comando em cada: `Rscript scripts/carga_historica.R 1` e `Rscript scripts/carga_historica.R 2`. Se o Windows não reconhecer `Rscript`, usar o caminho completo, por exemplo `& "C:\Program Files\R\R-4.3.3\bin\Rscript.exe" scripts/carga_historica.R 1`. **Nunca mais de dois** (limite de conexões); o script se recusa a rodar a mesma fatia duas vezes ao mesmo tempo (aviso "parece já estar em execução").
 4. Acompanhar: `Rscript scripts/carga_historica_progresso.R` (não usa a API): tabela por faixa e ano, chamadas restantes, ritmo da última hora e horas restantes.
