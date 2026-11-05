@@ -1,0 +1,8 @@
+serie,faixa,modelo,membros,oficial,desde,motivo
+rec:total,b1_b2,B0,,TRUE,2026-11-05,"nenhum candidato aceito nas regras fixadas (sinal)"
+rec:total,b3_b4,M5s4,M1+M2+M3,TRUE,2026-11-05,"aceito (M5 sem M4); espalhado entre os anos; robusto nas variantes (adendo ao relatorio E5)"
+rec:total,b5,B0,,TRUE,2026-11-05,"decisao pos-resultado: M5 sem M4 (M1+M3) aceito pelas regras mas fora da producao; ganho concentrado em 2020 (64%) e falha sem conceito_original"
+rec:total,b5,M5s4,M1+M3,FALSE,2026-11-05,"sombra"
+desp:total,b1_b2,B0,,TRUE,2026-11-05,"nenhum candidato aceito nas regras fixadas"
+desp:total,b3_b4,B0,,TRUE,2026-11-05,"nenhum candidato aceito nas regras fixadas"
+desp:total,b5,M3,,TRUE,2026-11-05,"aceito, com ressalva registrada: ganho concentrado em 2022 (74%) e marginal sem o RS (pares UF-ano 0,48)"

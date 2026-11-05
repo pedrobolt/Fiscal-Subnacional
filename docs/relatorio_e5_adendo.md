@@ -118,3 +118,7 @@ Candidato contra o B0' (informacao, mesmos criterios 2-5 com o B0' como base):
 
 Os entes subestimam a receita na previsao atualizada: vies de -8,4% (b1-b2), -7,1% (b3-b4) e -5,1% (b5) do total anual (`outputs/e5_entes.csv`, previsao atualizada contra a receita realizada, Anexo 6, 27 UFs, 2018-2025).
 
+
+## Decisão de adoção (05/11/2026, pós-resultado)
+
+Registrada em `docs/contrato.md` e em `data/protocolo/e5_adocao.csv`, com as três checagens acima como motivo. Receita: b1–b2 B0, b3–b4 M5 sem M4, b5 B0. Despesa: b1–b2 e b3–b4 B0, b5 M3 (ressalva: ganho concentrado em 2022, marginal sem o RS). A troca da receita entre b4 e b5 (M5 → B0) é reportada na rodada como salto de método.

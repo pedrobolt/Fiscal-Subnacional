@@ -64,18 +64,19 @@ e5_marcar_alvos <- function(painel, treino = E5_TREINO_MIN) {
 
 #' Dummies de quebra (secao 3 da especificacao). d_resto/d_base: LC 194 (2022 b4-b6) em receita total e ICMS; d_yoy: RS 2023 (despesa total e pessoal)
 #' e RS 2024 (pessoal e custeio); d_intra23: ano de 2023 na despesa total (pendencias incluem intra, nao separavel).
-e5_dummies <- function(d) {
+e5_dummies <- function(d, sem = FALSE) {
   s <- d$serie
   d$d_resto <- as.numeric(s %in% c("rec:total", "rec:ICMS") & d$exercicio == 2022L & d$corte < 4L)
   d$d_base <- as.numeric(s %in% c("rec:total", "rec:ICMS") & d$exercicio == 2023L & d$corte < 4L)
   d$d_yoy <- as.numeric(d$cod_ibge == 43L & ((s %in% c("desp:total", "desp:pessoal") & d$exercicio == 2023L) | (s %in% c("desp:pessoal", "desp:custeio") & d$exercicio == 2024L)))
   d$d_intra23 <- as.numeric(s == "desp:total" & d$exercicio == 2023L)
+  if (sem) d$d_yoy <- as.numeric(d$exercicio == 2023L | (d$cod_ibge == 33L & d$exercicio == 2025L))
   d
 }
 
 #' Linhas do modelo: ano t com o ano t-1 (mesmo UF, serie, corte). y = log r(t) - log r(t-1); x1 = log r(t-1); x2 = log do acumulado real t / t-1.
 #' `pend`: data.frame(cod_ibge, exercicio, corte, liq_menos_paga, emp_menos_liq) nominais (A6, despesa total); `den`: despesa total bruta do ano anterior (real).
-e5_base_modelo <- function(painel, ind_bim = NULL, pend = NULL, den = NULL) {
+e5_base_modelo <- function(painel, ind_bim = NULL, pend = NULL, den = NULL, sem = FALSE) {
   ant <- painel[, c("cod_ibge", "serie", "exercicio", "corte", "r", "Areal", "Treal", "T")]
   ant$exercicio <- ant$exercicio + 1L; names(ant)[5:8] <- c("r_ant", "Areal_ant", "Treal_ant", "T_ant")
   d <- merge(painel, ant, by = c("cod_ibge", "serie", "exercicio", "corte"), sort = FALSE)
@@ -90,12 +91,13 @@ e5_base_modelo <- function(painel, ind_bim = NULL, pend = NULL, den = NULL) {
     idx <- match(paste(d$cod_ibge[k], d$exercicio[k], d$corte[k]), paste(m$cod_ibge, m$exercicio, m$corte))
     d$x3[k] <- m$x3[idx]; d$x4[k] <- m$x4[idx]
   }
-  d <- e5_dummies(d)
+  d <- e5_dummies(d, sem)
   d[order(d$serie, d$cod_ibge, d$exercicio, d$corte), ]
 }
 
 #' Termos (preditores pre-registrados) por serie.
-e5_termos <- function(serie) {
+e5_termos <- function(serie, sem = FALSE) {
+  if (sem && serie == "rec:total") return(c("x1", "x2", "d_resto", "d_base", "d_yoy"))
   if (serie == "rec:total" || serie == "rec:ICMS") return(c("x1", "x2", "d_resto", "d_base"))
   if (serie == "desp:total") return(c("x1", "x2", "x3", "x4", "d_yoy", "d_intra23"))
   if (serie %in% c("desp:pessoal", "desp:custeio")) return(c("x1", "x2", "d_yoy"))
