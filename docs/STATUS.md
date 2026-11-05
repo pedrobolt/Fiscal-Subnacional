@@ -346,6 +346,10 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 - Achado das intra (`docs/relatorio_intra.md`, nota de quebras seção 7): o A6 inclui as intra na receita e na despesa primárias desde 2023 (todas as UFs); simétrico, o primário não está subestimado (líquido de R$ 4,0 bi em 2023). Quebra de 2023 de -7,9 p.p. no crescimento real de receita e despesa. Harmonização em `R/transform/intra.R` (total e duas categorias validadas), **não ligada** à rodada. Critério da etapa 2 da despesa 2015–17 refixado (`docs/intra_criterios.md` 2d).
 - Próximo: aprovação do Pedro do relatório das intra; o E5 (estados) segue o protocolo v4.
 
+### Rodada de teste 2026 dos estados: gap implícito e erro do SRW em anos de eleição (05/11/2026, branch `teste-2026-gap`)
+Descritivo, a pedido de Pedro; não muda modelos. `scripts/teste_2026_gap.R` (CSVs em `outputs/teste/relatorio_2026/`) e `scripts/teste_2026_md.R` geram `docs/projecao_2026_teste.md`. Conteúdo: projeção 2026 (IPCA 4,77%), gap implícito P2 − P1 com classe do E3.6 adaptada ao horizonte anual, decomposição (acumulado × restante), m3 sombra por esfera, erro do SRW por esfera e corte em anos de eleição estadual. O primário implícito do P2 não vai para planilha nem texto. Limites: rodada `--sem-download --rapida` (DEGRADADA); PIB e demais premissas são da fixture; P2 realizado por diferença só de 2020 em diante. Testes: `tests/test-codificacao.R` passa; sem código novo em `R/`.
+Arquivos: `scripts/teste_2026_gap.R`, `scripts/teste_2026_md.R`, `docs/projecao_2026_teste.md`, `docs/STATUS.md`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
