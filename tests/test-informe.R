@@ -36,6 +36,14 @@ test_that("blocos 3 a 5: sem E5 saem pendentes e o comentario do analista fica v
   expect_equal(T$comentario, ""); expect_match(T$notas[1], "conceito consolidado"); expect_match(T$notas[3], "conceito do Banco Central"); expect_false(any(grepl("m3|Sinais", c(T$blocos, T$notas))))
 })
 
+test_that("bloco 3: a diferenca em p.p. sai dos valores arredondados mostrados (8,85 e 4,801 -> 8,9%, 4,8%, 4,1 p.p.)", {
+  expect_equal(c(arred1(8.85), arred1(4.801), arred1(-8.85), arred1(0)), c(8.9, 4.8, -8.9, 0))
+  I <- mk_I(); cr <- data.frame(conceito = "consolidado", serie = c("rec:total", "desp:total"), modelo = c("M5s4", "B0"), oficial = TRUE, cresc_real_pct = c(4.801, 8.85), stringsAsFactors = FALSE)
+  uf <- expand.grid(cod_ibge = 1:27, serie = c("rec:total", "desp:total"), stringsAsFactors = FALSE); uf$modelo <- "B0"; uf$Areal_ant <- 100; uf$Areal <- 101
+  I$proj <- list(corte = 4L, cresc = cr, uf = uf, plano = data.frame(serie = c("rec:total", "desp:total"), modelo = c("M5s4", "B0"), membros = "", oficial = TRUE))
+  expect_match(informe_texto(I)$blocos[3], "expansão real de 8,9% em 2025, acima do crescimento projetado para a arrecadação \\(4,8%\\), diferença de 4,1 p\\.p\\.\\[1\\]")
+})
+
 test_that("bloco 3 com E5: razao, contagem de UFs e direcao", {
   I <- mk_I(); uf <- expand.grid(cod_ibge = 1:27, serie = c("rec:total", "desp:total"), stringsAsFactors = FALSE); uf$modelo <- ifelse(uf$serie == "rec:total", "M5s4", "B0"); uf$Areal_ant <- 100
   uf$Areal <- ifelse(uf$serie == "rec:total", 103, ifelse(uf$cod_ibge <= 18, 110, 101))

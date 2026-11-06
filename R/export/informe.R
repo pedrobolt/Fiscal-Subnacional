@@ -9,6 +9,9 @@ NOTA_BCB <- "No conceito do Banco Central."
 ROT_ESFERA <- c(regional = "regionais", estaduais = "estados", municipais = "municípios")
 rot_esfera <- function(x) { r <- unname(ROT_ESFERA[as.character(x)]); ifelse(is.na(r), as.character(x), r) }
 
+#' Arredonda a 1 casa, metade para cima (8,85 -> 8,9; o round/sprintf do R dariam 8,8 pela representacao binaria). Os valores do texto e a diferenca em p.p. saem daqui.
+arred1 <- function(x) sign(x) * floor(abs(x) * 10 + 0.5 + 1e-9) / 10
+
 fmt_pt <- function(x, k = 1) formatC(x, format = "f", digits = k, decimal.mark = ",", big.mark = ".")
 rs_bi <- function(x) sprintf("R$ %s %s", fmt_pt(abs(x)), if (round(abs(x), 1) < 2) "bilhão" else "bilhões")
 .sinal_res <- function(x) ifelse(x >= 0, "superávit", "déficit")
@@ -62,9 +65,10 @@ informe_texto <- function(I) {
   if (C$proj) {
     d <- C$d; r <- C$r; rz <- if (r > 0 && d > 0) d / r else NA_real_
     # Diferenca em p.p. (nao razao): com RMSE de ~1,8 p.p. por serie e n = 4 a 6, a razao nao e robusta; o sinal da diferenca e.
+    d1 <- arred1(d); r1 <- arred1(r); dif <- arred1(d1 - r1)       # a diferenca sai dos valores ja arredondados mostrados no texto (o leitor refaz a conta)
     rel <- if (abs(d - r) <= 0.5) "em linha com o" else if (d > r) "acima do" else "abaixo do"
     b3 <- sprintf("As despesas primárias devem registrar %s real de %s%% em %d, %s %s projetado para a arrecadação (%s%%), diferença de %s p.p.[1] Até %s, as despesas primárias cresciam acima da arrecadação em %d das %d UFs.",
-                  if (d >= 0) "expansão" else "queda", f(abs(d)), C$ano, rel, if (r >= 0) "crescimento" else "queda", f(r), f(abs(d - r)), C$mes_p2, C$n_ufs_desp_acima, C$n_ufs)
+                  if (d >= 0) "expansão" else "queda", f(abs(d1)), C$ano, rel, if (r >= 0) "crescimento" else "queda", f(r1), f(abs(dif)), C$mes_p2, C$n_ufs_desp_acima, C$n_ufs)
   } else b3 <- "Estados: pendente (projeção do E5 indisponível nesta rodada)."
   b4 <- "Municípios: pendente (E5 municipal ainda não disponível)."
   b5 <- "Conjunto regional: pendente (depende do E5 municipal)."
