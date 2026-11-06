@@ -20,15 +20,23 @@ caminhos_rodada <- function(dia, oficial) {
 #' Roda `fun(ctx)` isolando erro e aviso fatal. Retorna uma linha: etapa, estado ("ok" | "falhou"), msg, segundos.
 #' `ctx` é um ambiente compartilhado: a etapa guarda ali o que as seguintes usam. Uma etapa que falha não derruba as outras.
 rodar_etapa <- function(nome, fun, ctx) {
+  linha_etapa(nome, "")                       # progresso: uma linha ao iniciar e outra ao terminar
   t0 <- Sys.time()
   r <- tryCatch({ fun(ctx); list(estado = "ok", msg = "") },
                 error = function(e) list(estado = "falhou", msg = substr(gsub("[\r\n]+", " ", conditionMessage(e)), 1, 300)))
-  data.frame(etapa = nome, estado = r$estado, msg = r$msg, segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1),
-             stringsAsFactors = FALSE)
+  seg <- round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)
+  linha_etapa(nome, sprintf("%s (%s s)", r$estado, format(round(seg), trim = TRUE)))
+  data.frame(etapa = nome, estado = r$estado, msg = r$msg, segundos = seg, stringsAsFactors = FALSE)
+}
+
+#' Linha de progresso "[HH:MM:SS] etapa... resultado" no console (sem resultado, a etapa esta comecando).
+linha_etapa <- function(nome, resultado = "", agora = Sys.time()) {
+  cat(sprintf("[%s] %s...%s\n", format(agora, "%H:%M:%S"), nome, if (nzchar(resultado)) paste0(" ", resultado) else ""))
+  utils::flush.console(); invisible(NULL)
 }
 
 #' Etapa pulada por opção (ex.: `--sem-download`): conta como incompleta, não como OK.
-etapa_pulada <- function(nome, motivo) data.frame(etapa = nome, estado = "pulada", msg = motivo, segundos = 0, stringsAsFactors = FALSE)
+etapa_pulada <- function(nome, motivo) { linha_etapa(nome, "pulada"); data.frame(etapa = nome, estado = "pulada", msg = motivo, segundos = 0, stringsAsFactors = FALSE) }
 
 #' Status da rodada: "OK" só se todas as etapas rodaram; senão "DEGRADADA", com a lista do que falhou ou foi pulado.
 status_rodada <- function(etapas, avisos = character(0)) {
