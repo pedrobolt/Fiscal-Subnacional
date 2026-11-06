@@ -32,6 +32,8 @@ rreo_vigentes <- function(pasta = dados("data/raw/rreo"), esfera = "E") {
 }
 
 RREO_CACHE_VERSAO <- 1L
+#' Hash do codigo de decodificacao (`ler_rreo`): se ele mudar, o cache se invalida sozinho.
+rreo_hash_decodificacao <- function() { f <- tempfile(); on.exit(unlink(f)); writeLines(deparse(ler_rreo), f); unname(tools::md5sum(f)) }
 .rreo_memo <- new.env()      # mesmo objeto para as etapas que rodam no mesmo processo
 
 #' `ler_rreo_pasta()` com cache em disco (E6.1, desempenho). Le uma vez por rodada e grava em `cache` (RDS em data/processed/) a tabela e o
@@ -45,12 +47,13 @@ ler_rreo_cache <- function(pasta = dados("data/raw/rreo"), esfera = "E", cache =
   man <- data.frame(arquivo = substring(vig, nchar(pasta) + 2), tamanho = file.size(vig), mtime = as.numeric(file.mtime(vig)), stringsAsFactors = FALSE)
   chave <- paste(normalizePath(pasta, mustWork = FALSE), esfera)
   mesma <- function(a, b) !is.null(a) && nrow(a) == nrow(b) && identical(a$arquivo, b$arquivo) && identical(a$tamanho, b$tamanho) && identical(a$mtime, b$mtime)
+  hdec <- rreo_hash_decodificacao()
   memo <- .rreo_memo[[chave]]
   tab <- NULL; velho <- NULL
   if (!is.null(memo) && mesma(memo$manifesto, man)) tab <- memo$tabela
   else {
     c0 <- if (file.exists(cache)) tryCatch(readRDS(cache), error = function(e) NULL, warning = function(w) NULL)
-    if (is.list(c0) && identical(c0$versao, RREO_CACHE_VERSAO) && identical(c0$esfera, esfera) && is.data.frame(c0$tabela)) velho <- c0
+    if (is.list(c0) && identical(c0$versao, RREO_CACHE_VERSAO) && identical(c0$decod, hdec) && identical(c0$esfera, esfera) && is.data.frame(c0$tabela)) velho <- c0
     ok <- if (is.null(velho)) character(0) else { m <- velho$manifesto; k <- match(man$arquivo, m$arquivo); man$arquivo[!is.na(k) & man$tamanho == m$tamanho[k] & man$mtime == m$mtime[k]] }
     novos <- setdiff(man$arquivo, ok)
     if (aviso) cat(sprintf("RREO %s: %d arquivos vigentes, %d a decodificar (cache: %s)\n", esfera, nrow(man), length(novos), if (is.null(velho)) "ausente" else "valido"))
@@ -68,7 +71,13 @@ ler_rreo_cache <- function(pasta = dados("data/raw/rreo"), esfera = "E", cache =
     if (nrow(tab)) { tab <- tab[order(match(tab$arquivo, man$arquivo)), ]; rownames(tab) <- NULL }
     if (length(novos) || is.null(velho) || nrow(velho$manifesto) != nrow(man) || !identical(sort(velho$manifesto$arquivo), sort(man$arquivo))) {
       dir.create(dirname(cache), showWarnings = FALSE, recursive = TRUE); tmp <- paste0(cache, ".tmp", Sys.getpid())
-      tryCatch({ saveRDS(list(versao = RREO_CACHE_VERSAO, esfera = esfera, manifesto = man, tabela = tab), tmp); file.rename(tmp, cache) }, error = function(e) if (file.exists(tmp)) file.remove(tmp))
+      tryCatch({
+        saveRDS(list(versao = RREO_CACHE_VERSAO, decod = hdec, esfera = esfera, manifesto = man, tabela = tab), tmp)
+        if (!isTRUE(file.rename(tmp, cache))) {          # no Windows file.rename devolve FALSE (sem erro) e deixa o .tmp
+          if (!isTRUE(file.copy(tmp, cache, overwrite = TRUE))) warning("RREO: nao foi possivel gravar o cache em ", cache, call. = FALSE)
+          unlink(tmp)
+        }
+      }, error = function(e) { unlink(tmp); warning("RREO: falha ao gravar o cache: ", conditionMessage(e), call. = FALSE) })
     }
     assign(chave, list(manifesto = man, tabela = tab), envir = .rreo_memo)
   }

@@ -59,3 +59,16 @@ test_that("cache corrompido ou de outra versao e ignorado; FISCAL_SEM_CACHE e fo
 test_that("pasta sem arquivos devolve data.frame vazio", {
   limpa(); expect_equal(nrow(ler_rreo_cache(tempfile(), "E", caminho_cache(), aviso = FALSE)), 0L)
 })
+
+test_that("cache se invalida quando o codigo de decodificacao (ler_rreo) muda", {
+  limpa(); pasta <- monta(); cache <- caminho_cache(); ler_rreo_cache(pasta, "E", cache, aviso = FALSE)
+  limpa(); expect_output(ler_rreo_cache(pasta, "E", cache), "0 a decodificar")
+  original <- ler_rreo; on.exit(ler_rreo <<- original)
+  ler_rreo <<- function(arquivo) { d <- original(arquivo); d }       # corpo diferente => hash diferente
+  limpa(); expect_output(ler_rreo_cache(pasta, "E", cache), "4 a decodificar")
+})
+
+test_that("nao deixa .tmp para tras apos gravar o cache", {
+  limpa(); pasta <- monta(); dir <- tempfile("c"); dir.create(dir); cache <- file.path(dir, "rreo.rds")
+  ler_rreo_cache(pasta, "E", cache, aviso = FALSE); expect_equal(list.files(dir), "rreo.rds")
+})
