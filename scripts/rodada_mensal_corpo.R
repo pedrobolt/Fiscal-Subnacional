@@ -5,7 +5,7 @@
 #   --sem-download  pula Siconfi, BCB e IBGE (usa o que está em data/raw); a rodada sai DEGRADADA.
 #   --rapida        pula conceito único e alertas (usa as saídas de outputs/ já calculadas); a rodada sai DEGRADADA.
 # Dados sob a raiz FISCAL_DADOS (padrão: a pasta do repositório); ver docs/HANDOVER.md, 3h.
-# Saída: outputs/rodada/<data>/ (resumo.md, informe.xlsx, informe_texto.md, p1.csv, p2_categorias.csv, p2_resultado.csv, gap.csv, alertas_*.csv, etapas.csv, carimbo.txt) e o
+# Saída: outputs/rodada/<data>/ (resumo.md, informe.xlsx, informe_interno.xlsx, informe_texto.md, p1.csv, p2_categorias.csv, p2_resultado.csv, gap.csv, alertas_*.csv, etapas.csv, carimbo.txt) e o
 # arquivo de previsões emitidas outputs/arquivo/previsoes_emitidas.csv (uma linha por rodada x modelo x esfera x ano-alvo).
 # Código de saída: 0 = OK; 2 = DEGRADADA (alguma etapa falhou ou foi pulada); 1 = erro fatal. Rodar no Windows da CNI: ver docs/HANDOVER.md.
 # A rodada é sequencial: no máximo 1 conexão por vez ao Siconfi (limite combinado: 2).
@@ -221,7 +221,7 @@ et_informe <- function(ctx) {
   I <- list(p1_rel = rel, stn = stn, dia = dia, oficial = oficial, status = ctx$status_prelim, commit = commit, corte = ctx$corte, bim_ref = ctx$alertas$ultimo, prem = ctx$prem, p1 = p1, iv = ctx$iv, txt_cob = ctx$txt_cob, pib = ctx$pib, series = ctx$series,
             gap = ctx$gap[, c("exercicio", "periodo", "p2", "p1", "g", "r", "classe_informe", "classe_sem_2020_22")], p2_tot = ctx$p2_tot, p2_cat = if (!is.null(lido("p2_categorias.csv"))) informe_p2(lido("p2_categorias.csv"), ind, ano) else NULL,
             alertas_lista = lido("alertas_aba_lista.csv"), alertas_contagem = lido("alertas_aba_contagem.csv"), proj = ctx$p2_proj, rmse = rm, arquivo = arq, fh_tot = fh_tot, base_ant = base_ant)
-  escrever_informe(I, file.path(pasta, "informe.xlsx"), file.path(pasta, "informe_texto.md"))
+  escrever_informe(I, file.path(pasta, "informe.xlsx"), file.path(pasta, "informe_texto.md"), file.path(pasta, "informe_interno.xlsx"))
 }
 
 # ---- Execução ----------------------------------------------------------------------------------------------------------------------

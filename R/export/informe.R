@@ -1,10 +1,13 @@
 # E6.2: planilha e texto do informe, gerados so de outputs/rodada/<data>/ e do arquivo de previsoes (docs/proposta_e62_e5_fase2.md, secao 1).
-# Nenhuma celula digitada; unico campo livre: "comentario do analista" (vazio). A aba "Sinais" e INTERNA (uso interno, nao publicar): nao entra no numero nem no texto.
+# Nenhuma celula digitada; unico campo livre: "comentario do analista" (vazio). A aba "Sinais" e INTERNA (uso interno, nao publicar) e vai em arquivo separado (informe_interno.xlsx): nao entra no numero nem no texto.
 # Entrada: lista `I` montada pela etapa "informe" da rodada (ver `scripts/rodada_mensal_corpo.R`). Todas as funcoes abaixo sao puras (sem leitura de disco), exceto `escrever_informe()`.
 
 MESES_PT <- c("janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro")
 NOTA_CONCEITO <- "Receitas e despesas no conceito consolidado dos estados: incluem as fontes do RPPS e excluem as operações intraorçamentárias. O informe anterior usava o conceito sem RPPS e excluía RJ, PR e RS."
 NOTA_BCB <- "No conceito do Banco Central."
+#' Rotulo unico das esferas em todas as abas (chaves internas: regional/estaduais/municipais).
+ROT_ESFERA <- c(regional = "regionais", estaduais = "estados", municipais = "municípios")
+rot_esfera <- function(x) { r <- unname(ROT_ESFERA[as.character(x)]); ifelse(is.na(r), as.character(x), r) }
 
 fmt_pt <- function(x, k = 1) formatC(x, format = "f", digits = k, decimal.mark = ",", big.mark = ".")
 rs_bi <- function(x) sprintf("R$ %s %s", fmt_pt(abs(x)), if (round(abs(x), 1) < 2) "bilhão" else "bilhões")
@@ -58,9 +61,10 @@ informe_texto <- function(I) {
   # 3. estados (E5)
   if (C$proj) {
     d <- C$d; r <- C$r; rz <- if (r > 0 && d > 0) d / r else NA_real_
-    razao <- if (abs(d - r) <= 0.5) "em linha com o" else if (d > r) { if (!is.na(rz) && rz >= 2.2) "mais que o dobro do" else if (!is.na(rz) && rz >= 1.8) "quase o dobro do" else "acima do" } else "abaixo do"
-    b3 <- sprintf("As despesas primárias devem registrar %s real de %s%% em %d, %s %s projetado para a arrecadação (%s%%)[1]. Até %s, as despesas primárias cresciam acima da arrecadação em %d das %d UFs.",
-                  if (d >= 0) "expansão" else "queda", f(abs(d)), C$ano, razao, if (r >= 0) "crescimento" else "queda", f(r), C$mes_p2, C$n_ufs_desp_acima, C$n_ufs)
+    # Diferenca em p.p. (nao razao): com RMSE de ~1,8 p.p. por serie e n = 4 a 6, a razao nao e robusta; o sinal da diferenca e.
+    rel <- if (abs(d - r) <= 0.5) "em linha com o" else if (d > r) "acima do" else "abaixo do"
+    b3 <- sprintf("As despesas primárias devem registrar %s real de %s%% em %d, %s %s projetado para a arrecadação (%s%%), diferença de %s p.p.[1] Até %s, as despesas primárias cresciam acima da arrecadação em %d das %d UFs.",
+                  if (d >= 0) "expansão" else "queda", f(abs(d)), C$ano, rel, if (r >= 0) "crescimento" else "queda", f(r), f(abs(d - r)), C$mes_p2, C$n_ufs_desp_acima, C$n_ufs)
   } else b3 <- "Estados: pendente (projeção do E5 indisponível nesta rodada)."
   b4 <- "Municípios: pendente (E5 municipal ainda não disponível)."
   b5 <- "Conjunto regional: pendente (depende do E5 municipal)."
@@ -106,14 +110,14 @@ informe_carimbo <- function(I) {
 }
 
 informe_esferas <- function(I) {
-  C <- informe_campos(I); p <- I$p1; e <- c(regional = "regionais", estaduais = "estados", municipais = "municípios")
+  C <- informe_campos(I); p <- I$p1; e <- ROT_ESFERA
   data.frame(esfera = e[p$esfera], ano_alvo = p$ano_alvo, previsao_bi = p$previsao_bi, pct_pib = 100 * p$previsao_bi / C$pib_ano,
              realizado_ano_anterior_bi = vapply(p$esfera, function(s) informe_realizado(I$series[[s]], C$ano - 1L), 0), faixa_inf_bi = ifelse(p$esfera == "regional", p$faixa_intervalo_inf, NA_real_),
              faixa_sup_bi = ifelse(p$esfera == "regional", p$faixa_intervalo_sup, NA_real_), stringsAsFactors = FALSE, row.names = NULL)
 }
 
 informe_p1 <- function(I) {
-  C <- informe_campos(I); p <- I$p1; e <- c(regional = "regionais", estaduais = "estados", municipais = "municípios")
+  C <- informe_campos(I); p <- I$p1; e <- ROT_ESFERA
   d <- data.frame(esfera = e[p$esfera], ano_alvo = p$ano_alvo, corte_m = p$corte_m, acumulado_bi = vapply(p$esfera, function(s) informe_acum(I$series[[s]], C$ano, C$m), 0),
                   acumulado_ano_anterior_bi = vapply(p$esfera, function(s) informe_acum(I$series[[s]], C$ano - 1L, C$m), 0), restante_ano_anterior_bi = p$restante_ano_anterior_bi, previsao_bi = p$previsao_bi, previsao_pct_pib = 100 * p$previsao_bi / C$pib_ano,
                   faixa_inf_bi = ifelse(p$esfera == "regional", p$faixa_intervalo_inf, NA_real_), faixa_sup_bi = ifelse(p$esfera == "regional", p$faixa_intervalo_sup, NA_real_), stringsAsFactors = FALSE, row.names = NULL)
@@ -127,7 +131,7 @@ informe_p1 <- function(I) {
 informe_historico_p1 <- function(arq) {
   if (is.null(arq) || !nrow(arq)) return(NULL)
   h <- arq[arq$modelo == "srw_brl" & arq$esfera %in% c("regional", "estaduais", "municipais") & arq$oficial %in% c(TRUE, "TRUE"), c("data_rodada", "esfera", "ano_alvo", "corte_m", "previsao_bi", "status_rodada")]
-  h[order(h$data_rodada, h$esfera), ]
+  h <- h[order(h$data_rodada, h$esfera), ]; h$esfera <- rot_esfera(h$esfera); rownames(h) <- NULL; h
 }
 
 #' P2 estados por categoria: bimestre e acumulado, variacao real (IPCA bimestral) e nominal contra o mesmo periodo do ano anterior.
@@ -161,7 +165,7 @@ informe_notas <- function(I) {
     "RMSE do crescimento: erro típico agregado (p.p. do crescimento real do total dos estados) do modelo adotado no mesmo corte, nos anos-alvo do backtest do E5 (amostra A), com e sem 2020-21 (data/protocolo/e5_rmse_agregado.csv). Poucos anos: ver a coluna n.",
     "VERSÕES", sprintf("Rodada %s; commit %s; premissas %s.", I$dia, I$commit, if (!is.null(I$prem)) I$prem$versao else "ausente"),
     "QUEBRAS E TRATAMENTOS", "Série do informe: conceito consolidado (com RPPS, sem intraorçamentárias de 2023 em diante). A sensibilidade sem RPPS exclui PR e RS; a quebra de pessoal de RJ, PR e RS existe só na série sem RPPS (docs/nota_quebras.md).",
-    "LIMITES", "Municípios e conjunto regional do E5: pendentes (carga municipal em andamento). A classe do gap governa só a narrativa. Faixa do P1 regional: não é intervalo de 80%.", NOTA_CONCEITO, NOTA_BCB)
+    "LIMITES", "Municípios e conjunto regional do E5: pendentes (carga municipal em andamento). A classe do gap governa só a narrativa. Faixa do P1 regional: não é intervalo de 80%.", sprintf("[1] %s", NOTA_CONCEITO), sprintf("[3] %s", NOTA_BCB))
 }
 
 # ---- gravacao ---------------------------------------------------------------------------------------------------------------------------
@@ -174,7 +178,7 @@ informe_notas <- function(I) {
 }
 
 #' Monta o texto e a planilha e grava em `arq_xlsx` e `arq_md`. Retorna lista(texto, abas).
-escrever_informe <- function(I, arq_xlsx, arq_md) {
+escrever_informe <- function(I, arq_xlsx, arq_md, arq_interno = NULL) {
   stopifnot(requireNamespace("openxlsx", quietly = TRUE))
   T <- informe_texto(I); S <- sinais_tudo(I); P1 <- informe_p1(I); CR <- informe_crescimento(I)
   wb <- openxlsx::createWorkbook(); st_t <- openxlsx::createStyle(textDecoration = "bold", fontSize = 12); st_h <- openxlsx::createStyle(textDecoration = "bold", fgFill = "#DDE6F0", border = "bottom")
@@ -205,16 +209,22 @@ escrever_informe <- function(I, arq_xlsx, arq_md) {
   a <- add("Alertas"); l <- .bloco(wb, a, 1L, "Lista (grupo 'ultimo' primeiro, depois 'revisao')", I$alertas_lista, st_t, st_h); l <- .bloco(wb, a, l, "Contagem por tipo", I$alertas_contagem, st_t, st_h)
   # Notas
   a <- add("Notas"); openxlsx::writeData(wb, a, data.frame(notas = informe_notas(I)), startRow = 1, startCol = 1); openxlsx::addStyle(wb, a, st_h, rows = 1, cols = 1)
-  # Sinais (INTERNA)
-  a <- add("Sinais"); openxlsx::writeData(wb, a, "USO INTERNO, NÃO PUBLICAR. Não entra no número nem no texto do informe.", startRow = 1, startCol = 1); openxlsx::addStyle(wb, a, st_a, rows = 1, cols = 1:8, gridExpand = TRUE)
-  l <- .bloco(wb, a, 3L, "m3 (sombra) por esfera ao lado do SRW (R$ bi); o m3 usa o PIB das premissas", S$m3, st_t, st_h)
-  l <- .bloco(wb, a, l, "Candidatos do torneio do P1 no corte atual (R$ bi): previsão por esfera e RMSE relativo ao SRW na faixa do corte (nota_p1; + = pior que o SRW). Só informação; o número do informe é o SRW", S$candidatos, st_t, st_h)
-  l <- .bloco(wb, a, l, "Gap implícito P2 projetado - P1 dos estados (R$ bi), classe pela regra do E3.6 adaptada ao horizonte anual", if (!is.null(S$gap)) S$gap$resumo else NULL, st_t, st_h)
-  l <- .bloco(wb, a, l, "Decomposição: acumulado x hipótese do restante x diferença sazonal RREO-BCB do ano anterior (R$ bi)", if (!is.null(S$gap)) S$gap$decomposicao else NULL, st_t, st_h)
-  l <- .bloco(wb, a, l, "Gap realizado anual (P2 por diferença - P1) usado como referência da classe", if (!is.null(S$gap)) S$gap$realizado else NULL, st_t, st_h)
-  l <- .bloco(wb, a, l, sprintf("Erro histórico do SRW no mesmo corte (previsão - realizado, superávit positivo): anos de eleição estadual x demais%s", if (isTRUE(S$srw$ano_alvo_eleicao)) " (o ano-alvo é de eleição estadual)" else ""), S$srw$resumo, st_t, st_h)
-  l <- .bloco(wb, a, l, "Anos de eleição estadual, por ano", S$srw$por_ano, st_t, st_h)
   dir.create(dirname(arq_xlsx), showWarnings = FALSE, recursive = TRUE); openxlsx::saveWorkbook(wb, arq_xlsx, overwrite = TRUE)
+  if (!is.null(arq_interno)) {          # arquivo SEPARADO: rotulo nao impede encaminhamento, arquivo separado impede
+    wb <- openxlsx::createWorkbook()
+    a <- add("Carimbo"); openxlsx::writeData(wb, a, "USO INTERNO, NÃO PUBLICAR. Não entra no número nem no texto do informe.", startRow = 1, startCol = 1); openxlsx::addStyle(wb, a, st_a, rows = 1, cols = 1:6, gridExpand = TRUE)
+    .bloco(wb, a, 3L, "Carimbo da rodada", informe_carimbo(I), st_t, st_h)
+    # Sinais
+    a <- add("Sinais"); openxlsx::writeData(wb, a, "USO INTERNO, NÃO PUBLICAR. Não entra no número nem no texto do informe.", startRow = 1, startCol = 1); openxlsx::addStyle(wb, a, st_a, rows = 1, cols = 1:8, gridExpand = TRUE)
+    l <- .bloco(wb, a, 3L, "m3 (sombra) por esfera ao lado do SRW (R$ bi); o m3 usa o PIB das premissas", S$m3, st_t, st_h)
+    l <- .bloco(wb, a, l, "Candidatos do torneio do P1 no corte atual (R$ bi): previsão por esfera e RMSE relativo ao SRW na faixa do corte (nota_p1; + = pior que o SRW). Só informação; o número do informe é o SRW", S$candidatos, st_t, st_h)
+    l <- .bloco(wb, a, l, "Gap implícito P2 projetado - P1 dos estados (R$ bi), classe pela regra do E3.6 adaptada ao horizonte anual", if (!is.null(S$gap)) S$gap$resumo else NULL, st_t, st_h)
+    l <- .bloco(wb, a, l, "Decomposição: acumulado x hipótese do restante x diferença sazonal RREO-BCB do ano anterior (R$ bi)", if (!is.null(S$gap)) S$gap$decomposicao else NULL, st_t, st_h)
+    l <- .bloco(wb, a, l, "Gap realizado anual (P2 por diferença - P1) usado como referência da classe", if (!is.null(S$gap)) S$gap$realizado else NULL, st_t, st_h)
+    l <- .bloco(wb, a, l, sprintf("Erro histórico do SRW no mesmo corte (previsão - realizado, superávit positivo): anos de eleição estadual x demais%s", if (isTRUE(S$srw$ano_alvo_eleicao)) " (o ano-alvo é de eleição estadual)" else ""), S$srw$resumo, st_t, st_h)
+    l <- .bloco(wb, a, l, "Anos de eleição estadual, por ano", S$srw$por_ano, st_t, st_h)
+    dir.create(dirname(arq_interno), showWarnings = FALSE, recursive = TRUE); openxlsx::saveWorkbook(wb, arq_interno, overwrite = TRUE)
+  }
   txt <- c(sprintf("# Informe: texto gerado pela rodada de %s%s", I$dia, if (I$oficial) "" else " (RODADA DE TESTE, não oficial)"), "", T$blocos, "", T$notas, "", "Comentário do analista: ")
   writeLines(txt, arq_md, useBytes = TRUE)
   invisible(list(texto = T, sinais = S, crescimento = CR))

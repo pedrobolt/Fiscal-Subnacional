@@ -96,6 +96,7 @@ sinais_candidatos <- function(series, pib, ano, m, rel = NULL, stn = NULL) {
   d$rel_rmse_vs_srw_sem_2020_22 <- if (is.null(r)) NA_real_ else r$rel_rmse_sem_2020_22[k]; d$n_anos_sem_2020_22 <- if (is.null(r)) NA_integer_ else r$n_anos_sem_2020_22[k]
   d$rel_rmse_vs_srw_todos <- if (is.null(r)) NA_real_ else r$rel_rmse_todos[k]; d$n_anos_todos <- if (is.null(r)) NA_integer_ else r$n_anos_todos[k]
   d$observacao <- ifelse(d$esfera != "regional" & d$candidato != "srw_brl", "RMSE e o do candidato regional (torneio do P1)", ifelse(is.na(d$previsao_bi) & d$candidato == "fpe_fpm", "STN indisponível nesta rodada", ""))
+  d$observacao[d$candidato == "combinacao" & d$esfera == "regional" & is.na(reg[["fpe_fpm"]])] <- "sem FPE/FPM (STN indisponível); RMSE relativo é o da combinação do torneio, com FPE/FPM"
   d$rel_rmse_vs_srw_sem_2020_22[d$candidato == "srw_brl"] <- 0; d$rel_rmse_vs_srw_todos[d$candidato == "srw_brl"] <- 0
   d$srw_mesma_esfera_bi <- NULL; rownames(d) <- NULL; d
 }
@@ -103,6 +104,8 @@ sinais_candidatos <- function(series, pib, ano, m, rel = NULL, stn = NULL) {
 #' Tudo da aba Sinais. `I`: entrada do informe (series, pib, p1, proj, fh_tot, base_ant, corte).
 sinais_tudo <- function(I) {
   ano <- I$corte$ano_alvo; m <- I$corte$m
-  list(m3 = sinais_m3(I$series, I$pib, ano, m, I$p1), candidatos = sinais_candidatos(I$series, I$pib, ano, m, I$p1_rel, I$stn), gap = tryCatch(sinais_gap(I$proj, I$series$estaduais, sinais_p2_anual(I$fh_tot), I$base_ant, ano, m), error = function(e) NULL),
-       srw = sinais_srw_eleicao(I$series, m, ano))
+  rot <- function(d) { if (!is.null(d) && "esfera" %in% names(d)) d$esfera <- rot_esfera(d$esfera); d }
+  srw <- sinais_srw_eleicao(I$series, m, ano); srw$resumo <- rot(srw$resumo); srw$por_ano <- rot(srw$por_ano)
+  list(m3 = rot(sinais_m3(I$series, I$pib, ano, m, I$p1)), candidatos = rot(sinais_candidatos(I$series, I$pib, ano, m, I$p1_rel, I$stn)), gap = tryCatch(sinais_gap(I$proj, I$series$estaduais, sinais_p2_anual(I$fh_tot), I$base_ant, ano, m), error = function(e) NULL),
+       srw = srw)
 }

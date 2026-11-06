@@ -42,7 +42,7 @@ test_that("bloco 3 com E5: razao, contagem de UFs e direcao", {
   cr <- data.frame(conceito = "consolidado", serie = c("rec:total", "desp:total"), modelo = c("M5s4", "B0"), oficial = TRUE, cresc_real_pct = c(3.6, 6.8), stringsAsFactors = FALSE)
   I$proj <- list(corte = 4L, cresc = cr, uf = uf, plano = data.frame(serie = c("rec:total", "desp:total"), modelo = c("M5s4", "B0"), membros = "", oficial = TRUE))
   t3 <- informe_texto(I)$blocos[3]
-  expect_match(t3, "expansão real de 6,8% em 2025, quase o dobro do crescimento projetado para a arrecadação \\(3,6%\\)\\[1\\]")
+  expect_match(t3, "expansão real de 6,8% em 2025, acima do crescimento projetado para a arrecadação \\(3,6%\\), diferença de 3,2 p\\.p\\.\\[1\\]"); expect_false(grepl("dobro", t3))
   expect_match(t3, "Até agosto, as despesas primárias cresciam acima da arrecadação em 18 das 27 UFs")
   cr$cresc_real_pct <- c(5, 5.2); I$proj$cresc <- cr; expect_match(informe_texto(I)$blocos[3], "em linha com o")
   cr$cresc_real_pct <- c(5, -1); I$proj$cresc <- cr; expect_match(informe_texto(I)$blocos[3], "queda real de 1,0%")
@@ -81,13 +81,23 @@ test_that("sinais: classe do gap pela regra adaptada, P2 anual sem despesa nao r
   e <- sinais_srw_eleicao(list(estaduais = s), 6L, 2022L, anos = 2019:2021); expect_equal(e$resumo$n_eleicao, 0L); expect_true(e$ano_alvo_eleicao)
 })
 
-test_that("planilha: abas, marca de teste, Sinais interna fora do Resumo e do texto, comentario do analista vazio", {
+test_that("planilha: Sinais em arquivo separado (informe_interno), nada de Sinais/m3 no informe, comentario do analista vazio, esferas padronizadas", {
   skip_if_not_installed("openxlsx")
-  I <- mk_I(); I$fh_tot <- NULL; f <- tempfile(fileext = ".xlsx"); m <- tempfile(fileext = ".md")
-  suppressWarnings(escrever_informe(I, f, m))
-  expect_equal(openxlsx::getSheetNames(f), c("Resumo", "P1", "Crescimento projetado", "P2 estados", "Gap", "Alertas", "Notas", "Sinais"))
-  s <- openxlsx::read.xlsx(f, "Sinais", colNames = FALSE); expect_match(s[1, 1], "USO INTERNO, NÃO PUBLICAR")
-  r <- unlist(openxlsx::read.xlsx(f, "Resumo", colNames = FALSE)); expect_match(r[1], "RODADA DE TESTE"); expect_false(any(grepl("m3", r, ignore.case = FALSE)))
+  I <- mk_I(); I$fh_tot <- NULL; f <- tempfile(fileext = ".xlsx"); g <- tempfile(fileext = ".xlsx"); m <- tempfile(fileext = ".md")
+  suppressWarnings(escrever_informe(I, f, m, g))
+  expect_equal(openxlsx::getSheetNames(f), c("Resumo", "P1", "Crescimento projetado", "P2 estados", "Gap", "Alertas", "Notas"))
+  expect_equal(openxlsx::getSheetNames(g), c("Carimbo", "Sinais"))
+  s <- openxlsx::read.xlsx(g, "Sinais", colNames = FALSE); expect_match(s[1, 1], "USO INTERNO, NÃO PUBLICAR")
+  r <- unlist(openxlsx::read.xlsx(f, "Resumo", colNames = FALSE)); expect_match(r[1], "RODADA DE TESTE"); expect_false(any(grepl("m3|Sinais", r)))
   p <- unlist(openxlsx::read.xlsx(f, "P1", colNames = FALSE)); expect_false(any(grepl("m3", p)))
+  n <- openxlsx::read.xlsx(f, "Notas", colNames = FALSE)[, 1]; expect_true(any(grepl("^\\[3\\] No conceito do Banco Central", n))); expect_false(any(n == "No conceito do Banco Central."))
+  todos <- unlist(lapply(c(openxlsx::getSheetNames(f)), function(a) unlist(openxlsx::read.xlsx(f, a, colNames = TRUE, skipEmptyRows = FALSE)))); si <- unlist(openxlsx::read.xlsx(g, "Sinais", colNames = FALSE))
+  expect_false(any(c("estaduais", "municipais") %in% c(todos, si)))      # so regionais/estados/municipios
   txt <- readLines(m, encoding = "UTF-8"); expect_false(any(grepl("m3|Sinais|gap implícito", txt))); expect_match(tail(txt, 1), "^Comentário do analista: $")
+})
+
+test_that("sinais: observacao da combinacao quando falta o FPE/FPM (STN indisponivel)", {
+  I <- mk_I(); d <- sinais_candidatos(I$series, I$pib, I$corte$ano_alvo, I$corte$m, I$p1_rel, NULL)
+  o <- d$observacao[d$candidato == "combinacao" & d$esfera == "regional"]
+  expect_true(is.na(d$previsao_bi[d$candidato == "fpe_fpm" & d$esfera == "regional"])); expect_equal(o, "sem FPE/FPM (STN indisponível); RMSE relativo é o da combinação do torneio, com FPE/FPM")
 })
