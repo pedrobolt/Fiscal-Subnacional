@@ -48,6 +48,7 @@ e5_painel_corrente <- function(P, ind_bim, series, ano, corte) {
 e5_projetar <- function(hist, cur, ind_bim, ano, corte, modelos = E5_MODELOS_SOMBRA, membros = list(), pend = NULL, den = NULL, sem = FALSE, series = E5_ALVOS) {
   faixa <- e5_faixa_corte(corte); cf <- E5_FAIXAS[[faixa]]
   base <- e5_base_modelo(rbind(hist, cur), ind_bim, pend, den, sem)
+  ant <- hist[hist$exercicio == ano - 1L & hist$corte == corte, c("serie", "cod_ibge", "Areal")]   # acumulado real de t-1 no mesmo corte
   ind_rest <- if (corte < 6) mean(ind_bim(rep(ano, 6 - corte), (corte + 1L):6)) else NA_real_
   out <- list()
   for (s in series) {
@@ -55,6 +56,7 @@ e5_projetar <- function(hist, cur, ind_bim, ano, corte, modelos = E5_MODELOS_SOM
     b <- base[base$serie == s & base$corte %in% cf, ]
     tr <- b[b$exercicio < ano & stats::complete.cases(b[, need]), ]
     al0 <- b[b$exercicio == ano & b$corte == corte & is.finite(b$x1), ]
+    al0$Areal_ant <- ant$Areal[match(paste(s, al0$cod_ibge), paste(ant$serie, ant$cod_ibge))]
     if (!nrow(al0)) next
     okm <- stats::complete.cases(al0[, setdiff(need, "y")]); al <- al0[okm, ]
     pr <- list(B0 = al0$x1)
@@ -66,7 +68,7 @@ e5_projetar <- function(hist, cur, ind_bim, ano, corte, modelos = E5_MODELOS_SOM
     for (m in names(pr)) {
       lh <- pr[[m]]; Rh <- al$A * exp(lh)
       out[[length(out) + 1]] <- data.frame(serie = s, modelo = m, cod_ibge = al$cod_ibge, exercicio = ano, corte = corte, A = al$A, Areal = al$Areal, logr_hat = lh, That = al$A + Rh, Rhat = Rh,
-        Rreal_hat = Rh / ind_rest, Treal_hat = al$Areal + Rh / ind_rest, Treal_ant = al$Treal_ant, T_ant = al$T_ant)
+        Rreal_hat = Rh / ind_rest, Treal_hat = al$Areal + Rh / ind_rest, Treal_ant = al$Treal_ant, T_ant = al$T_ant, Areal_ant = al$Areal_ant)
     }
   }
   do.call(rbind, out)
@@ -77,7 +79,8 @@ e5_agregar_cresc <- function(U, excluir = integer(0)) {
   U <- U[!U$cod_ibge %in% excluir & is.finite(U$Treal_hat) & is.finite(U$Treal_ant), ]
   g <- split(U, list(U$serie, U$modelo), drop = TRUE)
   out <- lapply(g, function(d) data.frame(serie = d$serie[1], modelo = d$modelo[1], n_ufs = length(unique(d$cod_ibge)), That_bi = sum(d$That) / 1e9, Treal_hat_bi = sum(d$Treal_hat) / 1e9,
-    T_ant_bi = sum(d$T_ant) / 1e9, Treal_ant_bi = sum(d$Treal_ant) / 1e9, cresc_real_pct = 100 * (sum(d$Treal_hat) / sum(d$Treal_ant) - 1), cresc_nominal_pct = 100 * (sum(d$That) / sum(d$T_ant) - 1)))
+    T_ant_bi = sum(d$T_ant) / 1e9, Treal_ant_bi = sum(d$Treal_ant) / 1e9, cresc_real_pct = 100 * (sum(d$Treal_hat) / sum(d$Treal_ant) - 1), cresc_nominal_pct = 100 * (sum(d$That) / sum(d$T_ant) - 1),
+    acum_real_pct = { k <- is.finite(d$Areal_ant); if (any(k)) 100 * (sum(d$Areal[k]) / sum(d$Areal_ant[k]) - 1) else NA_real_ }))
   out <- do.call(rbind, out); rownames(out) <- NULL; out
 }
 
