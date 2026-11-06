@@ -102,3 +102,11 @@ test_that("progresso: uma linha ao iniciar e outra ao terminar, com hora e durac
   o2 <- capture.output(invisible(rodar_etapa("p2", function(ctx) stop("rede fora"), ctx))); expect_match(o2[2], "p2\\.\\.\\. falhou \\(\\d+ s\\)$")
   expect_match(capture.output(invisible(etapa_pulada("siconfi", "--sem-download"))), "siconfi\\.\\.\\. pulada$")
 })
+
+test_that("resumo: numeros de 1 casa usam arred1 (8,85 -> +8.9%, 4,801 -> +4.8%, -0,04 sem sinal negativo)", {
+  et <- data.frame(etapa = "p1", estado = "ok", msg = "", segundos = 1)
+  proj <- list(ano = 2026L, corte = 4L, faixa = "b4", cresc = data.frame(conceito = "consolidado", serie = c("rec:total", "desp:total"), modelo = c("M5s4", "B0"), oficial = TRUE, cresc_real_pct = c(4.801, 8.85), n_ufs = 27L, stringsAsFactors = FALSE))
+  r <- resumo_rodada("2026-11-06", status_rodada(et), et, proj = proj); expect_match(paste(r, collapse = "\n"), "despesa B0 \\+8\\.9%"); expect_match(paste(r, collapse = "\n"), "receita M5s4 \\+4\\.8%")
+  p1 <- data.frame(esfera = "regional", ano_alvo = 2026L, corte_m = 9L, previsao_bi = -0.04, dif_regional_vs_soma_bi = 0, stringsAsFactors = FALSE)
+  expect_match(paste(resumo_rodada("2026-11-06", status_rodada(et), et, p1 = p1), collapse = "\n"), "regional: 0\\.0 bi")
+})
