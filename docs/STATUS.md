@@ -350,6 +350,9 @@ Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída do
 Descritivo, a pedido de Pedro; não muda modelos. `scripts/teste_2026_gap.R` (CSVs em `outputs/teste/relatorio_2026/`) e `scripts/teste_2026_md.R` geram `docs/projecao_2026_teste.md`. Conteúdo: projeção 2026 (IPCA 4,77%), gap implícito P2 − P1 com classe do E3.6 adaptada ao horizonte anual, decomposição (acumulado × restante), m3 sombra por esfera, erro do SRW por esfera e corte em anos de eleição estadual. O primário implícito do P2 não vai para planilha nem texto. Limites: rodada `--sem-download --rapida` (DEGRADADA); PIB e demais premissas são da fixture; P2 realizado por diferença só de 2020 em diante. Testes: `tests/test-codificacao.R` passa; sem código novo em `R/`.
 Arquivos: `scripts/teste_2026_gap.R`, `scripts/teste_2026_md.R`, `docs/projecao_2026_teste.md`, `docs/STATUS.md`.
 
+### Versão do código sem git (06/11/2026, branch `versao-sem-git`)
+Zip do GitHub saía com "commit: NA". `VERSAO` (`$Format:%H$`) + `.gitattributes` (`VERSAO export-subst`); `versao_codigo()` usa git quando a raiz é o repositório e o `VERSAO` quando não há git; `--oficial` recusa sem commit. Testes: `tests/test-versao.R` (inclui `git archive` real). Conferido à mão: zip simulado com `git archive` roda a rodada de teste com `commit: 097e27a`, `fonte_commit: VERSAO`. Arquivos: `VERSAO`, `.gitattributes`, `R/pipeline/rodada.R`, `scripts/rodada_mensal_corpo.R`, `tests/test-versao.R`, `docs/HANDOVER.md`, `docs/STATUS.md`.
+
 ## Pendências abertas
 - Carga histórica municipal em faixas (só após aprovação da E2.4): agora = 6º bimestre de todos os anos + bimestres 1–5 de 2023 em diante (2026 b1–b4); **pendência condicionada**: bimestres 1–5 de 2015–2022 só se o bottom-up mostrar potencial no E4.
 - Contrato (PR próprio): versão mais recente (retificada) e regra do `available_at` (HO: `data_status`; RE: prazo legal + atraso mediano dos homologados da mesma UF × período).
