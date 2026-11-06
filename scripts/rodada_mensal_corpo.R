@@ -12,6 +12,7 @@
 args <- commandArgs(TRUE)
 opt <- function(nome, padrao = NA_character_) { a <- grep(paste0("^--", nome, "="), args, value = TRUE); if (length(a)) sub(paste0("^--", nome, "="), "", a[1]) else padrao }
 sem_download <- "--sem-download" %in% args; rapida <- "--rapida" %in% args; oficial <- "--oficial" %in% args
+if ("--sem-cache" %in% args) Sys.setenv(FISCAL_SEM_CACHE = "1")      # ignora o cache do RREO (conferencia: o resultado deve ser identico)
 if (oficial && (sem_download || rapida)) { cat("Erro: --oficial exige a rodada completa (sem --sem-download nem --rapida).\n"); quit(status = 1) }
 hoje <- as.Date(opt("data", format(Sys.Date())))
 dia <- format(hoje)
@@ -21,9 +22,9 @@ arqs <- list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
 arqs <- c(arqs[!grepl("candidatos_p1", arqs)], arqs[grepl("candidatos_p1", arqs)])   # candidatos_p1 depende de ESPEC_RESTANTE
 carregar_r(arqs)
 
-commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE, ignore.stderr = TRUE), error = function(e) NA_character_)
-sujo <- tryCatch(length(system("git status --porcelain -- R scripts data/dicionario_contas_estados.csv", intern = TRUE, ignore.stderr = TRUE)) > 0, error = function(e) FALSE)
-commit <- paste0(commit, if (isTRUE(sujo)) "+sujo" else "")
+versao <- versao_codigo(".")
+msg <- recusa_sem_commit(versao, oficial); if (!is.null(msg)) { cat(msg, "\n"); quit(status = 1) }
+commit <- if (is.na(versao$commit)) NA_character_ else paste0(versao$commit, if (isTRUE(versao$sujo)) "+sujo" else "")
 cam <- caminhos_rodada(dia, oficial); pasta <- cam$pasta; dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
 ctx <- new.env(); ctx$avisos <- character(0)
 ultimo <- function(prefixo, cod) { f <- sort(list.files(dados("data/raw"), sprintf("^%s_%s_.*\\.json$", prefixo, cod), full.names = TRUE)); if (length(f)) f[length(f)] else NA_character_ }
@@ -121,7 +122,7 @@ et_arquivo <- function(ctx) {
 # ---- 5. P2 realizado: categorias (com RPPS) e resultado com e sem RPPS (referência da LDO) --------------------------------------
 et_p2 <- function(ctx) {
   dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
-  rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
+  rreo <- ler_rreo_cache(dados("data/raw/rreo"), "E")
   ano <- as.integer(format(hoje, "%Y"))
   # Conceito consolidado (decisao de 04/11/2026, docs/contrato.md): com RPPS, sem intraorcamentarias de 2023 em diante; a serie bruta fica como referencia.
   ctx$intra <- fluxo_intra(rreo)
@@ -244,7 +245,7 @@ etapas <- rbind(etapas, rodar_etapa("arquivo", et_arquivo, ctx))
 etapas <- rbind(etapas, rodar_etapa("informe", et_informe, ctx))
 st <- status_rodada(etapas, ctx$avisos)
 gravar_csv(etapas[, c("etapa", "estado", "msg")], file.path(pasta, "etapas.csv"))
-writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
+writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), sprintf("fonte_commit: %s", versao$fonte), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
 txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4), oficial, ctx$p2_proj, ctx$p2_salto)
 writeLines(txt, file.path(pasta, "resumo.md"), useBytes = TRUE)
 cat(txt)
