@@ -21,9 +21,9 @@ arqs <- list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)
 arqs <- c(arqs[!grepl("candidatos_p1", arqs)], arqs[grepl("candidatos_p1", arqs)])   # candidatos_p1 depende de ESPEC_RESTANTE
 carregar_r(arqs)
 
-commit <- tryCatch(system("git rev-parse --short HEAD", intern = TRUE, ignore.stderr = TRUE), error = function(e) NA_character_)
-sujo <- tryCatch(length(system("git status --porcelain -- R scripts data/dicionario_contas_estados.csv", intern = TRUE, ignore.stderr = TRUE)) > 0, error = function(e) FALSE)
-commit <- paste0(commit, if (isTRUE(sujo)) "+sujo" else "")
+versao <- versao_codigo(".")
+msg <- recusa_sem_commit(versao, oficial); if (!is.null(msg)) { cat(msg, "\n"); quit(status = 1) }
+commit <- if (is.na(versao$commit)) NA_character_ else paste0(versao$commit, if (isTRUE(versao$sujo)) "+sujo" else "")
 cam <- caminhos_rodada(dia, oficial); pasta <- cam$pasta; dir.create(pasta, showWarnings = FALSE, recursive = TRUE)
 ctx <- new.env(); ctx$avisos <- character(0)
 ultimo <- function(prefixo, cod) { f <- sort(list.files(dados("data/raw"), sprintf("^%s_%s_.*\\.json$", prefixo, cod), full.names = TRUE)); if (length(f)) f[length(f)] else NA_character_ }
@@ -219,7 +219,7 @@ ctx$status_prelim <- status_rodada(etapas, ctx$avisos)$status      # o arquivo g
 etapas <- rbind(etapas, rodar_etapa("arquivo", et_arquivo, ctx))
 st <- status_rodada(etapas, ctx$avisos)
 gravar_csv(etapas[, c("etapa", "estado", "msg")], file.path(pasta, "etapas.csv"))
-writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
+writeLines(c(sprintf("carimbo: %s", format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")), sprintf("commit: %s", commit), sprintf("fonte_commit: %s", versao$fonte), paste0(etapas$etapa, ": ", etapas$segundos, " s")), file.path(pasta, "carimbo.txt"))
 txt <- resumo_rodada(dia, st, etapas, ctx$p1, ctx$iv, ctx$txt_cob, ctx$gap, ctx$alertas, if (!is.null(ctx$p2_tot)) utils::tail(ctx$p2_tot, 4), oficial, ctx$p2_proj, ctx$p2_salto)
 writeLines(txt, file.path(pasta, "resumo.md"), useBytes = TRUE)
 cat(txt)

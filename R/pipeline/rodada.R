@@ -27,6 +27,32 @@ rodar_etapa <- function(nome, fun, ctx) {
              stringsAsFactors = FALSE)
 }
 
+#' Versao do codigo da rodada. Usa o git quando a raiz e um repositorio (commit curto; "+sujo" se R/, scripts/ ou o dicionario mudaram);
+#' senao le o arquivo VERSAO, que o GitHub preenche com o hash completo no zip (`VERSAO export-subst` em .gitattributes).
+#' Retorna list(commit, fonte, sujo); commit = NA se nao identificar. `usar_git = FALSE` so para teste.
+versao_codigo <- function(raiz = ".", usar_git = TRUE) {
+  raiz <- normalizePath(raiz, mustWork = FALSE)
+  if (usar_git) {
+    topo <- tryCatch(suppressWarnings(system2("git", c("-C", shQuote(raiz), "rev-parse", "--show-toplevel"), stdout = TRUE, stderr = FALSE)), error = function(e) character(0))
+    if (length(topo) == 1L && nzchar(topo) && identical(normalizePath(topo, mustWork = FALSE), raiz)) {      # git so vale se a raiz do projeto e a raiz do repositorio
+      h <- tryCatch(suppressWarnings(system2("git", c("-C", shQuote(raiz), "rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)), error = function(e) character(0))
+      if (length(h) == 1L && grepl("^[0-9a-f]{7,40}$", h)) {
+        sujo <- tryCatch(length(suppressWarnings(system2("git", c("-C", shQuote(raiz), "status", "--porcelain", "--", "R", "scripts", "data/dicionario_contas_estados.csv"), stdout = TRUE, stderr = FALSE))) > 0, error = function(e) FALSE)
+        return(list(commit = h, fonte = "git", sujo = isTRUE(sujo)))
+      }
+    }
+  }
+  f <- file.path(raiz, "VERSAO")
+  v <- if (file.exists(f)) trimws(paste(readLines(f, warn = FALSE), collapse = "")) else ""
+  if (grepl("^[0-9a-f]{40}$", v)) return(list(commit = substr(v, 1, 7), fonte = "VERSAO", sujo = FALSE))      # "$Format:%H$" literal = arquivo nao exportado pelo git
+  list(commit = NA_character_, fonte = NA_character_, sujo = FALSE)
+}
+
+#' Rodada oficial exige commit identificado (git ou VERSAO); devolve a mensagem de recusa ou NULL.
+recusa_sem_commit <- function(versao, oficial) {
+  if (isTRUE(oficial) && is.na(versao$commit)) "Erro: --oficial exige identificar o commit do codigo (git ou arquivo VERSAO preenchido pelo zip do GitHub). Use o zip baixado do GitHub (nao copie a pasta) ou o git clone." else NULL
+}
+
 #' Etapa pulada por opção (ex.: `--sem-download`): conta como incompleta, não como OK.
 etapa_pulada <- function(nome, motivo) data.frame(etapa = nome, estado = "pulada", msg = motivo, segundos = 0, stringsAsFactors = FALSE)
 
