@@ -12,6 +12,7 @@
 args <- commandArgs(TRUE)
 opt <- function(nome, padrao = NA_character_) { a <- grep(paste0("^--", nome, "="), args, value = TRUE); if (length(a)) sub(paste0("^--", nome, "="), "", a[1]) else padrao }
 sem_download <- "--sem-download" %in% args; rapida <- "--rapida" %in% args; oficial <- "--oficial" %in% args
+if ("--sem-cache" %in% args) Sys.setenv(FISCAL_SEM_CACHE = "1")      # ignora o cache do RREO (conferencia: o resultado deve ser identico)
 if (oficial && (sem_download || rapida)) { cat("Erro: --oficial exige a rodada completa (sem --sem-download nem --rapida).\n"); quit(status = 1) }
 hoje <- as.Date(opt("data", format(Sys.Date())))
 dia <- format(hoje)
@@ -121,7 +122,7 @@ et_arquivo <- function(ctx) {
 # ---- 5. P2 realizado: categorias (com RPPS) e resultado com e sem RPPS (referência da LDO) --------------------------------------
 et_p2 <- function(ctx) {
   dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
-  rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
+  rreo <- ler_rreo_cache(dados("data/raw/rreo"), "E")
   ano <- as.integer(format(hoje, "%Y"))
   # Conceito consolidado (decisao de 04/11/2026, docs/contrato.md): com RPPS, sem intraorcamentarias de 2023 em diante; a serie bruta fica como referencia.
   ctx$intra <- fluxo_intra(rreo)
