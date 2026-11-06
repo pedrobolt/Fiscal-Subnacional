@@ -3,8 +3,13 @@
 Atualizar ao fim de cada tarefa: o que foi feito, comandos executados, saída dos testes, pendências.
 
 ## Estado atual
-- Etapa: E1
-- Próxima tarefa: decisão do Pedro sobre a recomendação da E2.0 (censo completo) e ordem da carga histórica; depois E2.2
+- Etapa: E6.4 — primeira rodada oficial, **aguardando o fim da carga histórica municipal**. Rodada de teste (`--sem-download`) validada no Windows em 06/11/2026: suíte FAIL 0; rodada em ~6 min com o cache do RREO (antes 2h30); commit identificado pelo `VERSAO` (49c03e8); `informe.xlsx` sem a aba Sinais e `informe_interno.xlsx` (Carimbo + Sinais).
+- Próxima tarefa: concluir a carga histórica municipal em faixas; depois a primeira `--oficial`.
+- Pendências para a primeira rodada oficial:
+  1. Carga histórica municipal (faixas aprovadas na E2.4) e verificação da cobertura.
+  2. `premissas.yml` oficial completo (só o IPCA de 2026, 4,77%, é oficial; PIB e demais estão na fixture) e rodada de teste final com ele.
+  3. Primeira rodada com `--oficial` (só depois de 1 e 2): grava o arquivo de previsões emitidas.
+- Pendências posteriores (não iniciar sem pedido): E5 municipal e bloco de municípios/conjunto regional do informe (hoje "pendente"); Anexo 7; t+1 (Fase 2); estatísticas MCS/C do E5; revisão anual do modelo (~março, após o 6º bimestre e a DCA; ver HANDOVER).
 
 ## Concluído
 ### E1.1 — Estrutura do repositório (23/10/2026, branch `e1.1-estrutura`)

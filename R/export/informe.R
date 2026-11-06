@@ -9,11 +9,8 @@ NOTA_BCB <- "No conceito do Banco Central."
 ROT_ESFERA <- c(regional = "regionais", estaduais = "estados", municipais = "municípios")
 rot_esfera <- function(x) { r <- unname(ROT_ESFERA[as.character(x)]); ifelse(is.na(r), as.character(x), r) }
 
-#' Arredonda a 1 casa, metade para cima (8,85 -> 8,9; o round/sprintf do R dariam 8,8 pela representacao binaria). Os valores do texto e a diferenca em p.p. saem daqui.
-arred1 <- function(x) sign(x) * floor(abs(x) * 10 + 0.5 + 1e-9) / 10
-
-fmt_pt <- function(x, k = 1) formatC(x, format = "f", digits = k, decimal.mark = ",", big.mark = ".")
-rs_bi <- function(x) sprintf("R$ %s %s", fmt_pt(abs(x)), if (round(abs(x), 1) < 2) "bilhão" else "bilhões")
+fmt_pt <- function(x, k = 1) formatC(if (k == 1) arred1(x) else x, format = "f", digits = k, decimal.mark = ",", big.mark = ".")
+rs_bi <- function(x) sprintf("R$ %s %s", fmt_pt(abs(x)), if (arred1(abs(x)) < 2) "bilhão" else "bilhões")
 .sinal_res <- function(x) ifelse(x >= 0, "superávit", "déficit")
 
 #' Realizado de um ano (12 meses do SGS, R$ bi, superavit positivo); NA se o ano nao esta completo.

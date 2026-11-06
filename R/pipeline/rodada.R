@@ -178,8 +178,8 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
   if (!is.null(p1) && nrow(p1)) {
     r <- p1[p1$esfera == "regional", ]
     L <- c(L, "", sprintf("## P1 (SRW em R$), ano-alvo %d, corte m = %d (último dado do BCB: mês %d)", r$ano_alvo, r$corte_m, r$corte_m), "",
-           paste0("- ", p1$esfera, ": ", sprintf("%.1f", p1$previsao_bi), " bi"))
-    if (!is.null(iv) && is.finite(iv$inf)) L <- c(L, "", sprintf("Faixa do regional: [%.1f; %.1f] bi (sigma = %.1f bi, PIB do ano %.0f bi). %s.", iv$inf, iv$sup, iv$sigma_bi, iv$pib_bi, texto_cob))
+           paste0("- ", p1$esfera, ": ", sprintf("%.1f", arred1(p1$previsao_bi)), " bi"))
+    if (!is.null(iv) && is.finite(iv$inf)) L <- c(L, "", sprintf("Faixa do regional: [%.1f; %.1f] bi (sigma = %.1f bi, PIB do ano %.0f bi). %s.", arred1(iv$inf), arred1(iv$sup), arred1(iv$sigma_bi), iv$pib_bi, texto_cob))
     else L <- c(L, "", "Faixa do regional: indisponível nesta rodada.")
     dif <- r$dif_regional_vs_soma_bi
     if (is.finite(dif)) L <- c(L, sprintf("Linearidade: SRW regional - (estaduais + municipais) = %.3f bi.", dif))
@@ -187,18 +187,18 @@ resumo_rodada <- function(data_rodada, st, etapas, p1 = NULL, iv = NULL, texto_c
   if (!is.null(gap) && nrow(gap)) {
     g <- utils::tail(gap, 4)
     L <- c(L, "", "## Gap P1 x P2 (estados, últimos bimestres)", "",
-           sprintf("- %d b%d: P2 %.1f | P1 %.1f | gap %.1f bi (%.1f%% da receita) | classe %s", g$exercicio, g$periodo, g$p2, g$p1, g$g, 100 * g$r, g$classe_informe))
+           sprintf("- %d b%d: P2 %.1f | P1 %.1f | gap %.1f bi (%.1f%% da receita) | classe %s", g$exercicio, g$periodo, arred1(g$p2), arred1(g$p1), arred1(g$g), arred1(100 * g$r), g$classe_informe))
   }
   if (!is.null(p2_tot) && nrow(p2_tot)) L <- c(L, "", "## P2 realizado, resultado primário (R$ bi, conceito consolidado: com RPPS, sem intraorçamentárias de 2023 em diante; sem RPPS = referência da LDO, 2023+)", "",
-           sprintf("- %d b%d: consolidado %.1f | bruto (com intra) %s | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, p2_tot$p2_com, if ("p2_com_bruto" %in% names(p2_tot)) ifelse(is.na(p2_tot$p2_com_bruto), "n.d.", sprintf("%.1f", p2_tot$p2_com_bruto)) else rep("n.d.", nrow(p2_tot)), ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", p2_tot$p2_sem))))
+           sprintf("- %d b%d: consolidado %.1f | bruto (com intra) %s | sem RPPS (LDO) %s", p2_tot$exercicio, p2_tot$periodo, arred1(p2_tot$p2_com), if ("p2_com_bruto" %in% names(p2_tot)) ifelse(is.na(p2_tot$p2_com_bruto), "n.d.", sprintf("%.1f", arred1(p2_tot$p2_com_bruto))) else rep("n.d.", nrow(p2_tot)), ifelse(is.na(p2_tot$p2_sem), "n.d.", sprintf("%.1f", arred1(p2_tot$p2_sem)))))
   if (!is.null(proj) && nrow(proj$cresc)) {
     L <- c(L, "", sprintf("## P2 projetado, estados, %d (E5; corte b%d, faixa %s; crescimento real, modelo oficial; demais candidatos = sombra no arquivo)", proj$ano, proj$corte, proj$faixa), "")
     for (cn in unique(proj$cresc$conceito)) {
       x <- proj$cresc[proj$cresc$conceito == cn & proj$cresc$oficial, ]
       L <- c(L, sprintf("- %s (%d UFs): %s", if (cn == "consolidado") "conceito consolidado (com RPPS, sem intra)" else "ponte sem RPPS, sem PR e RS (nao e o conceito do informe)", x$n_ufs[1],
-                        paste(sprintf("%s %s %+.1f%%", ifelse(x$serie == "rec:total", "receita", "despesa"), x$modelo, x$cresc_real_pct), collapse = " | ")))
+                        paste(sprintf("%s %s %+.1f%%", ifelse(x$serie == "rec:total", "receita", "despesa"), x$modelo, arred1(x$cresc_real_pct)), collapse = " | ")))
     }
-    if (!is.null(salto) && nrow(salto)) L <- c(L, "", paste0("Troca de metodo na faixa: ", paste(sprintf("%s (%s) %s -> %s: salto de %+.2f p.p. (R$ %+.1f bi) no crescimento real", ifelse(salto$serie == "rec:total", "receita", "despesa"), salto$conceito, salto$modelo_anterior, salto$modelo_atual, salto$salto_pp, salto$salto_bi), collapse = "; ")))
+    if (!is.null(salto) && nrow(salto)) L <- c(L, "", paste0("Troca de metodo na faixa: ", paste(sprintf("%s (%s) %s -> %s: salto de %+.2f p.p. (R$ %+.1f bi) no crescimento real", ifelse(salto$serie == "rec:total", "receita", "despesa"), salto$conceito, salto$modelo_anterior, salto$modelo_atual, salto$salto_pp, arred1(salto$salto_bi)), collapse = "; ")))
   }
   if (!is.null(alertas)) L <- c(L, "", sprintf("## Alertas novos. Bimestre de referência: %d b%d (prazo legal vencido antes da rodada)", alertas$ultimo[[1]], alertas$ultimo[[2]]), "",
     sprintf("- Último (referência e mais recentes): %d na lista, %d por tipo", alertas$lista_ultimo, alertas$contagem_ultimo),

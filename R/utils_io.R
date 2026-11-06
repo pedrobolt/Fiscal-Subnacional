@@ -45,3 +45,6 @@ carregar_r <- function(arquivos, envir = globalenv()) {
   }
   invisible(arquivos)
 }
+
+#' Arredonda a 1 casa, metade para cima (8,85 -> 8,9; o round/sprintf do R dariam 8,8 pela representacao binaria). Usada em todo numero de 1 casa do resumo e do texto do informe (sem -0).
+arred1 <- function(x) sign(x) * floor(abs(x) * 10 + 0.5 + 1e-9) / 10 + 0
