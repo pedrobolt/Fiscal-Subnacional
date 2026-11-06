@@ -6,7 +6,7 @@ for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/e
             "R/quality/alertas.R")) carregar_r(f)
 dir.create(dados("outputs"), showWarnings = FALSE)
 dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
-rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
+rreo <- ler_rreo_cache(dados("data/raw/rreo"), "E")
 estados <- unique(rreo$cod_ibge)
 
 # (a) dicionário

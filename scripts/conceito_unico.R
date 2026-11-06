@@ -6,7 +6,7 @@ for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/download/s
             "R/transform/receita_mensal_a3.R", "R/transform/dca_receita.R", "R/transform/receita_bruta_liquida.R", "R/transform/conceito_unico.R")) carregar_r(f)
 a3 <- ler_a3_estados(); fat <- fatores_dca(ler_dca_impostos(), a3)
 rb <- receita_bruta_liquida(receita_mensal_a3(a3), fat)
-rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
+rreo <- ler_rreo_cache(dados("data/raw/rreo"), "E")
 fl <- fluxos_a6_conceito(rreo, ler_dicionario("data/dicionario_contas_estados.csv"), ler_dicionario("data/dicionario_colunas_estados.csv"))
 con <- conceito_deducoes_a6(fat, fl$a6_anual)
 gravar_csv(con[, c("cod_ibge", "uf", "exercicio", "categoria", "conceito", "ded_fundeb_a6", "ded_transf_a6", "bruto", "a6_acum")], dados("outputs/conceito_a6_dca.csv"))

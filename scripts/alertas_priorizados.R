@@ -5,7 +5,7 @@
 source("R/utils_io.R", encoding = "UTF-8")
 for (f in c("R/download/snapshots.R", "R/download/siconfi_rreo.R", "R/transform/rreo.R", "R/transform/dicionario_contas.R", "R/quality/alertas.R")) carregar_r(f)
 dic <- ler_dicionario("data/dicionario_contas_estados.csv"); dc <- ler_dicionario("data/dicionario_colunas_estados.csv")
-rreo <- ler_rreo_pasta(dados("data/raw/rreo"), "E")
+rreo <- ler_rreo_cache(dados("data/raw/rreo"), "E")
 fl <- fluxos_a6_categorias(rreo, dic, dc)
 rt <- aggregate(valor ~ cod_ibge + exercicio + periodo, fl[grepl("^rec:", fl$serie), ], sum); names(rt)[4] <- "rec_total"
 al <- ler_csv(dados("outputs/alertas_rodada.csv"))

@@ -94,3 +94,11 @@ test_that("rodada de teste grava em outputs/teste e diz RODADA DE TESTE; a ofici
   r_t <- resumo_rodada("2026-11-03", status_rodada(et), et, oficial = FALSE); r_o <- resumo_rodada("2026-11-03", status_rodada(et), et, oficial = TRUE)
   expect_match(strsplit(r_t, "\n")[[1]][1], "RODADA DE TESTE"); expect_false(grepl("TESTE", r_o))
 })
+
+test_that("progresso: uma linha ao iniciar e outra ao terminar, com hora e duracao", {
+  ctx <- new.env()
+  o <- capture.output(invisible(rodar_etapa("alertas", function(ctx) NULL, ctx))); expect_length(o, 2)
+  expect_match(o[1], "^\\[\\d{2}:\\d{2}:\\d{2}\\] alertas\\.\\.\\.$"); expect_match(o[2], "^\\[\\d{2}:\\d{2}:\\d{2}\\] alertas\\.\\.\\. ok \\(\\d+ s\\)$")
+  o2 <- capture.output(invisible(rodar_etapa("p2", function(ctx) stop("rede fora"), ctx))); expect_match(o2[2], "p2\\.\\.\\. falhou \\(\\d+ s\\)$")
+  expect_match(capture.output(invisible(etapa_pulada("siconfi", "--sem-download"))), "siconfi\\.\\.\\. pulada$")
+})

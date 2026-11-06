@@ -20,15 +20,49 @@ caminhos_rodada <- function(dia, oficial) {
 #' Roda `fun(ctx)` isolando erro e aviso fatal. Retorna uma linha: etapa, estado ("ok" | "falhou"), msg, segundos.
 #' `ctx` é um ambiente compartilhado: a etapa guarda ali o que as seguintes usam. Uma etapa que falha não derruba as outras.
 rodar_etapa <- function(nome, fun, ctx) {
+  linha_etapa(nome, "")                       # progresso: uma linha ao iniciar e outra ao terminar
   t0 <- Sys.time()
   r <- tryCatch({ fun(ctx); list(estado = "ok", msg = "") },
                 error = function(e) list(estado = "falhou", msg = substr(gsub("[\r\n]+", " ", conditionMessage(e)), 1, 300)))
-  data.frame(etapa = nome, estado = r$estado, msg = r$msg, segundos = round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1),
-             stringsAsFactors = FALSE)
+  seg <- round(as.numeric(difftime(Sys.time(), t0, units = "secs")), 1)
+  linha_etapa(nome, sprintf("%s (%s s)", r$estado, format(round(seg), trim = TRUE)))
+  data.frame(etapa = nome, estado = r$estado, msg = r$msg, segundos = seg, stringsAsFactors = FALSE)
+}
+
+#' Linha de progresso "[HH:MM:SS] etapa... resultado" no console (sem resultado, a etapa esta comecando).
+linha_etapa <- function(nome, resultado = "", agora = Sys.time()) {
+  cat(sprintf("[%s] %s...%s\n", format(agora, "%H:%M:%S"), nome, if (nzchar(resultado)) paste0(" ", resultado) else ""))
+  utils::flush.console(); invisible(NULL)
+}
+
+#' Versao do codigo da rodada. Usa o git quando a raiz e um repositorio (commit curto; "+sujo" se R/, scripts/ ou o dicionario mudaram);
+#' senao le o arquivo VERSAO, que o GitHub preenche com o hash completo no zip (`VERSAO export-subst` em .gitattributes).
+#' Retorna list(commit, fonte, sujo); commit = NA se nao identificar. `usar_git = FALSE` so para teste.
+versao_codigo <- function(raiz = ".", usar_git = TRUE) {
+  raiz <- normalizePath(raiz, mustWork = FALSE)
+  if (usar_git) {
+    topo <- tryCatch(suppressWarnings(system2("git", c("-C", shQuote(raiz), "rev-parse", "--show-toplevel"), stdout = TRUE, stderr = FALSE)), error = function(e) character(0))
+    if (length(topo) == 1L && nzchar(topo) && identical(normalizePath(topo, mustWork = FALSE), raiz)) {      # git so vale se a raiz do projeto e a raiz do repositorio
+      h <- tryCatch(suppressWarnings(system2("git", c("-C", shQuote(raiz), "rev-parse", "--short", "HEAD"), stdout = TRUE, stderr = FALSE)), error = function(e) character(0))
+      if (length(h) == 1L && grepl("^[0-9a-f]{7,40}$", h)) {
+        sujo <- tryCatch(length(suppressWarnings(system2("git", c("-C", shQuote(raiz), "status", "--porcelain", "--", "R", "scripts", "data/dicionario_contas_estados.csv"), stdout = TRUE, stderr = FALSE))) > 0, error = function(e) FALSE)
+        return(list(commit = h, fonte = "git", sujo = isTRUE(sujo)))
+      }
+    }
+  }
+  f <- file.path(raiz, "VERSAO")
+  v <- if (file.exists(f)) trimws(paste(readLines(f, warn = FALSE), collapse = "")) else ""
+  if (grepl("^[0-9a-f]{40}$", v)) return(list(commit = substr(v, 1, 7), fonte = "VERSAO", sujo = FALSE))      # "$Format:%H$" literal = arquivo nao exportado pelo git
+  list(commit = NA_character_, fonte = NA_character_, sujo = FALSE)
+}
+
+#' Rodada oficial exige commit identificado (git ou VERSAO); devolve a mensagem de recusa ou NULL.
+recusa_sem_commit <- function(versao, oficial) {
+  if (isTRUE(oficial) && is.na(versao$commit)) "Erro: --oficial exige identificar o commit do codigo (git ou arquivo VERSAO preenchido pelo zip do GitHub). Use o zip baixado do GitHub (nao copie a pasta) ou o git clone." else NULL
 }
 
 #' Etapa pulada por opção (ex.: `--sem-download`): conta como incompleta, não como OK.
-etapa_pulada <- function(nome, motivo) data.frame(etapa = nome, estado = "pulada", msg = motivo, segundos = 0, stringsAsFactors = FALSE)
+etapa_pulada <- function(nome, motivo) { linha_etapa(nome, "pulada"); data.frame(etapa = nome, estado = "pulada", msg = motivo, segundos = 0, stringsAsFactors = FALSE) }
 
 #' Status da rodada: "OK" só se todas as etapas rodaram; senão "DEGRADADA", com a lista do que falhou ou foi pulado.
 status_rodada <- function(etapas, avisos = character(0)) {
